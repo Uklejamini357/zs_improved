@@ -5,8 +5,9 @@ CLASS.Hidden = true
 CLASS.Name = "ZE Super Zombie"
 CLASS.TranslationName = "class_super_zombie"
 
-CLASS.Health = 2250
+CLASS.Health = 1600
 CLASS.Speed = SPEED_ZOMBIEESCAPE_ZOMBIE
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 8
 
 CLASS.SWEP = "weapon_zs_zesuperzombie"
@@ -25,6 +26,12 @@ if SERVER then
 	function CLASS:AltUse(pl)
 		if not GAMEMODE.ZombieEscape then
 			pl:StartFeignDeath()
+		end
+	end
+
+	function CLASS:ProcessDamage(pl, dmginfo)
+		if bit_band(dmginfo:GetDamageType(), DMG_BULLET) ~= 0 then
+			pl:SetVelocity(dmginfo:GetAttacker():GetAimVector() * dmginfo:GetDamage() * ZE_KNOCKBACKSCALE)
 		end
 	end
 end
@@ -62,14 +69,7 @@ function CLASS:UpdateAnimation(pl, velocity, maxseqgroundspeed)
 	return self.BaseClass.UpdateAnimation(self, pl, velocity, maxseqgroundspeed)
 end
 
-if SERVER then
-	function CLASS:ProcessDamage(pl, dmginfo)
-		if bit_band(dmginfo:GetDamageType(), DMG_BULLET) ~= 0 then
-			pl:SetVelocity(dmginfo:GetAttacker():GetAimVector() * dmginfo:GetDamage() * ZE_KNOCKBACKSCALE)
-		end
-	end
-	return
-end
+if SERVER then return end
 
 CLASS.Icon = "zombiesurvival/killicons/fresh_dead"
 CLASS.IconColor = Color(127, 255, 127)

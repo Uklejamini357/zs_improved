@@ -184,6 +184,7 @@ function GM:CreateWeaponOfQuality(i, orig, quality, classname, branch)
 		local afent = scripted_ents.Get((prefix or "") .. class)
 		if cbk then cbk(afent, newent) end
 
+		afent.ClassName = nil
 		scripted_ents.Register(afent, (prefix or "") .. newent)
 		return newent
 	end
@@ -221,6 +222,7 @@ function GM:CreateWeaponOfQuality(i, orig, quality, classname, branch)
 		ent.GhostWeapon = newclass
 	end, "status_") end
 
+	wept.ClassName = nil
 	weapons.Register(wept, newclass)
 end
 
@@ -283,7 +285,7 @@ end
 function GM:GetUpgradeScrap(wtbl, qualitychoice)
 	local itier = wtbl.Tier
 
-	return math.ceil(self.ScrapVals[itier or 1] * qualitychoice * (wtbl.IsMelee and 0.85 or 1))
+	return math.ceil(self.ScrapVals[itier or 1] * (self.ScrapRemantleCostMul[qualitychoice] or qualitychoice) * (wtbl.IsMelee and 0.85 or 1))
 end
 
 function GM:PointsToScrap(points)

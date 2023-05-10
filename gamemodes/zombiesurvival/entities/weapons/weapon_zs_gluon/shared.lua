@@ -54,8 +54,8 @@ local branch = GAMEMODE:AddNewRemantleBranch(SWEP, 1, "'Hades' Higgs Gun", "Has 
 	wept.FireSoundPitch = 96
 	wept.LegDamage = true
 end)
-branch.Colors = {Color(160, 160, 160), Color(105, 105, 105), Color(50, 50, 50)}
-branch.NewNames = {"Deep", "Null", "Void"}
+branch.Colors = {Color(160, 160, 160), Color(105, 105, 105), Color(50, 50, 50), Color(25, 25, 25)}
+branch.NewNames = {"Deep", "Null", "Void", "Empty"}
 
 GAMEMODE:AddNewRemantleBranch(SWEP, 2, "'Tartarus' Muon Gun", "Deals more damage with heat, but can overheat and damage you, reduced range", function(wept)
 	wept.GluonDamage = function(self)

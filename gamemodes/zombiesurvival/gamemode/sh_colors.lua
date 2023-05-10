@@ -52,6 +52,7 @@ COLORID_YELLOW = 5
 COLORID_PURPLE = 6
 COLORID_CYAN = 7
 COLORID_GRAY = 8
+COLORID_DARKRED = 9
 
 local colidtocolor = {
 	[COLORID_WHITE] = COLOR_WHITE,
@@ -62,7 +63,8 @@ local colidtocolor = {
 	[COLORID_YELLOW] = COLOR_YELLOW,
 	[COLORID_PURPLE] = COLOR_PURPLE,
 	[COLORID_CYAN] = COLOR_CYAN,
-	[COLORID_GRAY] = COLOR_GRAY
+	[COLORID_GRAY] = COLOR_GRAY,
+	[COLORID_DARKRED] = COLOR_DARKRED
 }
 function util.ColorIDToColor(id, default)
 	return colidtocolor[id] or default or COLOR_WHITE

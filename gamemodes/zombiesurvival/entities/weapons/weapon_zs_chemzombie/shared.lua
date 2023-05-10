@@ -1,3 +1,4 @@
+SWEP.PrintName = "Chem Zombie"
 SWEP.ZombieOnly = true
 
 SWEP.ViewModel = "models/weapons/v_crowbar.mdl"

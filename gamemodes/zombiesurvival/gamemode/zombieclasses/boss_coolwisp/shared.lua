@@ -12,6 +12,7 @@ CLASS.SWEP = "weapon_zs_coolwisp"
 CLASS.Health = 900
 CLASS.DynamicHealth = 35
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 20
 
 CLASS.ResistFrost = true

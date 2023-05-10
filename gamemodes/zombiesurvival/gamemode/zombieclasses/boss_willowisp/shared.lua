@@ -9,6 +9,7 @@ CLASS.KnockbackScale = 0
 
 CLASS.FearPerInstance = 0.05
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 20
 
 CLASS.Model = Model("models/dav0r/hoverball.mdl")

@@ -11,6 +11,7 @@ CLASS.Disabled = true
 CLASS.Unlocked = true
 
 CLASS.Health = 130
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.UsePlayerModel = true

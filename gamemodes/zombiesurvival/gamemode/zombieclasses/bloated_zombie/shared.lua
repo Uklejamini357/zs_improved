@@ -15,6 +15,7 @@ CLASS.Mass = DEFAULT_MASS * 2
 
 CLASS.CanTaunt = true
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.SWEP = "weapon_zs_bloatedzombie"

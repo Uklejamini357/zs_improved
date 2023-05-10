@@ -6,8 +6,6 @@ function ENT:PlayerSet(pPlayer, bExists)
 	if self:GetStartTime() == 0 then
 		self:SetStartTime(CurTime())
 	end
-
-	hook.Add("EntityTakeDamage", self, self.EntityTakeDamage)
 end
 
 function ENT:Think()
@@ -19,7 +17,7 @@ function ENT:Think()
 		self:Remove()
 	end
 
-	if froms and froms:IsValid() and not froms:IsWeapon() and (froms:GetSigilCorrupted() or owner:GetPos():DistToSqr(froms:GetPos()) > 16384) then
+	if froms and froms:IsValid() and not froms:IsWeapon() and (owner:GetPos():DistToSqr(froms:GetPos()) > 16384) then --128
 		self:Remove()
 	end
 

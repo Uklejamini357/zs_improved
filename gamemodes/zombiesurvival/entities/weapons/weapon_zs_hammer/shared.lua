@@ -35,6 +35,7 @@ SWEP.MissGesture = SWEP.HitGesture
 
 SWEP.HealStrength = 1
 SWEP.ReinforceDuration = 2.5
+SWEP.NailHealthMulti = 1
 
 SWEP.NoHolsterOnCarry = true
 

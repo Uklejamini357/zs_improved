@@ -1,4 +1,4 @@
-GM.VaultFolder = "zombiesurvival_vault"
+GM.VaultFolder = "zombiesurvival_vault_alt"
 GM.SkillTreeVersion = 1
 
 function GM:ShouldSaveVault(pl)
@@ -34,6 +34,7 @@ function GM:SaveAllVaults()
 	for _, pl in pairs(player.GetAll()) do
 		self:SaveVault(pl)
 	end
+	self:SaveServerVault()
 end
 
 function GM:InitializeVault(pl)
@@ -144,6 +145,48 @@ function GM:SaveVault(pl)
 	end
 
 	local filename = self:GetVaultFile(pl)
+	file.CreateDir(string.GetPathFromFilename(filename))
+	file.Write(filename, Serialize(tosave))
+end
+
+function GM:ShouldSaveServerVault()
+	return true
+end
+
+function GM:GetServerVaultFile()
+	return self.VaultFolder.."/server.txt"
+end
+
+function GM:LoadServerVault()
+	if not self:ShouldSaveServerVault() then return end
+
+	local filename = self:GetServerVaultFile()
+	if file.Exists(filename, "DATA") then
+		local contents = file.Read(filename, "DATA")
+		if contents and #contents > 0 then
+			contents = Deserialize(contents)
+			if contents then
+				
+				if contents.AdditionalDifficulty then
+					self:SetDifficulty(contents.AdditionalDifficulty)
+				end
+
+				self.NextRoundIsEndless = contents.NextRoundIsEndless or false
+
+			end
+		end
+	end
+end
+
+function GM:SaveServerVault()
+	if not self:ShouldSaveServerVault() then return end
+
+	local tosave = {
+		AdditionalDifficulty = self:GetDifficulty(),
+		NextRoundIsEndless = self.NextRoundIsEndless or false,
+	}
+
+	local filename = self:GetServerVaultFile(pl)
 	file.CreateDir(string.GetPathFromFilename(filename))
 	file.Write(filename, Serialize(tosave))
 end

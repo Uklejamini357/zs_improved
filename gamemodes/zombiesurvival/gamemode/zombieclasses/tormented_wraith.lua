@@ -7,6 +7,7 @@ CLASS.Help = "controls_tormented_wraith"
 
 CLASS.Health = 160
 CLASS.DynamicHealth = 4
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio
 CLASS.Points = CLASS.Health/GM.NoHeadboxZombiePointRatio
 CLASS.Speed = 150
 

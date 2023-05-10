@@ -9,12 +9,14 @@ CLASS.BetterVersion = "Eradicator III"
 
 CLASS.Wave = 8 / GM.NumberOfWaves
 
-CLASS.Health = 475
+CLASS.Health = 435
 CLASS.DynamicHealth = 7
 CLASS.Speed = 155
 
 CLASS.CanTaunt = true
+CLASS.IsEradicator = true
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.SWEP = "weapon_zs_eradicator2"

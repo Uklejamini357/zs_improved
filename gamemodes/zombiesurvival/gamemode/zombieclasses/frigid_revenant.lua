@@ -13,6 +13,7 @@ CLASS.Health = 300
 CLASS.DynamicHealth = 5
 CLASS.Speed = 180
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.ResistFrost = true

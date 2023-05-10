@@ -284,7 +284,37 @@ SKILL_SIGILDEFENDER3 = 178
 SKILL_SIGILDEFENDER4 = 179
 SKILL_GUNSLINGER = 180
 SKILL_D_FRAGILITY = 181
-
+SKILL_ANTITORMENT1 = 182
+SKILL_ANTITORMENT2 = 183
+SKILL_ANTITORMENT3 = 184
+SKILL_ANTITORMENT4 = 185
+SKILL_SURGEON5 = 186
+SKILL_BIOLOGY5 = 187
+SKILL_OUTREACH = 188
+SKILL_OVERREGENERATOR = 189
+SKILL_THE_EXCHANGE1 = 190
+SKILL_THE_EXCHANGE2 = 191
+SKILL_THE_EXCHANGE3 = 192
+SKILL_TORMENT11 = 193
+SKILL_TORMENT12 = 194
+SKILL_TORMENT13 = 195
+SKILL_TORMENT14 = 196
+SKILL_TORMENT15 = 197
+SKILL_TORMENT16 = 198
+SKILL_TORMENT17 = 199
+SKILL_TORMENT18 = 200
+SKILL_TORMENT19 = 201
+SKILL_TORMENT20 = 202
+SKILL_THE_EXCHANGE4 = 203
+SKILL_THE_EXCHANGE5 = 204
+SKILL_ANCIENT_SKILL = 205
+SKILL_COMMISIONED_BUYER = 206
+SKILL_DOOR_DESTROYER = 207
+SKILL_REDEMPTION_UNDEAD = 208
+SKILL_QUICKFIRE = 209
+SKILL_POINT_OLD = 210
+SKILL_ENDLESS = 211
+SKILL_CAPACITY = 212
 
 
 SKILLMOD_HEALTH = 1
@@ -391,6 +421,11 @@ SKILLMOD_RELOADSPEED_RIFLE_MUL = 101
 SKILLMOD_RELOADSPEED_XBOW_MUL = 102
 SKILLMOD_RELOADSPEED_PULSE_MUL = 103
 SKILLMOD_RELOADSPEED_EXP_MUL = 104
+SKILLMOD_DAMAGE_TAKEN_MUL = 105
+SKILLMOD_DAMAGE_DEALT_MUL = 106
+SKILLMOD_REMANTLER_PRICE_MUL = 107
+SKILLMOD_BARRICADE_HEALTH_MUL = 108
+SKILLMOD_CLIP_SIZE_MUL = 109
 
 -- These are only used to check in Character stats and Skills (beta)
 GM.SkillModifiersNonMulOnly = {
@@ -406,6 +441,7 @@ GM.SkillModifiersBadOnly = {
 	SKILLMOD_PHYSICS_DAMAGE_TAKEN_MUL, SKILLMOD_VISION_ALTER_DURATION_MUL, SKILLMOD_DIMVISION_EFF_MUL, SKILLMOD_PROP_CARRY_SLOW_MUL, SKILLMOD_BLEED_SPEED_MUL,
 	SKILLMOD_SIGIL_TELEPORT_MUL, SKILLMOD_POISON_SPEED_MUL, SKILLMOD_PROJECTILE_DAMAGE_TAKEN_MUL, SKILLMOD_WEAPON_WEIGHT_SLOW_MUL, SKILLMOD_FRIGHT_DURATION_MUL,
 	SKILLMOD_IRONSIGHT_EFF_MUL, SKILLMOD_LOW_HEALTH_SLOW_MUL, SKILLMOD_ARSENAL_DISCOUNT, SKILLMOD_AIM_SHAKE_MUL, SKILLMOD_WEAPON_FIREDELAY_MUL,
+	SKILLMOD_DAMAGE_TAKEN_MUL, SKILLMOD_REMANTLER_PRICE_MUL,
 }
 
 
@@ -413,8 +449,8 @@ local VERYGOOD = "^"..COLORID_CYAN
 local GOOD = "^"..COLORID_GREEN
 local NEUTRAL = "^"..COLORID_YELLOW
 local BAD = "^"..COLORID_RED
-local VERYBAD = "^"..COLORID_RED
-
+local VERYBAD = "^"..COLORID_DARKRED
+local PURPLE = "^"..COLORID_PURPLE
 
 -- Health Tree
 local s = GM:AddSkill(SKILL_STOIC1, "Stoic I", GOOD.."+1 maximum health\n"..BAD.."-0.75 movement speed",
@@ -476,18 +512,21 @@ s = GM:AddSkill(SKILL_BLOODLETTER, "Bloodletter", GOOD.."+60% blood armor genera
 0, 4, {SKILL_ANTIGEN}, TREE_HEALTHTREE)
 GM:AddSkillModifier(SKILL_BLOODLETTER, SKILLMOD_BLOODARMOR_GAIN_MUL, 0.6)
 
-s = GM:AddSkill(SKILL_REGENERATOR, "Regenerator", GOOD.."Regenerate 1 health every 6s when below 60% health\n"..BAD.."-6 maximum health",
--5, -2, {}, TREE_HEALTHTREE)
-s.CanUseInZE = true
+s = GM:AddSkill(SKILL_REGENERATOR, "Regenerator", GOOD.."Regenerate 1 health every 7s when below 60% health\n"..BAD.."-6 maximum health",
+-5, -2, {SKILL_OVERREGENERATOR}, TREE_HEALTHTREE)
 GM:AddSkillModifier(SKILL_REGENERATOR, SKILLMOD_HEALTH, -6)
 
-s = GM:AddSkill(SKILL_BLOODARMOR, "Blood Armor", GOOD.."Regenerate 1 blood armor every 8 seconds upto your blood armor max\nBase maximum blood armor = 20\nBase blood armor damage absorption = 50%\n"..BAD.."-13 maximum health",
+s = GM:AddSkill(SKILL_OVERREGENERATOR, "Over-Regenerator", GOOD.."Regenerate 1 health every 5s when below 70% health instead\n"..BAD.."-5 maximum health\n"..BAD.."Must have Regenerator skill active for this skill to work",
+-5, 0, {}, TREE_HEALTHTREE)
+GM:AddSkillModifier(SKILL_OVERREGENERATOR, SKILLMOD_HEALTH, -5)
+
+s = GM:AddSkill(SKILL_BLOODARMOR, "Blood Armor", GOOD.."Regenerate 1 blood armor every 8s upto your blood armor max\nBase maximum blood armor = 20\nBase blood armor damage absorption = 50%\n"..BAD.."-13 maximum health",
 2, 2, {SKILL_IRONBLOOD, SKILL_BLOODLETTER, SKILL_D_HEMOPHILIA}, TREE_HEALTHTREE)
 GM:AddSkillModifier(SKILL_BLOODARMOR, SKILLMOD_HEALTH, -13)
 
-s = GM:AddSkill(SKILL_IRONBLOOD, "Iron Blood", GOOD.."+25% blood armor damage absorption\n"..GOOD.."+25% additional blood armor damage absorption\nOnly if health is 50% or less\n"..BAD.."-50% maximum blood armor",
+s = GM:AddSkill(SKILL_IRONBLOOD, "Iron Blood", GOOD.."+30% blood armor damage absorption\n"..GOOD.."+20% additional blood armor damage absorption if health is 50% or less\n"..BAD.."-50% maximum blood armor",
 2, 4, {SKILL_HAEMOSTASIS, SKILL_CIRCULATION}, TREE_HEALTHTREE)
-GM:AddSkillModifier(SKILL_IRONBLOOD, SKILLMOD_BLOODARMOR_DMG_REDUCTION, 0.25)
+GM:AddSkillModifier(SKILL_IRONBLOOD, SKILLMOD_BLOODARMOR_DMG_REDUCTION, 0.30)
 GM:AddSkillModifier(SKILL_IRONBLOOD, SKILLMOD_BLOODARMOR_MUL, -0.5)
 
 s = GM:AddSkill(SKILL_D_WEAKNESS, "Debuff: Weakness", GOOD.."+15 starting Worth\n"..GOOD.."+1 end of wave points\n"..BAD.."-45 maximum health",
@@ -535,15 +574,15 @@ s = GM:AddSkill(SKILL_CIRCULATION, "Circulation", GOOD.."+1 maximum blood armor"
 4, 4, {SKILL_SANGUINE1}, TREE_HEALTHTREE)
 GM:AddSkillModifier(SKILL_CIRCULATION, SKILLMOD_BLOODARMOR, 1)
 
-s = GM:AddSkill(SKILL_SANGUINE1, "Sanguine I", GOOD.."+11 maximum blood armor\n"..BAD.."-9 maximum health",
+s = GM:AddSkill(SKILL_SANGUINE1, "Sanguine I", GOOD.."+8 maximum blood armor\n"..BAD.."-6 maximum health",
 6, 2, {SKILL_SANGUINE2}, TREE_HEALTHTREE)
-GM:AddSkillModifier(SKILL_SANGUINE1, SKILLMOD_BLOODARMOR, 11)
-GM:AddSkillModifier(SKILL_SANGUINE1, SKILLMOD_HEALTH, -9)
+GM:AddSkillModifier(SKILL_SANGUINE1, SKILLMOD_BLOODARMOR, 8)
+GM:AddSkillModifier(SKILL_SANGUINE1, SKILLMOD_HEALTH, -6)
 
-s = GM:AddSkill(SKILL_SANGUINE2, "Sanguine II", GOOD.."+18 maximum blood armor\n"..BAD.."-15 maximum health",
+s = GM:AddSkill(SKILL_SANGUINE2, "Sanguine II", GOOD.."+14 maximum blood armor\n"..BAD.."-11 maximum health",
 6, 3.5, {}, TREE_HEALTHTREE)
-GM:AddSkillModifier(SKILL_SANGUINE2, SKILLMOD_BLOODARMOR, 18)
-GM:AddSkillModifier(SKILL_SANGUINE2, SKILLMOD_HEALTH, -15)
+GM:AddSkillModifier(SKILL_SANGUINE2, SKILLMOD_BLOODARMOR, 14)
+GM:AddSkillModifier(SKILL_SANGUINE2, SKILLMOD_HEALTH, -11)
 
 s = GM:AddSkill(SKILL_ANTIGEN, "Antigen", GOOD.."+5% blood armor damage absorption\n"..BAD.."-3 maximum health",
 -2, 4, {}, TREE_HEALTHTREE)
@@ -718,33 +757,41 @@ s = GM:AddSkill(SKILL_SURGEON1, "Surgeon I", GOOD.."-6% medical kit cooldown",
 -4, 6, {SKILL_NONE, SKILL_SURGEON2}, TREE_SUPPORTTREE)
 GM:AddSkillModifier(SKILL_SURGEON1, SKILLMOD_MEDKIT_COOLDOWN_MUL, -0.06)
 
-s = GM:AddSkill(SKILL_SURGEON2, "Surgeon II", GOOD.."-7% medical kit cooldown",
+s = GM:AddSkill(SKILL_SURGEON2, "Surgeon II", GOOD.."-6% medical kit cooldown",
 -3, 3, {SKILL_WORTHINESS4, SKILL_SURGEON3}, TREE_SUPPORTTREE)
-GM:AddSkillModifier(SKILL_SURGEON2, SKILLMOD_MEDKIT_COOLDOWN_MUL, -0.07)
+GM:AddSkillModifier(SKILL_SURGEON2, SKILLMOD_MEDKIT_COOLDOWN_MUL, -0.06)
 
-s = GM:AddSkill(SKILL_SURGEON3, "Surgeon III", GOOD.."-8% medical kit cooldown",
+s = GM:AddSkill(SKILL_SURGEON3, "Surgeon III", GOOD.."-7% medical kit cooldown",
 -2, 0, {SKILL_U_MEDICCLOUD, SKILL_D_FRAIL, SKILL_SURGEON4}, TREE_SUPPORTTREE)
-GM:AddSkillModifier(SKILL_SURGEON3, SKILLMOD_MEDKIT_COOLDOWN_MUL, -0.08)
+GM:AddSkillModifier(SKILL_SURGEON3, SKILLMOD_MEDKIT_COOLDOWN_MUL, -0.07)
 
-s = GM:AddSkill(SKILL_SURGEON4, "Surgeon IV", GOOD.."-10% medical kit cooldown",
--2, -3, {}, TREE_SUPPORTTREE)
-GM:AddSkillModifier(SKILL_SURGEON4, SKILLMOD_MEDKIT_COOLDOWN_MUL, -0.10)
+s = GM:AddSkill(SKILL_SURGEON4, "Surgeon IV", GOOD.."-8% medical kit cooldown",
+-2, -3, {SKILL_SURGEON5}, TREE_SUPPORTTREE)
+GM:AddSkillModifier(SKILL_SURGEON4, SKILLMOD_MEDKIT_COOLDOWN_MUL, -0.08)
+
+s = GM:AddSkill(SKILL_SURGEON5, "Surgeon V", GOOD.."-10% medical kit cooldown",
+-2, -5, {SKILL_OUTREACH}, TREE_SUPPORTTREE)
+GM:AddSkillModifier(SKILL_SURGEON5, SKILLMOD_MEDKIT_COOLDOWN_MUL, -0.10)
 
 s = GM:AddSkill(SKILL_BIOLOGY1, "Biology I", GOOD.."+6% medic tool effectiveness",
 4, 6, {SKILL_NONE, SKILL_BIOLOGY2}, TREE_SUPPORTTREE)
 GM:AddSkillModifier(SKILL_BIOLOGY1, SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, 0.06)
 
-s = GM:AddSkill(SKILL_BIOLOGY2, "Biology II", GOOD.."+7% medic tool effectiveness",
+s = GM:AddSkill(SKILL_BIOLOGY2, "Biology II", GOOD.."+6% medic tool effectiveness",
 3, 3, {SKILL_BIOLOGY3, SKILL_SMARTTARGETING}, TREE_SUPPORTTREE)
-GM:AddSkillModifier(SKILL_BIOLOGY2, SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, 0.07)
+GM:AddSkillModifier(SKILL_BIOLOGY2, SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, 0.06)
 
-s = GM:AddSkill(SKILL_BIOLOGY3, "Biology III", GOOD.."+8% medic tool effectiveness",
+s = GM:AddSkill(SKILL_BIOLOGY3, "Biology III", GOOD.."+7% medic tool effectiveness",
 2, 0, {SKILL_U_MEDICCLOUD, SKILL_U_ANTITODESHOT, SKILL_BIOLOGY4}, TREE_SUPPORTTREE)
-GM:AddSkillModifier(SKILL_BIOLOGY3, SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, 0.08)
+GM:AddSkillModifier(SKILL_BIOLOGY3, SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, 0.07)
 
-s = GM:AddSkill(SKILL_BIOLOGY4, "Biology IV", GOOD.."+10% medic tool effectiveness",
-2, -3, {}, TREE_SUPPORTTREE)
-GM:AddSkillModifier(SKILL_BIOLOGY4, SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, 0.10)
+s = GM:AddSkill(SKILL_BIOLOGY4, "Biology IV", GOOD.."+8% medic tool effectiveness",
+2, -3, {SKILL_BIOLOGY5}, TREE_SUPPORTTREE)
+GM:AddSkillModifier(SKILL_BIOLOGY4, SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, 0.08)
+
+s = GM:AddSkill(SKILL_BIOLOGY5, "Biology V", GOOD.."+10% medic tool effectiveness",
+2, -5, {SKILL_OUTREACH}, TREE_SUPPORTTREE)
+GM:AddSkillModifier(SKILL_BIOLOGY5, SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, 0.10)
 
 s = GM:AddSkill(SKILL_D_FRAIL, "Debuff: Frail", GOOD.."+20 starting Worth\n"..GOOD.."+5 starting points\n"..BAD.."Cannot be healed above 25% health",
 -4, -2, {}, TREE_SUPPORTTREE)
@@ -791,6 +838,10 @@ s = GM:AddSkill(SKILL_DISPERSION, "Dispersion", GOOD.."+15% cloud bomb radius\n"
 0, -4, {}, TREE_SUPPORTTREE)
 GM:AddSkillModifier(SKILL_DISPERSION, SKILLMOD_CLOUD_RADIUS, 0.15)
 GM:AddSkillModifier(SKILL_DISPERSION, SKILLMOD_CLOUD_TIME, -0.1)
+
+s = GM:AddSkill(SKILL_OUTREACH, "Outreach", GOOD.."+5% cloud bomb radius",
+0, -7, {}, TREE_SUPPORTTREE)
+GM:AddSkillModifier(SKILL_OUTREACH, SKILLMOD_CLOUD_RADIUS, 0.05)
 
 -- Defence Tree
 
@@ -878,7 +929,7 @@ s = GM:AddSkill(SKILL_U_DRONE, "Unlock: Pulse Drone", GOOD.."Unlocks the Pulse D
 s.AlwaysActive = true
 
 s = GM:AddSkill(SKILL_U_NANITECLOUD, "Unlock: Nanite Cloud Bomb", GOOD.."Unlocks purchasing the Nanite Cloud Bomb\nSlowly repairs all props and deployables inside the cloud",
-3, 1, {SKILL_HAMMERDISCIPLINE1}, TREE_BUILDINGTREE)
+3, 1, {SKILL_HAMMERDISCIPLINE1, SKILL_DOOR_DESTROYER}, TREE_BUILDINGTREE)
 s.AlwaysActive = true
 
 s = GM:AddSkill(SKILL_FIELDAMP, "Field Amplifier", GOOD.."-20% zapper and repair field delay\n"..BAD.."-40% zapper and repair field range",
@@ -929,11 +980,11 @@ s = GM:AddSkill(SKILL_U_ZAPPER_ARC, "Unlock: Arc Zapper", GOOD.."Unlocks purchas
 6, 2, {SKILL_FIELDAMP, SKILL_TECHNICIAN}, TREE_BUILDINGTREE)
 s.AlwaysActive = true
 
-s = GM:AddSkill(SKILL_D_LATEBUYER, "Debuff: Late Buyer", GOOD.."+20 starting Worth\n"..GOOD.."-2% resupply delay\n"..GOOD.."-3% arsenal items cost\n"..BAD.."Unable to use points at arsenal crates until the second half of the round",
+s = GM:AddSkill(SKILL_D_LATEBUYER, "Debuff: Late Buyer", GOOD.."+20 starting Worth\n"..GOOD.."-2% resupply delay\n"..GOOD.."-4% arsenal item prices\n"..BAD.."Unable to use points at arsenal crates until the second half of the round",
 8, 1, {}, TREE_BUILDINGTREE)
 GM:AddSkillModifier(SKILL_D_LATEBUYER, SKILLMOD_WORTH, 20)
 GM:AddSkillModifier(SKILL_D_LATEBUYER, SKILLMOD_RESUPPLY_DELAY_MUL, -0.02)
-GM:AddSkillModifier(SKILL_D_LATEBUYER, SKILLMOD_ARSENAL_DISCOUNT, -0.03)
+GM:AddSkillModifier(SKILL_D_LATEBUYER, SKILLMOD_ARSENAL_DISCOUNT, -0.04)
 
 s = GM:AddSkill(SKILL_U_CRAFTINGPACK, "Unlock: Crafting Pack", GOOD.."Unlocks purchasing the Sawblade component\n"..GOOD.."Unlocks purchasing the Electrobattery component\n"..GOOD.."Unlocks purchasing the CPU Parts component",
 4, -1, {}, TREE_BUILDINGTREE)
@@ -946,18 +997,13 @@ GM:AddSkillFunction(SKILL_TAUT, function(pl, active)
 	pl.BuffTaut = active
 end)
 
-s = GM:AddSkill(SKILL_D_NOODLEARMS, "Debuff: Noodle Arms", GOOD.."+5 starting Worth\n"..GOOD.."+1 starting scrap\n"..BAD.."-90% prop carrying weight limit\n"..BAD.."-75% prop carrying volume limit\n"..BAD.."-60% object throwing strength",
+s = GM:AddSkill(SKILL_D_NOODLEARMS, "Debuff: Noodle Arms", GOOD.."+5 starting Worth\n"..GOOD.."+1 starting scrap\n"..BAD.."Unable to pickup props",
 -7, 2, {}, TREE_BUILDINGTREE)
 GM:AddSkillModifier(SKILL_D_NOODLEARMS, SKILLMOD_WORTH, 5)
 GM:AddSkillModifier(SKILL_D_NOODLEARMS, SKILLMOD_SCRAP_START, 1)
-GM:AddSkillModifier(SKILL_D_NOODLEARMS, SKILLMOD_PROP_CARRY_CAPACITY_MASS_MUL, -0.9)
-GM:AddSkillModifier(SKILL_D_NOODLEARMS, SKILLMOD_PROP_CARRY_CAPACITY_VOLUME_MUL, -0.75)
-GM:AddSkillModifier(SKILL_D_NOODLEARMS, SKILLMOD_PROP_THROW_STRENGTH_MUL, -0.6)
-/*
 GM:AddSkillFunction(SKILL_D_NOODLEARMS, function(pl, active)
 	pl.NoObjectPickup = active
 end)
-*/
 
 s = GM:AddSkill(SKILL_INSTRUMENTS, "Instruments", GOOD.."+5% turret range",
 -10, -3, {}, TREE_BUILDINGTREE)
@@ -969,6 +1015,11 @@ GM:AddSkillModifier(SKILL_STOWAGE, SKILLMOD_RESUPPLY_DELAY_MUL, 0.1)
 GM:AddSkillFunction(SKILL_STOWAGE, function(pl, active)
 	pl.Stowage = active
 end)
+
+s = GM:AddSkill(SKILL_DOOR_DESTROYER, "Door Destroyer", GOOD.."3x damage dealt to hinged doors\n"..BAD.."-10% repair rate\n"..BAD.."-5% health to nailed props",
+4, 2, {}, TREE_BUILDINGTREE)
+GM:AddSkillModifier(SKILL_DOOR_DESTROYER, SKILLMOD_REPAIRRATE_MUL, -0.1)
+GM:AddSkillModifier(SKILL_DOOR_DESTROYER, SKILLMOD_BARRICADE_HEALTH_MUL, -0.05)
 
 -- Gunnery Tree
 
@@ -1002,7 +1053,7 @@ s = GM:AddSkill(SKILL_LEVELHEADED, "Level Headed", GOOD.."-6% effect of aim shak
 -2, 2, {SKILL_UNCORRUPTOR, SKILL_GUNSLINGER}, TREE_GUNTREE)
 GM:AddSkillModifier(SKILL_LEVELHEADED, SKILLMOD_AIM_SHAKE_MUL, -0.06)
 
-s = GM:AddSkill(SKILL_GUNSLINGER, "Gunslinger", GOOD.."+3% bullet damage\n"..BAD.."-20% melee damage",
+s = GM:AddSkill(SKILL_GUNSLINGER, "Gunslinger", GOOD.."+3% weapon bullet damage\n"..BAD.."-20% melee damage",
 -0.5, 0.5, {}, TREE_GUNTREE)
 s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_GUNSLINGER, SKILLMOD_BULLET_DAMAGE_MUL, 0.03)
@@ -1040,19 +1091,24 @@ GM:AddSkillModifier(SKILL_FOCUS3, SKILLMOD_AIM_SHAKE_MUL, -0.0125)
 GM:AddSkillModifier(SKILL_FOCUS3, SKILLMOD_RELOADSPEED_MUL, -0.05)
 
 s = GM:AddSkill(SKILL_QUICKRELOAD, "Quick Reload", GOOD.."+10% weapon reload speed\n"..BAD.."-25% weapon draw speed",
--5, 1, {SKILL_SLEIGHTOFHAND, SKILL_U_DOOMSTICK}, TREE_GUNTREE)
+-5, 1, {SKILL_SLEIGHTOFHAND, SKILL_U_DOOMSTICK, SKILL_QUICKFIRE}, TREE_GUNTREE)
 s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_QUICKRELOAD, SKILLMOD_RELOADSPEED_MUL, 0.10)
 GM:AddSkillModifier(SKILL_QUICKRELOAD, SKILLMOD_DEPLOYSPEED_MUL, -0.25)
 
-s = GM:AddSkill(SKILL_U_DOOMSTICK, "Unlock: Doom Stick", GOOD.."Unlocks purchasing the Doom Stick\nThe only tier 6 weapon\nMore powerful than Boom Stick",
+s = GM:AddSkill(SKILL_QUICKFIRE, "Quick Fire", GOOD.."-5% weapon fire delay\n"..BAD.."-25% weapon reload speed",
+-7, -1, {SKILL_CAPACITY}, TREE_GUNTREE)
+s.CanUseInZE = true
+GM:AddSkillModifier(SKILL_QUICKFIRE, SKILLMOD_RELOADSPEED_MUL, -0.25)
+GM:AddSkillModifier(SKILL_QUICKFIRE, SKILLMOD_WEAPON_FIREDELAY_MUL, -0.05)
+
+s = GM:AddSkill(SKILL_U_DOOMSTICK, "Unlock: Doom Stick", GOOD.."Unlocks purchasing the Doom Stick\nTier 6 weapon\nMore powerful than Boom Stick",
 -6.5, 1.5, {}, TREE_GUNTREE)
 
-s = GM:AddSkill(SKILL_SLEIGHTOFHAND, "Sleight of Hand", GOOD.."+10% weapon reload speed\n"..GOOD.."-2.5% weapon fire delay\n"..BAD.."+20% weapon aim spread",
+s = GM:AddSkill(SKILL_SLEIGHTOFHAND, "Sleight of Hand", GOOD.."+10% weapon reload speed\n"..BAD.."+20% weapon aim spread",
 -5, -1, {}, TREE_GUNTREE)
 s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_SLEIGHTOFHAND, SKILLMOD_RELOADSPEED_MUL, 0.10)
-GM:AddSkillModifier(SKILL_SLEIGHTOFHAND, SKILLMOD_WEAPON_FIREDELAY_MUL, -0.025)
 GM:AddSkillModifier(SKILL_SLEIGHTOFHAND, SKILLMOD_AIMSPREAD_MUL, 0.2)
 
 s = GM:AddSkill(SKILL_U_CRYGASGREN, "Unlock: Cryo Gas Grenade", GOOD.."Unlocks purchasing the Cryo Gas Grenade\nVariant of the Corrosive Gas Grenade\nCryo gas deals a bit of damage over time\nZombies are slowed in the effect",
@@ -1065,11 +1121,10 @@ s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_SOFTDET, SKILLMOD_EXP_DAMAGE_RADIUS, -0.10)
 GM:AddSkillModifier(SKILL_SOFTDET, SKILLMOD_EXP_DAMAGE_TAKEN_MUL, -0.3)
 
-s = GM:AddSkill(SKILL_ORPHICFOCUS, "Orphic Focus", GOOD.."90% spread while ironsighting\n"..GOOD.."-2.5% weapon aim spread\n"..GOOD.."-1.25% weapon fire delay\n"..BAD.."110% spread at any other time\n"..BAD.."-8% reload speed",
+s = GM:AddSkill(SKILL_ORPHICFOCUS, "Orphic Focus", GOOD.."90% spread while ironsighting\n"..GOOD.."-2.5% weapon aim spread\n"..BAD.."110% spread at any other time\n"..BAD.."-8% reload speed",
 5, -1, {SKILL_DELIBRATION}, TREE_GUNTREE)
 s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_ORPHICFOCUS, SKILLMOD_AIMSPREAD_MUL, -0.025)
-GM:AddSkillModifier(SKILL_ORPHICFOCUS, SKILLMOD_WEAPON_FIREDELAY_MUL, -0.0125)
 GM:AddSkillModifier(SKILL_ORPHICFOCUS, SKILLMOD_RELOADSPEED_MUL, -0.08)
 GM:AddSkillFunction(SKILL_ORPHICFOCUS, function(pl, active)
 	pl.Orphic = active
@@ -1146,6 +1201,12 @@ GM:AddSkillFunction(SKILL_TRUEWOOISM, function(pl, active)
 	pl.TrueWooism = active
 end)
 
+s = GM:AddSkill(SKILL_CAPACITY, "Capacity", GOOD.."+7% clipsize of weapons with 8 or more clip size\n"..BAD.."-15% weapon reload speed",
+-7, -3, {}, TREE_GUNTREE)
+s.CanUseInZE = true
+GM:AddSkillModifier(SKILL_CAPACITY, SKILLMOD_CLIP_SIZE_MUL, 0.07)
+GM:AddSkillModifier(SKILL_CAPACITY, SKILLMOD_RELOADSPEED_MUL, -0.15)
+
 -- Melee Tree
 
 s = GM:AddSkill(SKILL_WORTHINESS2, "Worthiness II", GOOD.."+5 starting worth\n"..BAD.."-3 starting points",
@@ -1190,8 +1251,10 @@ s.RemortReq = 1
 s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_BATTLER6, SKILLMOD_MELEE_DAMAGE_MUL, 0.08)
 
-s = GM:AddSkill(SKILL_LASTSTAND, "Last Stand", GOOD.."1.85x melee damage when below 25% health\n"..GOOD.."-10% melee damage taken when below 25% health\n"..BAD.."0.8x melee weapon damage at any other time",
+s = GM:AddSkill(SKILL_LASTSTAND, "Last Stand", GOOD.."1.85x melee damage when below 25% health\n"..GOOD.."-10% melee damage taken when below 25% health\n"..BAD.."0.8x melee weapon damage at any other time\n"..BAD.."-5 maximum health\n"..BAD.."-5 maximum blood armor",
 0, 6, {}, TREE_MELEETREE)
+GM:AddSkillModifier(SKILL_LASTSTAND, SKILLMOD_HEALTH, -5)
+GM:AddSkillModifier(SKILL_LASTSTAND, SKILLMOD_BLOODARMOR, -5)
 
 s = GM:AddSkill(SKILL_GLASSWEAPONS, "Glass Weapons", VERYGOOD.."3.23x melee weapon damage vs. zombies\n"..BAD.."Your melee weapons have a 35% chance to break when hitting a zombie\n"..NEUTRAL.."Some melee weapons are not affected by this skill", --\nFirst melee hit will never break a melee weapon,
 2, 4.5, {}, TREE_MELEETREE)
@@ -1225,7 +1288,7 @@ GM:AddSkillModifier(SKILL_KNUCKLEMASTER, SKILLMOD_UNARMED_DAMAGE_MUL, 0.65)
 s = GM:AddSkill(SKILL_COMBOKNUCKLE, "Combo Knuckle", GOOD.."Next unarmed strike is 2x faster if hitting something\n"..BAD.."Next unarmed attack is 2x slower if not hitting something",
 6, -4, {SKILL_CHEAPKNUCKLE, SKILL_CRITICALKNUCKLE}, TREE_MELEETREE)
 
-s = GM:AddSkill(SKILL_HEAVYSTRIKES, "Heavy Strikes", GOOD.."+75% melee knockback\n"..BAD.."6% of melee damage dealt is reflected back to you as damage if knockback is applied\n"..BAD.."25% reflected if using unarmed strikes",
+s = GM:AddSkill(SKILL_HEAVYSTRIKES, "Heavy Strikes", GOOD.."+75% melee knockback\n"..BAD.."6% of melee damage dealt is reflected back to you as damage if knockback is applied",
 2, 0, {SKILL_BATTLER5, SKILL_JOUSTER1}, TREE_MELEETREE)
 GM:AddSkillModifier(SKILL_HEAVYSTRIKES, SKILLMOD_MELEE_KNOCKBACK_MUL, 0.75)
 
@@ -1280,521 +1343,252 @@ GM:AddSkillModifier(SKILL_BRASH, SKILLMOD_MELEE_ATTACK_DELAY_MUL, -0.02)
 GM:AddSkillModifier(SKILL_BRASH, SKILLMOD_MELEE_MOVEMENTSPEED_ON_KILL, -15)
 
 -- Torment Skill Tree
-s = GM:AddSkill(SKILL_TORMENT1, "Torment I", GOOD.."+2% XP multiplier\n"..BAD.."-7.5 movement speed",
--3, 0, {SKILL_NONE, SKILL_TORMENT2}, TREE_TORMENTTREE)
-GM:AddSkillModifier(SKILL_TORMENT1, SKILLMOD_XP_MULTI, 0.02)
-GM:AddSkillModifier(SKILL_TORMENT1, SKILLMOD_SPEED, -7.5)
+s = GM:AddSkill(SKILL_TORMENT1, "Torment I", GOOD.."+1% XP gain multiplier\n"..BAD.."-3 movement speed",
+-4, -2, {SKILL_NONE, SKILL_TORMENT2}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_TORMENT1, SKILLMOD_XP_MULTI, 0.01)
+GM:AddSkillModifier(SKILL_TORMENT1, SKILLMOD_SPEED, -3)
 
-s = GM:AddSkill(SKILL_TORMENT2, "Torment II", GOOD.."+3% XP multiplier\n"..BAD.."-15 maximum health",
--1.5, 0, {SKILL_TORMENT3}, TREE_TORMENTTREE)
+s = GM:AddSkill(SKILL_TORMENT2, "Torment II", GOOD.."+1.25% XP gain multiplier\n"..BAD.."-6 maximum health",
+-4, 0, {SKILL_TORMENT3}, TREE_TORMENTTREE)
 s.RemortReq = 1
-GM:AddSkillModifier(SKILL_TORMENT2, SKILLMOD_XP_MULTI, 0.03)
-GM:AddSkillModifier(SKILL_TORMENT2, SKILLMOD_HEALTH, -15)
+GM:AddSkillModifier(SKILL_TORMENT2, SKILLMOD_XP_MULTI, 0.0125)
+GM:AddSkillModifier(SKILL_TORMENT2, SKILLMOD_HEALTH, -6)
 
-s = GM:AddSkill(SKILL_TORMENT3, "Torment III", GOOD.."+4% XP multiplier\n"..BAD.."+50% medical kit cooldown\n"..BAD.."-20% repair rate",
-0, 0, {SKILL_TORMENT4}, TREE_TORMENTTREE)
-s.RemortReq = 1
-GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_XP_MULTI, 0.04)
-GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_MEDKIT_COOLDOWN_MUL, 0.5)
-GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_REPAIRRATE_MUL, -0.2)
+s = GM:AddSkill(SKILL_TORMENT3, "Torment III", GOOD.."+1.5% XP gain multiplier\n"..BAD.."+20% medical kit cooldown\n"..BAD.."-10% repair rate",
+-4, 2, {SKILL_TORMENT4}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_XP_MULTI, 0.015)
+GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_MEDKIT_COOLDOWN_MUL, 0.2)
+GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_REPAIRRATE_MUL, -0.1)
 
-s = GM:AddSkill(SKILL_TORMENT4, "Torment IV", GOOD.."+5% XP multiplier\n"..BAD.."+10% melee damage taken\n"..BAD.."+5% arsenal items cost",
-1, -0.5, {SKILL_TORMENT5}, TREE_TORMENTTREE)
+s = GM:AddSkill(SKILL_TORMENT4, "Torment IV", GOOD.."+2% XP gain multiplier\n"..BAD.."+4% melee damage taken\n"..BAD.."+2% arsenal item prices",
+-4, 4, {SKILL_TORMENT5}, TREE_TORMENTTREE)
 s.RemortReq = 2
-GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_XP_MULTI, 0.05)
-GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, 0.1)
-GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_ARSENAL_DISCOUNT, 0.05)
+GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_XP_MULTI, 0.02)
+GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, 0.04)
+GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_ARSENAL_DISCOUNT, 0.02)
 
-s = GM:AddSkill(SKILL_TORMENT5, "Torment V", GOOD.."+6% XP multiplier\n"..BAD.."-15 maximum blood armor\n"..BAD.."-10% jumping power\n"..BAD.."+40% effect of aim shake effects",
-2, -1, {}, TREE_TORMENTTREE)
-s.RemortReq = 2
-GM:AddSkillModifier(SKILL_TORMENT5, SKILLMOD_XP_MULTI, 0.06)
-GM:AddSkillModifier(SKILL_TORMENT5, SKILLMOD_JUMPPOWER_MUL, -0.1)
-GM:AddSkillModifier(SKILL_TORMENT5, SKILLMOD_AIM_SHAKE_MUL, 0.4)
-GM:AddSkillModifier(SKILL_TORMENT5, SKILLMOD_BLOODARMOR, -15)
+s = GM:AddSkill(SKILL_TORMENT5, "Torment V", GOOD.."+2.25% XP gain multiplier\n"..BAD.."-7 maximum blood armor\n"..BAD.."-5% jumping power\n"..BAD.."+25% effect of aim shake effects",
+-2, 6, {SKILL_TORMENT6, SKILL_ANTITORMENT1}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_TORMENT5, SKILLMOD_XP_MULTI, 0.0225)
+GM:AddSkillModifier(SKILL_TORMENT5, SKILLMOD_JUMPPOWER_MUL, -0.05)
+GM:AddSkillModifier(SKILL_TORMENT5, SKILLMOD_AIM_SHAKE_MUL, 0.25)
+GM:AddSkillModifier(SKILL_TORMENT5, SKILLMOD_BLOODARMOR, -7)
 
-s = GM:AddSkill(SKILL_TORMENT6, "Torment VI", GOOD.."+7% XP multiplier\n"..BAD.."-25 maximum health\n"..BAD.."+20% resupply delay\nWORK IN PROGRESS",
-3, -1.5, {SKILL_TORMENT7}, TREE_TORMENTTREE)
+s = GM:AddSkill(SKILL_TORMENT6, "Torment VI", GOOD.."+2.5% XP gain multiplier\n"..BAD.."-9 maximum health\n"..BAD.."+10% resupply delay",
+0, 4, {SKILL_TORMENT7, SKILL_THE_EXCHANGE1}, TREE_TORMENTTREE)
 s.RemortReq = 3
-GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_XP_MULTI, 0.07)
-GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_HEALTH, -25)
-GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_RESUPPLY_DELAY_MUL, 0.2)
+GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_XP_MULTI, 0.025)
+GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_HEALTH, -9)
+GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_RESUPPLY_DELAY_MUL, 0.1)
 
-s = GM:AddSkill(SKILL_TORMENT7, "Torment VII", GOOD.."+8% XP multiplier\n"..BAD.."+15% melee damage taken\n"..BAD.."-15 starting points\n"..VERYBAD.."-5% point gain multiplier\nWORK IN PROGRESS",
-4, -2, {SKILL_TORMENT8}, TREE_TORMENTTREE)
-s.RemortReq = 3
-GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_XP_MULTI, 0.08)
-GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, 0.15)
-GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_POINTS, -15)
-GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_POINT_MULTIPLIER, -0.05)
+s = GM:AddSkill(SKILL_TORMENT7, "Torment VII", GOOD.."+3% XP gain multiplier\n"..BAD.."+7% melee damage taken\n"..BAD.."-3 starting points\n"..BAD.."-3% point gain multiplier",
+2, 2, {SKILL_TORMENT8, SKILL_THE_EXCHANGE4}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_XP_MULTI, 0.03)
+GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, 0.07)
+GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_POINTS, -3)
+GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_POINT_MULTIPLIER, -0.03)
 
-s = GM:AddSkill(SKILL_TORMENT8, "Torment VIII", GOOD.."+9% XP multiplier\n"..BAD.."-22.5 movement speed\n"..BAD.."+20% sigil teleportation time\n"..BAD.."+150% time to eat food\nWORK IN PROGRESS",
-5, -3, {SKILL_TORMENT9}, TREE_TORMENTTREE)
+s = GM:AddSkill(SKILL_TORMENT8, "Torment VIII", GOOD.."+3.25% XP gain multiplier\n"..BAD.."-10 movement speed\n"..BAD.."+20% sigil teleportation time\n"..BAD.."+50% time to eat food",
+4, 0, {SKILL_TORMENT9, SKILL_COMMISIONED_BUYER}, TREE_TORMENTTREE)
 s.RemortReq = 4
-GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_XP_MULTI, 0.09)
-GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_SPEED, -22.5)
+GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_XP_MULTI, 0.0325)
+GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_SPEED, -10)
 GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_SIGIL_TELEPORT_MUL, 0.2)
-GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_FOODEATTIME_MUL, 1.5)
+GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_FOODEATTIME_MUL, 0.5)
 
-s = GM:AddSkill(SKILL_TORMENT9, "Torment IX", GOOD.."+10% XP multiplier\n"..BAD.."-20% barricade phasing movement speed\nWORK IN PROGRESS",
-5.5, -4, {SKILL_TORMENT10}, TREE_TORMENTTREE)
-s.RemortReq = 4
-GM:AddSkillModifier(SKILL_TORMENT9, SKILLMOD_XP_MULTI, 0.1)
+s = GM:AddSkill(SKILL_TORMENT9, "Torment IX", GOOD.."+2.5% XP gain multiplier\n"..BAD.."-20% barricade phasing movement speed",
+6, -2, {SKILL_TORMENT10}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_TORMENT9, SKILLMOD_XP_MULTI, 0.06)
 GM:AddSkillModifier(SKILL_TORMENT9, SKILLMOD_BARRICADE_PHASE_SPEED_MUL, -0.2)
 
-s = GM:AddSkill(SKILL_TORMENT10, "Torment X", GOOD.."+11% XP multiplier\n"..VERYGOOD.."If all torment skills active you gain +50% XP on winning round\nWORK IN PROGRESS",
-6, -5.5, {}, TREE_TORMENTTREE)
+s = GM:AddSkill(SKILL_TORMENT10, "Torment X", GOOD.."+3.5% XP gain multiplier\n+75% damage vs. yourself\n-15% weapon reload speed\nIf torment skills are active and no anti-torment skill is active:\n"..VERYGOOD.."You gain 1.5x more XP on win round\n"..VERYGOOD.."Also gives progress to achievement on round win!",
+8, 0, {SKILL_TORMENT11}, TREE_TORMENTTREE)
 s.RemortReq = 5
-GM:AddSkillModifier(SKILL_TORMENT10, SKILLMOD_XP_MULTI, 0.11)
+GM:AddSkillModifier(SKILL_TORMENT10, SKILLMOD_XP_MULTI, 0.035)
+GM:AddSkillModifier(SKILL_TORMENT10, SKILLMOD_SELF_DAMAGE_MUL, 0.75)
+GM:AddSkillModifier(SKILL_TORMENT10, SKILLMOD_RELOADSPEED_MUL, -0.15)
 
--- Defender Skill Tree
+s = GM:AddSkill(SKILL_TORMENT11, "Torment XI", GOOD.."+2% XP gain multiplier\n"..BAD.."+7.5% remantler prices\n"..BAD.."+10% bleed damage taken\nIt is not recommended to unlock further skills.\nMany debuffs on Torment >XI are present, even damage debuffs.\nOnly the brave shall go past Torment XI.",
+6, 0, {SKILL_TORMENT12}, TREE_TORMENTTREE)
+s.RemortReq = 8
+GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_XP_MULTI, 0.02)
+GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_REMANTLER_PRICE_MUL, 0.075)
+GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_BLEED_DAMAGE_TAKEN_MUL, 0.1)
+
+s = GM:AddSkill(SKILL_TORMENT12, "Torment XII", GOOD.."+2.25% XP gain multiplier\n"..BAD.."-10% melee damage\n"..BAD.."-5% weapon bullet damage",
+4, 2, {SKILL_TORMENT13}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_XP_MULTI, 0.0225)
+GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_MELEE_DAMAGE_MUL, -0.1)
+GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_BULLET_DAMAGE_MUL, -0.05)
+
+s = GM:AddSkill(SKILL_TORMENT13, "Torment XIII", GOOD.."+2.5% XP gain multiplier\n"..BAD.."+5% all damage taken\n"..BAD.."-15% deployable health",
+2, 4, {SKILL_TORMENT14}, TREE_TORMENTTREE)
+s.RemortReq = 9
+GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_XP_MULTI, 0.025)
+GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_DAMAGE_TAKEN_MUL, 0.05)
+GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_DEPLOYABLE_HEALTH_MUL, -0.15)
+
+s = GM:AddSkill(SKILL_TORMENT14, "Torment XIV", GOOD.."+3% XP gain multiplier\n"..BAD.."-15% controllable health\n"..BAD.."-15 starting worth",
+0, 6, {SKILL_TORMENT15}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_TORMENT14, SKILLMOD_XP_MULTI, 0.03)
+GM:AddSkillModifier(SKILL_TORMENT14, SKILLMOD_CONTROLLABLE_HEALTH_MUL, -0.15)
+GM:AddSkillModifier(SKILL_TORMENT14, SKILLMOD_WORTH, -15)
+
+s = GM:AddSkill(SKILL_TORMENT15, "Torment XV", GOOD.."+4.5% XP gain multiplier\n"..BAD.."+1% arsenal item prices per every wave\n"..BAD.."-35% healing received\n"..BAD.."+30% knockdown duration",
+2, 6, {SKILL_TORMENT16}, TREE_TORMENTTREE)
+s.RemortReq = 10
+GM:AddSkillModifier(SKILL_TORMENT15, SKILLMOD_XP_MULTI, 0.045)
+GM:AddSkillModifier(SKILL_TORMENT15, SKILLMOD_HEALING_RECEIVED, -0.35)
+GM:AddSkillModifier(SKILL_TORMENT15, SKILLMOD_KNOCKDOWN_RECOVERY_MUL, 0.3)
+
+s = GM:AddSkill(SKILL_TORMENT16, "Torment XVI", GOOD.."+2.75% XP gain multiplier\n+15% weapon fire delay\n+25% fall damage taken",
+4, 6, {SKILL_TORMENT17}, TREE_TORMENTTREE)
+s.RemortReq = 11
+GM:AddSkillModifier(SKILL_TORMENT16, SKILLMOD_XP_MULTI, 0.0275)
+GM:AddSkillModifier(SKILL_TORMENT16, SKILLMOD_WEAPON_FIREDELAY_MUL, 0.15)
+GM:AddSkillModifier(SKILL_TORMENT16, SKILLMOD_FALLDAMAGE_DAMAGE_MUL, 0.25)
+
+s = GM:AddSkill(SKILL_TORMENT17, "Torment XVII", GOOD.."+3% XP gain multiplier\n",
+6, 6, {SKILL_TORMENT18}, TREE_TORMENTTREE)
+s.RemortReq = 12
+GM:AddSkillModifier(SKILL_TORMENT17, SKILLMOD_XP_MULTI, 0.03)
+GM:AddSkillModifier(SKILL_TORMENT17, SKILLMOD_RESUPPLY_DELAY_MUL, 0.25)
+
+s = GM:AddSkill(SKILL_TORMENT18, "Torment XVIII", GOOD.."+3.5% XP gain multiplier\n",
+8, 4, {SKILL_TORMENT19}, TREE_TORMENTTREE)
+s.RemortReq = 13
+GM:AddSkillModifier(SKILL_TORMENT18, SKILLMOD_XP_MULTI, 0.035)
+
+s = GM:AddSkill(SKILL_TORMENT19, "Torment XIX", GOOD.."+4% XP gain multiplier\n",
+8, 2, {SKILL_TORMENT20}, TREE_TORMENTTREE)
+s.RemortReq = 14
+GM:AddSkillModifier(SKILL_TORMENT19, SKILLMOD_XP_MULTI, 0.04)
+
+s = GM:AddSkill(SKILL_TORMENT20, "Torment XX", GOOD.."+7.5% XP gain multiplier\n"..VERYBAD.."Every 20 seconds take 4 damage if round has started\n"..VERYGOOD.."If all torment skills active and no anti-torment skill active:\n"..VERYGOOD.."1.75x XP gain on winning round\n"..VERYGOOD.."Also gives progress to achievement on winning a round in normal mode!",
+6, 2, {}, TREE_TORMENTTREE)
+s.RemortReq = 15
+GM:AddSkillModifier(SKILL_TORMENT20, SKILLMOD_XP_MULTI, 0.075)
+
+
+s = GM:AddSkill(SKILL_ANTITORMENT1, "Anti-Torment I", GOOD.."+2 maximum health\n"..BAD.."-4% XP gain multiplier",
+-2, 4, {SKILL_ANTITORMENT2}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_ANTITORMENT1, SKILLMOD_XP_MULTI, -0.04)
+GM:AddSkillModifier(SKILL_ANTITORMENT1, SKILLMOD_HEALTH, 2)
+
+s = GM:AddSkill(SKILL_ANTITORMENT2, "Anti-Torment II", GOOD.."+2% point gain multiplier\n"..BAD.."-5% XP gain multiplier",
+-2, 2, {SKILL_ANTITORMENT3}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_ANTITORMENT2, SKILLMOD_XP_MULTI, -0.05)
+GM:AddSkillModifier(SKILL_ANTITORMENT2, SKILLMOD_POINT_MULTIPLIER, 0.02)
+
+s = GM:AddSkill(SKILL_ANTITORMENT3, "Anti-Torment III", GOOD.."+5 maximum blood armor\n"..BAD.."-7% XP gain multiplier",
+-2, 0, {SKILL_ANTITORMENT4}, TREE_TORMENTTREE)
+GM:AddSkillModifier(SKILL_ANTITORMENT3, SKILLMOD_XP_MULTI, -0.07)
+GM:AddSkillModifier(SKILL_ANTITORMENT3, SKILLMOD_BLOODARMOR, 5)
+
+s = GM:AddSkill(SKILL_ANTITORMENT4, "Anti-Torment IV", GOOD.."-2% melee damage taken\n"..BAD.."-8% XP gain multiplier",
+-2, -2, {}, TREE_TORMENTTREE)
+s.RemortMaxReq = 10
+GM:AddSkillModifier(SKILL_ANTITORMENT4, SKILLMOD_XP_MULTI, -0.08)
+GM:AddSkillModifier(SKILL_ANTITORMENT4, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.02)
+
+
+s = GM:AddSkill(SKILL_THE_EXCHANGE1, "The Exchange I", GOOD.."+1% XP gain multiplier\n"..BAD.."-1% point gain multiplier",
+0, 2, {SKILL_THE_EXCHANGE2}, TREE_TORMENTTREE)
+s.RemortReq = 4
+s.RequiredSP = 2
+GM:AddSkillModifier(SKILL_THE_EXCHANGE1, SKILLMOD_XP_MULTI, 0.01)
+GM:AddSkillModifier(SKILL_THE_EXCHANGE1, SKILLMOD_POINT_MULTIPLIER, -0.01)
+
+s = GM:AddSkill(SKILL_THE_EXCHANGE2, "The Exchange II", GOOD.."+2% XP gain multiplier\n"..BAD.."-2% point gain multiplier",
+0, 0, {SKILL_THE_EXCHANGE3}, TREE_TORMENTTREE)
+s.RequiredSP = 2
+GM:AddSkillModifier(SKILL_THE_EXCHANGE2, SKILLMOD_XP_MULTI, 0.02)
+GM:AddSkillModifier(SKILL_THE_EXCHANGE2, SKILLMOD_POINT_MULTIPLIER, -0.02)
+
+s = GM:AddSkill(SKILL_THE_EXCHANGE3, "The Exchange III", GOOD.."+3% XP gain multiplier\n"..BAD.."-3% point gain multiplier",
+0, -2, {}, TREE_TORMENTTREE)
+s.RequiredSP = 2
+GM:AddSkillModifier(SKILL_THE_EXCHANGE3, SKILLMOD_XP_MULTI, 0.03)
+GM:AddSkillModifier(SKILL_THE_EXCHANGE3, SKILLMOD_POINT_MULTIPLIER, -0.03)
+
+s = GM:AddSkill(SKILL_THE_EXCHANGE4, "The Exchange IV", GOOD.."+0.75% weapon bullet damage\n"..BAD.."-3% melee damage",
+2, 0, {SKILL_THE_EXCHANGE5}, TREE_TORMENTTREE)
+s.RemortReq = 5
+s.RequiredSP = 2
+GM:AddSkillModifier(SKILL_THE_EXCHANGE4, SKILLMOD_BULLET_DAMAGE_MUL, 0.0075)
+GM:AddSkillModifier(SKILL_THE_EXCHANGE4, SKILLMOD_MELEE_DAMAGE_MUL, -0.03)
+
+s = GM:AddSkill(SKILL_THE_EXCHANGE5, "The Exchange V", GOOD.."+1.25% weapon bullet damage\n"..BAD.."-6% melee damage",
+2, -2, {}, TREE_TORMENTTREE)
+s.RequiredSP = 2
+GM:AddSkillModifier(SKILL_THE_EXCHANGE5, SKILLMOD_BULLET_DAMAGE_MUL, 0.0125)
+GM:AddSkillModifier(SKILL_THE_EXCHANGE5, SKILLMOD_MELEE_DAMAGE_MUL, -0.06)
+
+
+s = GM:AddSkill(SKILL_COMMISIONED_BUYER, "Commisioned Buyer", GOOD.."-3% arsenal item prices during wave intermission\n"..BAD.."+15% arsenal item prices at any other time",
+4, -2, {}, TREE_TORMENTTREE)
+
+
+-- Sspecial Skill Tree
 
 s = GM:AddSkill(SKILL_SIGILDEFENDER1, "Sigil Defender I", GOOD.."-1% melee damage taken\n"..BAD.."-2.5 movement speed\nMinimal melee damage taken is 2.5%",
-0, -2, {SKILL_NONE, SKILL_SIGILDEFENDER2}, TREE_REMORTTREE)
+-2, 2, {SKILL_NONE, SKILL_SIGILDEFENDER2}, TREE_REMORTTREE)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER1, SKILLMOD_SPEED, -2.5)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER1, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.01)
 
-s = GM:AddSkill(SKILL_SIGILDEFENDER2, "Sigil Defender II", GOOD.."-2% melee damage taken\n"..BAD.."-5 movement speed",
-2, -1, {SKILL_SIGILDEFENDER3}, TREE_REMORTTREE)
-GM:AddSkillModifier(SKILL_SIGILDEFENDER2, SKILLMOD_SPEED, -5)
-GM:AddSkillModifier(SKILL_SIGILDEFENDER2, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.02)
+s = GM:AddSkill(SKILL_SIGILDEFENDER2, "Sigil Defender II", GOOD.."-1.5% melee damage taken\n"..BAD.."-3.75 movement speed",
+-4, 0, {SKILL_SIGILDEFENDER3}, TREE_REMORTTREE)
+GM:AddSkillModifier(SKILL_SIGILDEFENDER2, SKILLMOD_SPEED, -3.75)
+GM:AddSkillModifier(SKILL_SIGILDEFENDER2, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.015)
 
-s = GM:AddSkill(SKILL_SIGILDEFENDER3, "Sigil Defender III", GOOD.."-4% melee damage taken\n"..BAD.."-10 movement speed",
-2, 1, {SKILL_SIGILDEFENDER4}, TREE_REMORTTREE)
-GM:AddSkillModifier(SKILL_SIGILDEFENDER3, SKILLMOD_SPEED, -10)
-GM:AddSkillModifier(SKILL_SIGILDEFENDER3, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.04)
+s = GM:AddSkill(SKILL_SIGILDEFENDER3, "Sigil Defender III", GOOD.."-2% melee damage taken\n"..BAD.."-5 movement speed",
+-2, -2, {SKILL_SIGILDEFENDER4}, TREE_REMORTTREE)
+GM:AddSkillModifier(SKILL_SIGILDEFENDER3, SKILLMOD_SPEED, -5)
+GM:AddSkillModifier(SKILL_SIGILDEFENDER3, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.02)
 
-s = GM:AddSkill(SKILL_SIGILDEFENDER4, "Sigil Defender IV", GOOD.."-6% melee damage taken\n"..BAD.."-15 movement speed",
-0, 2, {SKILL_D_FRAGILITY}, TREE_REMORTTREE)
-GM:AddSkillModifier(SKILL_SIGILDEFENDER4, SKILLMOD_SPEED, -15)
-GM:AddSkillModifier(SKILL_SIGILDEFENDER4, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.06)
+s = GM:AddSkill(SKILL_SIGILDEFENDER4, "Sigil Defender IV", GOOD.."-3% melee damage taken\n"..BAD.."-7.5 movement speed",
+0, 0, {SKILL_D_FRAGILITY}, TREE_REMORTTREE)
+GM:AddSkillModifier(SKILL_SIGILDEFENDER4, SKILLMOD_SPEED, -7.5)
+GM:AddSkillModifier(SKILL_SIGILDEFENDER4, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
 
 s = GM:AddSkill(SKILL_D_FRAGILITY, "Debuff: Fragility", GOOD.."+15 starting worth\n"..GOOD.."+1% point gain multiplier\n"..BAD.."+4% melee damage taken for every wave",
-0, 4, {}, TREE_REMORTTREE)
+2, 0, {SKILL_ANCIENT_SKILL}, TREE_REMORTTREE)
 GM:AddSkillModifier(SKILL_D_FRAGILITY, SKILLMOD_WORTH, 15)
 GM:AddSkillModifier(SKILL_D_FRAGILITY, SKILLMOD_POINT_MULTIPLIER, 0.01)
 GM:AddSkillFunction(SKILL_D_FRAGILITY, function(pl, active)
 	pl.IsFragility = active
 end)
 
-
-
-GM:SetSkillModifierFunction(SKILLMOD_HEALTH, function(pl, amount)
-	local current = pl:GetMaxHealth()
-	local new = math.Clamp(100 + amount, 1, 100000)
-	if SERVER then
-		pl:SetMaxHealth(new)
-		pl:SetHealth(math.max(1, pl:Health() / current * new))
-	end
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_BLOODARMOR, function(pl, amount)
-	local oldarmor = pl:GetBloodArmor()
-	local oldcap = pl.MaxBloodArmor or 20
-	local new = 20 + math.Clamp(amount, -20, 1000)
-
-	pl.MaxBloodArmor = new
-
-	if SERVER then
-		if oldarmor > oldcap then
-			local overcap = oldarmor - oldcap
-			pl:SetBloodArmor(pl.MaxBloodArmor + overcap)
-		else
-			pl:SetBloodArmor(pl:GetBloodArmor() / oldcap * new)
-		end
-	end
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_SPEED, function(pl, amount)
-	pl.SkillSpeedAdd = amount
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_WORTH, function(pl, amount)
-	pl.ExtraStartingWorth = amount
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FALLDAMAGE_DAMAGE_MUL, function(pl, amount)
-	pl.FallDamageDamageMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FALLDAMAGE_THRESHOLD_MUL, function(pl, amount)
-	pl.FallDamageThresholdMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FALLDAMAGE_RECOVERY_MUL, function(pl, amount)
-	pl.FallDamageRecoveryMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FALLDAMAGE_SLOWDOWN_MUL, function(pl, amount)
-	pl.FallDamageSlowDownMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FOODRECOVERY_MUL, function(pl, amount)
-	pl.FoodRecoveryMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FOODEATTIME_MUL, function(pl, amount)
-	pl.FoodEatTimeMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_JUMPPOWER_MUL, function(pl, amount)
-	pl.JumpPowerMul = math.Clamp(amount + 1.0, 0.0, 10.0)
-
-	if SERVER then
-		pl:ResetJumpPower()
-	end
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplier = math.Clamp(amount + 1.0, 0.05, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_DEPLOYSPEED_MUL, function(pl, amount)
-	pl.DeploySpeedMultiplier = math.Clamp(amount + 1.0, 0.05, 100.0)
-
-	for _, wep in pairs(pl:GetWeapons()) do
-		GAMEMODE:DoChangeDeploySpeed(wep)
-	end
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_UNARMED_DAMAGE_MUL, function(pl, amount)
-	pl.UnarmedDamageMul = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_UNARMED_SWING_DELAY_MUL, function(pl, amount)
-	pl.UnarmedDelayMul = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_DAMAGE_MUL, function(pl, amount)
-	pl.MeleeDamageMultiplier = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_KNOCKBACK_MUL, function(pl, amount)
-	pl.MeleeKnockbackMultiplier = math.Clamp(amount + 1.0, 0.0, 10000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_RANGE_MUL, function(pl, amount)
-	pl.MeleeRangeMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_HAMMER_SWING_DELAY_MUL, function(pl, amount)
-	pl.HammerSwingDelayMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_CONTROLLABLE_SPEED_MUL, function(pl, amount)
-	pl.ControllableSpeedMul = math.Clamp(amount + 1.0, 0.01, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_CONTROLLABLE_HANDLING_MUL, function(pl, amount)
-	pl.ControllableHandlingMul = math.Clamp(amount + 1.0, 0.01, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_CONTROLLABLE_HEALTH_MUL, function(pl, amount)
-	pl.ControllableHealthMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MANHACK_DAMAGE_MUL, function(pl, amount)
-	pl.ManhackDamageMul = math.Clamp(amount + 1.0, 0.0, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MANHACK_HEALTH_MUL, function(pl, amount)
-	pl.ManhackHealthMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_BARRICADE_PHASE_SPEED_MUL, function(pl, amount)
-	pl.BarricadePhaseSpeedMul = math.Clamp(amount + 1.0, 0.05, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MEDKIT_COOLDOWN_MUL, function(pl, amount)
-	pl.MedicCooldownMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MEDKIT_EFFECTIVENESS_MUL, function(pl, amount)
-	pl.MedicHealMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-
-GM:SetSkillModifierFunction(SKILLMOD_SELF_DAMAGE_MUL, function(pl, amount)
-	pl.SelfDamageMul = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_REPAIRRATE_MUL, function(pl, amount)
-	pl.RepairRateMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_AIMSPREAD_MUL, function(pl, amount)
-	pl.AimSpreadMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MEDGUN_FIRE_DELAY_MUL, function(pl, amount)
-	pl.MedgunFireDelayMul = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MEDGUN_RELOAD_SPEED_MUL, function(pl, amount)
-	pl.MedgunReloadSpeedMul = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_DRONE_GUN_RANGE_MUL, function(pl, amount)
-	pl.DroneGunRangeMul = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_HEALING_RECEIVED, function(pl, amount)
-	pl.HealingReceived = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_PISTOL_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplierPISTOL = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_SMG_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplierSMG1 = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_ASSAULT_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplierAR2 = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_SHELL_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplierBUCKSHOT = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_RIFLE_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplier357 = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_XBOW_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplierXBOWBOLT = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_PULSE_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplierPULSE = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RELOADSPEED_EXP_MUL, function(pl, amount)
-	pl.ReloadSpeedMultiplierIMPACTMINE = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_ATTACKER_DMG_REFLECT, function(pl, amount)
-	pl.BarbedArmor = math.Clamp(amount, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_PULSE_WEAPON_SLOW_MUL, function(pl, amount)
-	pl.PulseWeaponSlowMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, function(pl, amount)
-	pl.MeleeDamageTakenMul = math.Clamp(amount + 1.0, -1000.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_POISON_DAMAGE_TAKEN_MUL, function(pl, amount)
-	pl.PoisonDamageTakenMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_BLEED_DAMAGE_TAKEN_MUL, function(pl, amount)
-	pl.BleedDamageTakenMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_SWING_DELAY_MUL, function(pl, amount)
-	pl.MeleeSwingDelayMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_ATTACK_DELAY_MUL, function(pl, amount)
-	pl.MeleeAttackDelayMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_DAMAGE_TO_BLOODARMOR_MUL, function(pl, amount)
-	pl.MeleeDamageToBloodArmorMul = math.Clamp(amount, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_MOVEMENTSPEED_ON_KILL, function(pl, amount)
-	pl.MeleeMovementSpeedOnKill = math.Clamp(amount, -15, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_POWERATTACK_MUL, function(pl, amount)
-	pl.MeleePowerAttackMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_KNOCKDOWN_RECOVERY_MUL, function(pl, amount)
-	pl.KnockdownRecoveryMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_RANGE_ADD, function(pl, amount)
-	pl.MeleeRangeAdd = math.Clamp(amount, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_SLOW_EFF_TAKEN_MUL, function(pl, amount)
-	pl.SlowEffTakenMul = math.Clamp(amount + 1.0, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_EXP_DAMAGE_TAKEN_MUL, function(pl, amount)
-	pl.ExplosiveDamageTakenMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FIRE_DAMAGE_TAKEN_MUL, function(pl, amount)
-	pl.FireDamageTakenMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_PROP_CARRY_CAPACITY_MASS_MUL, function(pl, amount)
-	pl.PropCarryCapacityMassMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_PROP_CARRY_CAPACITY_VOLUME_MUL, function(pl, amount)
-	pl.PropCarryCapacityVolumeMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_PROP_THROW_STRENGTH_MUL, function(pl, amount)
-	pl.ObjectThrowStrengthMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_PHYSICS_DAMAGE_TAKEN_MUL, function(pl, amount)
-	pl.PhysicsDamageTakenMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_VISION_ALTER_DURATION_MUL, function(pl, amount)
-	pl.VisionAlterDurationMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_DIMVISION_EFF_MUL, function(pl, amount)
-	pl.DimVisionEffMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_PROP_CARRY_SLOW_MUL, function(pl, amount)
-	pl.PropCarrySlowMul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_BLEED_SPEED_MUL, function(pl, amount)
-	pl.BleedSpeedMul = math.Clamp(amount + 1.0, 0.1, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_LEG_DAMAGE_ADD, function(pl, amount)
-	pl.MeleeLegDamageAdd = math.Clamp(amount, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_SIGIL_TELEPORT_MUL, function(pl, amount)
-	pl.SigilTeleportTimeMul = math.Clamp(amount + 1.0, 0.1, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_MELEE_ATTACKER_DMG_REFLECT_PERCENT, function(pl, amount)
-	pl.BarbedArmorPercent = math.Clamp(amount, 0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_POISON_SPEED_MUL, function(pl, amount)
-	pl.PoisonSpeedMul = math.Clamp(amount + 1.0, 0.1, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_PROJECTILE_DAMAGE_TAKEN_MUL, GM:MkGenericMod("ProjDamageTakenMul"))
-GM:SetSkillModifierFunction(SKILLMOD_EXP_DAMAGE_RADIUS, GM:MkGenericMod("ExpDamageRadiusMul"))
-GM:SetSkillModifierFunction(SKILLMOD_WEAPON_WEIGHT_SLOW_MUL, GM:MkGenericMod("WeaponWeightSlowMul"))
-GM:SetSkillModifierFunction(SKILLMOD_FRIGHT_DURATION_MUL, GM:MkGenericMod("FrightDurationMul"))
-GM:SetSkillModifierFunction(SKILLMOD_IRONSIGHT_EFF_MUL, GM:MkGenericMod("IronsightEffMul"))
-GM:SetSkillModifierFunction(SKILLMOD_MEDDART_EFFECTIVENESS_MUL, GM:MkGenericMod("MedDartEffMul"))
-
-GM:SetSkillModifierFunction(SKILLMOD_BLOODARMOR_DMG_REDUCTION, function(pl, amount)
-	pl.BloodArmorDamageReductionAdd = math.Clamp(amount, -0.5, 0.5)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_BLOODARMOR_MUL, function(pl, amount)
-	local mul = math.Clamp(amount + 1.0, 0.0, 1000.0)
-
-	pl.MaxBloodArmorMul = mul
-
-	local oldarmor = pl:GetBloodArmor()
-	local oldcap = pl.MaxBloodArmor or 20
-	local new = pl.MaxBloodArmor * mul
-
-	pl.MaxBloodArmor = new
-
-	if SERVER then
- if oldarmor > oldcap then
- local overcap = oldarmor - oldcap
- pl:SetBloodArmor(pl.MaxBloodArmor + overcap)
- else
- pl:SetBloodArmor(pl:GetBloodArmor() / oldcap * new)
- end
-	end
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_BLOODARMOR_GAIN_MUL, GM:MkGenericMod("BloodarmorGainMul"))
-GM:SetSkillModifierFunction(SKILLMOD_LOW_HEALTH_SLOW_MUL, GM:MkGenericMod("LowHealthSlowMul"))
-GM:SetSkillModifierFunction(SKILLMOD_PROJ_SPEED, GM:MkGenericMod("ProjectileSpeedMul"))
-
-GM:SetSkillModifierFunction(SKILLMOD_ENDWAVE_POINTS, function(pl,amount)
-	pl.EndWavePointsExtra = math.Clamp(amount, 0.0, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_ARSENAL_DISCOUNT, function(pl, amount)
-	pl.ArsenalDiscount = math.Clamp(1 + amount, 0.0, 1000.0)
-end)
-GM:SetSkillModifierFunction(SKILLMOD_CLOUD_RADIUS, GM:MkGenericMod("CloudRadius"))
-GM:SetSkillModifierFunction(SKILLMOD_CLOUD_TIME, GM:MkGenericMod("CloudTime"))
-GM:SetSkillModifierFunction(SKILLMOD_EXP_DAMAGE_MUL, GM:MkGenericMod("ExplosiveDamageMul"))
-GM:SetSkillModifierFunction(SKILLMOD_PROJECTILE_DAMAGE_MUL, GM:MkGenericMod("ProjectileDamageMul"))
-GM:SetSkillModifierFunction(SKILLMOD_TURRET_RANGE_MUL, GM:MkGenericMod("TurretRangeMul"))
-GM:SetSkillModifierFunction(SKILLMOD_AIM_SHAKE_MUL, GM:MkGenericMod("AimShakeMul"))
-GM:SetSkillModifierFunction(SKILLMOD_XP_MULTI, GM:MkGenericMod("XPGainMul"))
-GM:SetSkillModifierFunction(SKILLMOD_POINT_MULTIPLIER, GM:MkGenericMod("PointsGainMul"))
-
-GM:SetSkillModifierFunction(SKILLMOD_BULLET_DAMAGE_MUL, function(pl, amount)
-	pl.WeaponBulletDamageMul = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_WEAPON_FIREDELAY_MUL, function(pl, amount)
-	pl.WeaponFireDelayMul = math.Clamp(amount + 1.0, 0.0, 100.0)
-end)
-
-
-
-GM:SetSkillModifierFunction(SKILLMOD_POINTS, function(pl, amount)
-	if SERVER and not pl.AdjustedStartPointsSkill then
- pl:SetPoints(pl:GetPoints() + amount)
- pl.AdjustedStartPointsSkill = true
-	end
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_SCRAP_START, function(pl, amount)
-	if SERVER and not pl.AdjustedStartScrapSkill then
- pl:GiveAmmo(amount, "scrap")
- pl.AdjustedStartScrapSkill = true
-	end
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_DRONE_SPEED_MUL, function(pl, amount)
-	pl.DroneSpeedMul = math.Clamp(amount + 1.0, 0.01, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_DRONE_CARRYMASS_MUL, function(pl, amount)
-	pl.DroneCarryMassMul = math.Clamp(amount + 1.0, 0.01, 1000.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_TURRET_HEALTH_MUL, function(pl, amount)
-	pl.TurretHealthMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_TURRET_SCANSPEED_MUL, function(pl, amount)
-	pl.TurretScanSpeedMul = math.Clamp(amount + 1.0, 0, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_TURRET_SCANANGLE_MUL, function(pl, amount)
-	pl.TurretScanAngleMul = math.Clamp(amount + 1.0, 0, 2.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_DEPLOYABLE_HEALTH_MUL, function(pl, amount)
-	pl.DeployableHealthMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_DEPLOYABLE_PACKTIME_MUL, function(pl, amount)
-	pl.DeployablePackTimeMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_RESUPPLY_DELAY_MUL, function(pl, amount)
-	pl.ResupplyDelayMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FIELD_RANGE_MUL, function(pl, amount)
-	pl.FieldRangeMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
-
-GM:SetSkillModifierFunction(SKILLMOD_FIELD_DELAY_MUL, function(pl, amount)
-	pl.FieldDelayMul = math.Clamp(amount + 1.0, 0.01, 10.0)
-end)
+s = GM:AddSkill(SKILL_ANCIENT_SKILL, "Ancient Skill", "An ancient skill that was secretly hidden until now.\n"..PURPLE.."?",
+4, 0, {SKILL_REDEMPTION_UNDEAD, SKILL_POINT_OLD, SKILL_ENDLESS}, TREE_REMORTTREE)
+
+s = GM:AddSkill(SKILL_POINT_OLD, "Old Pointer", PURPLE.."Gives 2 points every minute\n"..BAD.."Taking damage resets the timer\n"..BAD.."Unable to gain points from wave end",
+6, 2, {}, TREE_REMORTTREE)
+s.RequiredSP = 3
+s.RemortReq = 3
+s.ColorModifierOverride = {0.2, 0.35, 0.1}
+s.ColorModifierOverrideCanUnlock = {0.2, 0.35, 0.1}
+s.ColorModifierOverrideUnlocked = {0.2, 0.35, 0.1}
+s.ColorModifierOverrideActive = {0.2, 0.35, 0.1}
+
+s = GM:AddSkill(SKILL_ENDLESS, "Endless", PURPLE.."-10% melee damage taken\n"..PURPLE.."+15% damage dealt\n\nThe skill of disbalance",
+7, 0, {}, TREE_REMORTTREE)
+s.RequiredSP = 85
+s.RemortReq = 55
+s.Rainbow = true
+s.ColorModifierOverride = {0.05, 0.15, 0.07}
+s.ColorModifierOverrideCanUnlock = {0.05, 0.15, 0.07}
+s.ColorModifierOverrideUnlocked = {0.05, 0.15, 0.07}
+s.ColorModifierOverrideActive = {0.05, 0.15, 0.07}
+GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.1)
+GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, 0.15)
+
+s = GM:AddSkill(SKILL_REDEMPTION_UNDEAD, "Redemption of the Undead", VERYGOOD.."Killing a zombie has a 1 of 10 chance to redeem them\nAbility no longer works if redeem was successful\nWorks only once per round and does not work for bot zombies and initial volunteers\n"..VERYBAD.."-17.5% damage dealt",
+6, -2, {}, TREE_REMORTTREE)
+s.RequiredSP = 10
+s.RemortReq = 8
+s.ColorModifierOverride = {128, 0.5, 0.2}
+s.ColorModifierOverrideCanUnlock = {128, 0.5, 0.2}
+s.ColorModifierOverrideUnlocked = {128, 0.5, 0.2}
+s.ColorModifierOverrideActive = {128, 0.5, 0.2}
+GM:AddSkillModifier(SKILL_REDEMPTION_UNDEAD, SKILLMOD_DAMAGE_DEALT_MUL, -0.175)

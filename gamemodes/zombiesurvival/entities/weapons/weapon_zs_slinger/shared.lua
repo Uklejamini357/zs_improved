@@ -33,7 +33,7 @@ SWEP.NextZoom = 0
 SWEP.ReloadSpeed = 0.59
 
 GAMEMODE:AttachWeaponModifier(SWEP, WEAPON_MODIFIER_RELOAD_SPEED, 0.07)
-GAMEMODE:AddNewRemantleBranch(SWEP, 1, "'Darter' Bolt Pistol", "Deals less damage but has much higher velocity", function(wept)
+GAMEMODE:AddNewRemantleBranch(SWEP, 1, "'Darter' Bolt Pistol", "Deals -10% damage but has much higher velocity", function(wept)
 	wept.Primary.Damage = wept.Primary.Damage * 0.9
 	wept.Primary.ProjVelocity = 2300
 	if SERVER then
@@ -51,8 +51,8 @@ local branch = GAMEMODE:AddNewRemantleBranch(SWEP, 2, "'Hurler' Bolt Pistol", "G
 		end
 	end
 end)
-branch.Colors = {Color(255, 160, 150), Color(215, 120, 150), Color(175, 100, 140)}
-branch.NewNames = {"Range", "Seeker", "Searcher"}
+branch.Colors = {Color(255, 160, 150), Color(215, 120, 150), Color(175, 100, 140), Color(155, 80, 130)}
+branch.NewNames = {"Range", "Seeker", "Searcher", "Finder"}
 
 function SWEP:SendReloadAnimation()
 	self:SendWeaponAnim(ACT_VM_DRAW)

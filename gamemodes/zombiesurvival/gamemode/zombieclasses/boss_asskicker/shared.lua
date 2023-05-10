@@ -11,6 +11,7 @@ CLASS.KnockbackScale = 0
 
 CLASS.FearPerInstance = 1
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 40
 
 CLASS.SWEP = "weapon_zs_asskicker"

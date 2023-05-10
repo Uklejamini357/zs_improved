@@ -12,7 +12,9 @@ CLASS.DynamicHealth = 6
 CLASS.Speed = 150
 
 CLASS.CanTaunt = true
+CLASS.IsEradicator = true
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.SWEP = "weapon_zs_eradicator"

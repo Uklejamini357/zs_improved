@@ -7,12 +7,14 @@ CLASS.Help = "controls_eradicator"
 
 CLASS.Wave = 11 / GM.NumberOfWaves
 
-CLASS.Health = 555
+CLASS.Health = 470
 CLASS.DynamicHealth = 8
-CLASS.Speed = 160
+CLASS.Speed = 155
 
 CLASS.CanTaunt = true
+CLASS.IsEradicator = true
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.SWEP = "weapon_zs_eradicator3"
@@ -65,7 +67,7 @@ end
 if SERVER then return end
 
 CLASS.Icon = "zombiesurvival/killicons/poisonzombie"
-CLASS.IconColor = Color(88, 44, 220)
+CLASS.IconColor = Color(110, 44, 44)
 
 local matSkin = Material("Models/charple/charple4_sheet.vtf")
 function CLASS:PrePlayerDrawOverrideModel(pl)

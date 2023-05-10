@@ -1,21 +1,23 @@
-CLASS.Hidden = true
-CLASS.Disabled = true
-CLASS.Unlocked = true
-
 CLASS.Name = "Chem Zombie"
 CLASS.TranslationName = "class_chem_zombie"
 CLASS.Description = "description_chem_zombie"
 CLASS.Help = "controls_chem_zombie"
 
-CLASS.Wave = 6 / GM.NumberOfWaves
 --CLASS.Sanity = 2 / 3
+CLASS.Wave = 1 / GM.NumberOfWaves
 CLASS.Health = 100
 CLASS.DynamicHealth = 2
 CLASS.SWEP = "weapon_zs_chemzombie"
 CLASS.Model = Model("models/Zombie/Poison.mdl")
 CLASS.Speed = 160
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 3
+
+CLASS.Disabled = true
+CLASS.Hidden = true
+CLASS.Unlocked = true
+CLASS.IsChemZombie = true
 
 CLASS.PainSounds = {Sound("npc/metropolice/knockout2.wav"),
 	Sound("npc/metropolice/pain1.wav"),
@@ -94,7 +96,7 @@ if SERVER then
 		if DUMMY_CHEMZOMBIE:IsValid() then
 			DUMMY_CHEMZOMBIE:SetPos(pos)
 		end
-		util.PoisonBlastDamage(DUMMY_CHEMZOMBIE, pl, pos, 128, 85, true)
+		util.PoisonBlastDamage(pl:GetActiveWeapon() or DUMMY_CHEMZOMBIE, pl, pos, 128, 85, true)
 
 		pl:CheckRedeem()
 	end
@@ -104,7 +106,7 @@ if SERVER then
 			local pos = pl:LocalToWorld(pl:OBBCenter())
 
 			pl:Gib(dmginfo)
-			timer.Simple(0, function() ChemBomb(pl, pos) end)
+			ChemBomb(pl, pos)
 
 			return true
 		end

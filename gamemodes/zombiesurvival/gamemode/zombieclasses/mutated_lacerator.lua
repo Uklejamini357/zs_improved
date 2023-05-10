@@ -20,6 +20,7 @@ CLASS.HullDuck = {Vector(-16, -16, 0), Vector(16, 16, 32)}
 CLASS.ViewOffset = Vector(0, 0, 50)
 CLASS.ViewOffsetDucked = Vector(0, 0, 24)
 
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio
 CLASS.Points = CLASS.Health/GM.NoHeadboxZombiePointRatio
 
 CLASS.CanTaunt = true

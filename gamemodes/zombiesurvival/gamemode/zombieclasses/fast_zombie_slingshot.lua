@@ -14,6 +14,7 @@ CLASS.DynamicHealth = 2
 CLASS.Speed = 235
 CLASS.SWEP = "weapon_zs_fastzombie_slingshot"
 
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio
 CLASS.Points = CLASS.Health/GM.NoHeadboxZombiePointRatio
 
 local math_random = math.random

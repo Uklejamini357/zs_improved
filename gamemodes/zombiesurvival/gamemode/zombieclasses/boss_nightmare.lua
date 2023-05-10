@@ -15,6 +15,7 @@ CLASS.CanTaunt = true
 
 CLASS.FearPerInstance = 1
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 30
 
 CLASS.SWEP = "weapon_zs_nightmare"

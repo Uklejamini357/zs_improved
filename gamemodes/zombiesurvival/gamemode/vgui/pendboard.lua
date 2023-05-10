@@ -45,10 +45,10 @@ function MakepEndBoard(winner)
 		heading = EasyLabel(frame, "You have won!", "ZSHUDFontBig", COLOR_CYAN)
 	elseif winner == TEAM_HUMAN or winner == TEAM_UNDEAD then
 		surface.PlaySound("ambient/levels/citadel/strange_talk"..math.random(3, 11)..".wav")
-		heading = EasyLabel(frame, GAMEMODE.ZombieEscape and "Zombies win." or "You have lost.", "ZSHUDFontBig", COLOR_RED)
+		heading = EasyLabel(frame, GAMEMODE.ZombieEscape and "Zombies won" or "You have lost.", "ZSHUDFontBig", COLOR_RED)
 	else
 		surface.PlaySound("ambient/levels/citadel/strange_talk"..math.random(3, 11)..".wav")
-		heading = EasyLabel(frame, "Round ended with a draw...", "ZSHUDFont", COLOR_GRAY)
+		heading = EasyLabel(frame, "Stalemate", "ZSHUDFont", COLOR_GRAY)
 	end
 	heading:SetPos(wid * 0.5 - heading:GetWide() * 0.5, y)
 	y = y + heading:GetTall() + 16

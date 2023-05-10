@@ -116,17 +116,17 @@ function GM:AddMutation(signature, name, desc, mutcategory, worth, callback, bot
 		MutationShop = true,
 		Bots = bots,
 		Rebuyable = rebuyable, -- can be rebuyable and add tokens cost per purchase
-		MaxPurchases = maxpurchases -- amount of times the mutation can be purchased
+		MaxPurchases = maxpurchases or 1 -- amount of times the mutation can be purchased
 	}
 	self.Mutations[#self.Mutations + 1] = tab
 
 	return tab
 end
-
+/*
 function GM:AddMutationItem(signature, name, desc, mutcategory, worth, callback, bots, rebuyable, maxpurchases)
 	return self:AddMutation(signature, name, desc, mutcategory, worth, callback, bots, rebuyable, maxpurchases)
 end
-
+*/
 -- How much ammo is considered one 'clip' of ammo? For use with setting up weapon defaults. Works directly with zs_survivalclips
 GM.AmmoCache = {}
 GM.AmmoCache["ar2"]							= 32		-- Assault rifles.
@@ -182,16 +182,16 @@ GM.AmmoResupply = table.ToAssoc({
 -- Worth --
 -----------
 
-GM:AddStartingItem("pshtr",				ITEMCAT_GUNS,			45,				"weapon_zs_peashooter")
-GM:AddStartingItem("btlax",				ITEMCAT_GUNS,			45,				"weapon_zs_battleaxe")
-GM:AddStartingItem("owens",				ITEMCAT_GUNS,			45,				"weapon_zs_owens")
-GM:AddStartingItem("blstr",				ITEMCAT_GUNS,			45,				"weapon_zs_blaster")
-GM:AddStartingItem("tossr",				ITEMCAT_GUNS,			45,				"weapon_zs_tosser")
-GM:AddStartingItem("stbbr",				ITEMCAT_GUNS,			45,				"weapon_zs_stubber")
-GM:AddStartingItem("crklr",				ITEMCAT_GUNS,			45,				"weapon_zs_crackler")
-GM:AddStartingItem("sling",				ITEMCAT_GUNS,			45,				"weapon_zs_slinger")
-GM:AddStartingItem("z9000",				ITEMCAT_GUNS,			45,				"weapon_zs_z9000")
-GM:AddStartingItem("minelayer",			ITEMCAT_GUNS,			60,				"weapon_zs_minelayer")
+GM:AddStartingItem("pshtr",				ITEMCAT_GUNS,			40,				"weapon_zs_peashooter")
+GM:AddStartingItem("btlax",				ITEMCAT_GUNS,			40,				"weapon_zs_battleaxe")
+GM:AddStartingItem("owens",				ITEMCAT_GUNS,			40,				"weapon_zs_owens")
+GM:AddStartingItem("blstr",				ITEMCAT_GUNS,			40,				"weapon_zs_blaster")
+GM:AddStartingItem("tossr",				ITEMCAT_GUNS,			40,				"weapon_zs_tosser")
+GM:AddStartingItem("stbbr",				ITEMCAT_GUNS,			40,				"weapon_zs_stubber")
+GM:AddStartingItem("crklr",				ITEMCAT_GUNS,			40,				"weapon_zs_crackler")
+GM:AddStartingItem("sling",				ITEMCAT_GUNS,			40,				"weapon_zs_slinger")
+GM:AddStartingItem("z9000",				ITEMCAT_GUNS,			40,				"weapon_zs_z9000")
+GM:AddStartingItem("minelayer",			ITEMCAT_GUNS,			55,				"weapon_zs_minelayer")
 
 GM:AddStartingItem("2pcp",				ITEMCAT_AMMO,			15,				nil,			"28 pistol ammo",				nil,		"ammo_pistol",			function(pl) pl:GiveAmmo(28, "pistol", true) end)
 GM:AddStartingItem("3pcp",				ITEMCAT_AMMO,			20,				nil,			"42 pistol ammo",				nil,		"ammo_pistol",			function(pl) pl:GiveAmmo(42, "pistol", true) end)
@@ -215,16 +215,16 @@ GM:AddStartingItem("60mkit",			ITEMCAT_AMMO,			15,				nil,			"60 medical power",
 GM:AddStartingItem("90mkit",			ITEMCAT_AMMO,			25,				nil,			"90 medical power",				nil,		"ammo_medpower",		function(pl) pl:GiveAmmo(90, "Battery", true) end)
 
 GM:AddStartingItem("brassknuckles",		ITEMCAT_MELEE,			20,				"weapon_zs_brassknuckles").Model = "models/props_c17/utilityconnecter005.mdl"
-GM:AddStartingItem("zpaxe",				ITEMCAT_MELEE,			40,				"weapon_zs_axe")
-GM:AddStartingItem("crwbar",			ITEMCAT_MELEE,			40,				"weapon_zs_crowbar")
-GM:AddStartingItem("stnbtn",			ITEMCAT_MELEE,			40,				"weapon_zs_stunbaton")
+GM:AddStartingItem("zpaxe",				ITEMCAT_MELEE,			35,				"weapon_zs_axe")
+GM:AddStartingItem("crwbar",			ITEMCAT_MELEE,			35,				"weapon_zs_crowbar")
+GM:AddStartingItem("stnbtn",			ITEMCAT_MELEE,			35,				"weapon_zs_stunbaton")
 GM:AddStartingItem("csknf",				ITEMCAT_MELEE,			20,				"weapon_zs_swissarmyknife")
 GM:AddStartingItem("zpplnk",			ITEMCAT_MELEE,			20,				"weapon_zs_plank")
 GM:AddStartingItem("zpfryp",			ITEMCAT_MELEE,			30,				"weapon_zs_fryingpan")
 GM:AddStartingItem("zpcpot",			ITEMCAT_MELEE,			30,				"weapon_zs_pot")
 GM:AddStartingItem("ladel",				ITEMCAT_MELEE,			30,				"weapon_zs_ladel")
-GM:AddStartingItem("pipe",				ITEMCAT_MELEE,			40,				"weapon_zs_pipe")
-GM:AddStartingItem("hook",				ITEMCAT_MELEE,			40,				"weapon_zs_hook")
+GM:AddStartingItem("pipe",				ITEMCAT_MELEE,			35,				"weapon_zs_pipe")
+GM:AddStartingItem("hook",				ITEMCAT_MELEE,			35,				"weapon_zs_hook")
 
 local item
 GM:AddStartingItem("medkit",			ITEMCAT_TOOLS,			60,				"weapon_zs_medicalkit")
@@ -235,62 +235,62 @@ item.SkillRequirement = SKILL_U_STRENGTHSHOT
 item =
 GM:AddStartingItem("antidoteshot",		ITEMCAT_TOOLS,			40,				"weapon_zs_antidoteshot")
 item.SkillRequirement = SKILL_U_ANTITODESHOT
-GM:AddStartingItem("arscrate",			ITEMCAT_DEPLOYABLES,			50,				"weapon_zs_arsenalcrate")
+GM:AddStartingItem("arscrate",			ITEMCAT_DEPLOYABLES,	45,				"weapon_zs_arsenalcrate")
 .Countables = "prop_arsenalcrate"
-GM:AddStartingItem("resupplybox",		ITEMCAT_DEPLOYABLES,			50,				"weapon_zs_resupplybox")
+GM:AddStartingItem("resupplybox",		ITEMCAT_DEPLOYABLES,	45,				"weapon_zs_resupplybox")
 .Countables = "prop_resupplybox"
-GM:AddStartingItem("remantler",			ITEMCAT_DEPLOYABLES,			50,				"weapon_zs_remantler")
+GM:AddStartingItem("remantler",			ITEMCAT_DEPLOYABLES,	45,				"weapon_zs_remantler")
 .Countables = "prop_remantler"
 item =
-GM:AddStartingItem("infturret",			ITEMCAT_DEPLOYABLES,			75,				"weapon_zs_gunturret",			nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_gunturret") pl:GiveAmmo(1, "thumper") pl:GiveAmmo(125, "smg1") end)
+GM:AddStartingItem("infturret",			ITEMCAT_DEPLOYABLES,	75,				"weapon_zs_gunturret",			nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_gunturret") pl:GiveAmmo(1, "thumper") pl:GiveAmmo(125, "smg1") end)
 item.Countables = "prop_gunturret"
 item.NoClassicMode = true
 item =
-GM:AddStartingItem("blastturret",		ITEMCAT_DEPLOYABLES,			75,				"weapon_zs_gunturret_buckshot",	nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_gunturret_buckshot") pl:GiveAmmo(1, "turret_buckshot") pl:GiveAmmo(30, "buckshot") end)
+GM:AddStartingItem("blastturret",		ITEMCAT_DEPLOYABLES,	75,				"weapon_zs_gunturret_buckshot",	nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_gunturret_buckshot") pl:GiveAmmo(1, "turret_buckshot") pl:GiveAmmo(30, "buckshot") end)
 item.Countables = "prop_gunturret_buckshot"
 item.NoClassicMode = true
 item.SkillRequirement = SKILL_U_BLASTTURRET
 item =
-GM:AddStartingItem("repairfield",		ITEMCAT_DEPLOYABLES,			60,				"weapon_zs_repairfield",		nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_repairfield") pl:GiveAmmo(1, "repairfield") pl:GiveAmmo(50, "pulse") end)
+GM:AddStartingItem("repairfield",		ITEMCAT_DEPLOYABLES,	60,				"weapon_zs_repairfield",		nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_repairfield") pl:GiveAmmo(1, "repairfield") pl:GiveAmmo(50, "pulse") end)
 item.Countables = "prop_repairfield"
 item.NoClassicMode = true
 item =
-GM:AddStartingItem("zapper",			ITEMCAT_DEPLOYABLES,			75,				"weapon_zs_zapper",				nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_zapper") pl:GiveAmmo(1, "zapper") pl:GiveAmmo(50, "pulse") end)
+GM:AddStartingItem("zapper",			ITEMCAT_DEPLOYABLES,	75,				"weapon_zs_zapper",				nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_zapper") pl:GiveAmmo(1, "zapper") pl:GiveAmmo(50, "pulse") end)
 item.Countables = "prop_zapper"
 item.NoClassicMode = true
 
-GM:AddStartingItem("manhack",			ITEMCAT_DEPLOYABLES,			50,				"weapon_zs_manhack").Countables = "prop_manhack"
+GM:AddStartingItem("manhack",			ITEMCAT_DEPLOYABLES,	50,				"weapon_zs_manhack").Countables = "prop_manhack"
 item =
-GM:AddStartingItem("drone",				ITEMCAT_DEPLOYABLES,			55,				"weapon_zs_drone",				nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_drone") pl:GiveAmmo(1, "drone") pl:GiveAmmo(60, "smg1") end)
+GM:AddStartingItem("drone",				ITEMCAT_DEPLOYABLES,	55,				"weapon_zs_drone",				nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_drone") pl:GiveAmmo(1, "drone") pl:GiveAmmo(60, "smg1") end)
 item.Countables = "prop_drone"
 item =
-GM:AddStartingItem("pulsedrone",		ITEMCAT_DEPLOYABLES,			55,				"weapon_zs_drone_pulse",		nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_drone_pulse") pl:GiveAmmo(1, "pulse_cutter") pl:GiveAmmo(60, "pulse") end)
+GM:AddStartingItem("pulsedrone",		ITEMCAT_DEPLOYABLES,	55,				"weapon_zs_drone_pulse",		nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_drone_pulse") pl:GiveAmmo(1, "pulse_cutter") pl:GiveAmmo(60, "pulse") end)
 item.Countables = "prop_drone_pulse"
 item.SkillRequirement = SKILL_U_DRONE
 item =
-GM:AddStartingItem("hauldrone",			ITEMCAT_DEPLOYABLES,			25,				"weapon_zs_drone_hauler",		nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_drone_hauler") pl:GiveAmmo(1, "drone_hauler") end)
+GM:AddStartingItem("hauldrone",			ITEMCAT_DEPLOYABLES,	25,				"weapon_zs_drone_hauler",		nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_drone_hauler") pl:GiveAmmo(1, "drone_hauler") end)
 item.Countables = "prop_drone_hauler"
 item.SkillRequirement = SKILL_HAULMODULE
 item =
-GM:AddStartingItem("rollermine",		ITEMCAT_DEPLOYABLES,			65,				"weapon_zs_rollermine",			nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_rollermine") pl:GiveAmmo(1, "rollermine") end)
+GM:AddStartingItem("rollermine",		ITEMCAT_DEPLOYABLES,	65,				"weapon_zs_rollermine",			nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_rollermine") pl:GiveAmmo(1, "rollermine") end)
 item.Countables = "prop_rollermine"
 item.SkillRequirement = SKILL_U_ROLLERMINE
 
 GM:AddStartingItem("wrench",			ITEMCAT_TOOLS,			20,				"weapon_zs_wrench").NoClassicMode = true
-GM:AddStartingItem("crphmr",			ITEMCAT_TOOLS,			40,				"weapon_zs_hammer").NoClassicMode = true
+GM:AddStartingItem("crphmr",			ITEMCAT_TOOLS,			35,				"weapon_zs_hammer").NoClassicMode = true
 GM:AddStartingItem("junkpack",			ITEMCAT_DEPLOYABLES,	30,				"weapon_zs_boardpack")
 GM:AddStartingItem("propanetank",		ITEMCAT_TOOLS,			30,				"comp_propanecan")
 GM:AddStartingItem("busthead",			ITEMCAT_TOOLS,			35,				"comp_busthead")
 GM:AddStartingItem("sawblade",			ITEMCAT_TOOLS,			35,				"comp_sawblade").SkillRequirement = SKILL_U_CRAFTINGPACK
 GM:AddStartingItem("cpuparts",			ITEMCAT_TOOLS,			35,				"comp_cpuparts").SkillRequirement = SKILL_U_CRAFTINGPACK
 GM:AddStartingItem("electrobattery",	ITEMCAT_TOOLS,			45,				"comp_electrobattery").SkillRequirement = SKILL_U_CRAFTINGPACK
-GM:AddStartingItem("msgbeacon",			ITEMCAT_DEPLOYABLES,			10,				"weapon_zs_messagebeacon").Countables = "prop_messagebeacon"
+GM:AddStartingItem("msgbeacon",			ITEMCAT_DEPLOYABLES,	10,				"weapon_zs_messagebeacon").Countables = "prop_messagebeacon"
 item =
-GM:AddStartingItem("ffemitter",			ITEMCAT_DEPLOYABLES,			45,				"weapon_zs_ffemitter",			nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_ffemitter") pl:GiveAmmo(1, "slam") pl:GiveAmmo(50, "pulse") end)
+GM:AddStartingItem("ffemitter",			ITEMCAT_DEPLOYABLES,	45,				"weapon_zs_ffemitter",			nil,	nil,			nil,					function(pl) pl:GiveEmptyWeapon("weapon_zs_ffemitter") pl:GiveAmmo(1, "slam") pl:GiveAmmo(50, "pulse") end)
 item.Countables = "prop_ffemitter"
-GM:AddStartingItem("barricadekit",		ITEMCAT_DEPLOYABLES,			80,				"weapon_zs_barricadekit")
-GM:AddStartingItem("camera",			ITEMCAT_DEPLOYABLES,			15,				"weapon_zs_camera").Countables = "prop_camera"
-GM:AddStartingItem("tv",				ITEMCAT_DEPLOYABLES,			35,				"weapon_zs_tv").Countables = "prop_tv"
+GM:AddStartingItem("barricadekit",		ITEMCAT_DEPLOYABLES,	80,				"weapon_zs_barricadekit")
+GM:AddStartingItem("camera",			ITEMCAT_DEPLOYABLES,	15,				"weapon_zs_camera").Countables = "prop_camera"
+GM:AddStartingItem("tv",				ITEMCAT_DEPLOYABLES,	35,				"weapon_zs_tv").Countables = "prop_tv"
 
 GM:AddStartingItem("oxtank",			ITEMCAT_TRINKETS,		5,				"trinket_oxygentank").SubCategory =				ITEMSUBCAT_TRINKETS_PERFORMANCE
 GM:AddStartingItem("boxingtraining",	ITEMCAT_TRINKETS,		10,				"trinket_boxingtraining").SubCategory =			ITEMSUBCAT_TRINKETS_MELEE
@@ -310,10 +310,11 @@ GM:AddStartingItem("processor",			ITEMCAT_TRINKETS,		20,				"trinket_processor")
 GM:AddStartingItem("cardpackagei",		ITEMCAT_TRINKETS,		20,				"trinket_cardpackagei").SubCategory =			ITEMSUBCAT_TRINKETS_DEFENSIVE
 GM:AddStartingItem("bloodpack",			ITEMCAT_TRINKETS,		20,				"trinket_bloodpack").SubCategory =				ITEMSUBCAT_TRINKETS_DEFENSIVE
 GM:AddStartingItem("biocleanser",		ITEMCAT_TRINKETS,		20,				"trinket_biocleanser").SubCategory =			ITEMSUBCAT_TRINKETS_SPECIAL
+GM:AddStartingItem("ammovestii",		ITEMCAT_TRINKETS,		20,				"trinket_ammovestii").SubCategory =				ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddStartingItem("reactiveflasher",	ITEMCAT_TRINKETS,		25,				"trinket_reactiveflasher").SubCategory =		ITEMSUBCAT_TRINKETS_SPECIAL
 GM:AddStartingItem("magnet",			ITEMCAT_TRINKETS,		25,				"trinket_magnet").SubCategory =					ITEMSUBCAT_TRINKETS_SPECIAL
-GM:AddStartingItem("arsenalpack",		ITEMCAT_TRINKETS,		55,				"trinket_arsenalpack").SubCategory =			ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddStartingItem("resupplypack",		ITEMCAT_TRINKETS,		55,				"trinket_resupplypack").SubCategory =			ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddStartingItem("arsenalpack",		ITEMCAT_TRINKETS,		50,				"trinket_arsenalpack").SubCategory =			ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddStartingItem("resupplypack",		ITEMCAT_TRINKETS,		50,				"trinket_resupplypack").SubCategory =			ITEMSUBCAT_TRINKETS_SUPPORT
 
 GM:AddStartingItem("stone",				ITEMCAT_OTHER,			10,				"weapon_zs_stone")
 GM:AddStartingItem("grenade",			ITEMCAT_OTHER,			30,				"weapon_zs_grenade")
@@ -410,29 +411,28 @@ GM:AddPointShopItem("smelter",			ITEMCAT_GUNS,			200,			"weapon_zs_smelter")
 GM:AddPointShopItem("doomstick",		ITEMCAT_GUNS,			300,			"weapon_zs_doomstick").SkillRequirement = SKILL_U_DOOMSTICK
 
 
-GM:AddPointShopItem("pistolammo",		ITEMCAT_AMMO,			9,				nil,							"14 pistol ammo",				nil,									"ammo_pistol",						function(pl) pl:GiveAmmo(14, "pistol", true) end)
-GM:AddPointShopItem("shotgunammo",		ITEMCAT_AMMO,			9,				nil,							"12 shotgun ammo",				nil,									"ammo_shotgun",						function(pl) pl:GiveAmmo(12, "buckshot", true) end)
-GM:AddPointShopItem("smgammo",			ITEMCAT_AMMO,			9,				nil,							"36 SMG ammo",					nil,									"ammo_smg",							function(pl) pl:GiveAmmo(36, "smg1", true) end)
-GM:AddPointShopItem("rifleammo",		ITEMCAT_AMMO,			9,				nil,							"8 rifle ammo",					nil,									"ammo_rifle",						function(pl) pl:GiveAmmo(8, "357", true) end)
-GM:AddPointShopItem("crossbowammo",		ITEMCAT_AMMO,			9,				nil,							"8 crossbow bolts",				nil,									"ammo_bolts",						function(pl) pl:GiveAmmo(8,	"XBowBolt",	true) end)
-GM:AddPointShopItem("assaultrifleammo",	ITEMCAT_AMMO,			9,				nil,							"32 assault rifle ammo",		nil,									"ammo_assault",						function(pl) pl:GiveAmmo(32, "ar2", true) end)
-GM:AddPointShopItem("pulseammo",		ITEMCAT_AMMO,			9,				nil,							"30 pulse ammo",				nil,									"ammo_pulse",						function(pl) pl:GiveAmmo(30, "pulse", true) end)
-GM:AddPointShopItem("impactmine",		ITEMCAT_AMMO,			9,				nil,							"3 explosives",					nil,									"ammo_explosive",					function(pl) pl:GiveAmmo(3, "impactmine", true) end)
-GM:AddPointShopItem("chemical",			ITEMCAT_AMMO,			9,				nil,							"20 chemical vials",			nil,									"ammo_chemical",					function(pl) pl:GiveAmmo(20, "chemical", true) end)
+GM:AddPointShopItem("pistolammo",		ITEMCAT_AMMO,			9,				nil,	"14 pistol ammo",				nil,									"ammo_pistol",					function(pl) pl:GiveAmmo(14, "pistol", true) end)
+GM:AddPointShopItem("shotgunammo",		ITEMCAT_AMMO,			9,				nil,	"12 shotgun ammo",				nil,									"ammo_shotgun",					function(pl) pl:GiveAmmo(12, "buckshot", true) end)
+GM:AddPointShopItem("smgammo",			ITEMCAT_AMMO,			9,				nil,	"36 SMG ammo",					nil,									"ammo_smg",						function(pl) pl:GiveAmmo(36, "smg1", true) end)
+GM:AddPointShopItem("rifleammo",		ITEMCAT_AMMO,			9,				nil,	"8 rifle ammo",					nil,									"ammo_rifle",					function(pl) pl:GiveAmmo(8, "357", true) end)
+GM:AddPointShopItem("crossbowammo",		ITEMCAT_AMMO,			9,				nil,	"8 crossbow bolts",				nil,									"ammo_bolts",					function(pl) pl:GiveAmmo(8,	"XBowBolt",	true) end)
+GM:AddPointShopItem("assaultrifleammo",	ITEMCAT_AMMO,			9,				nil,	"32 assault rifle ammo",		nil,									"ammo_assault",					function(pl) pl:GiveAmmo(32, "ar2", true) end)
+GM:AddPointShopItem("pulseammo",		ITEMCAT_AMMO,			9,				nil,	"30 pulse ammo",				nil,									"ammo_pulse",					function(pl) pl:GiveAmmo(30, "pulse", true) end)
+GM:AddPointShopItem("impactmine",		ITEMCAT_AMMO,			9,				nil,	"3 explosives",					nil,									"ammo_explosive",				function(pl) pl:GiveAmmo(3, "impactmine", true) end)
+GM:AddPointShopItem("chemical",			ITEMCAT_AMMO,			9,				nil,	"20 chemical vials",			nil,									"ammo_chemical",				function(pl) pl:GiveAmmo(20, "chemical", true) end)
 item =
-GM:AddPointShopItem("medammo",			ITEMCAT_AMMO,			12,				nil,							"25 Medical Kit power",			"25 extra power for the Medical Kit.",	"ammo_medpower",					function(pl) pl:GiveAmmo(25, "Battery", true) end)
+GM:AddPointShopItem("medammo",			ITEMCAT_AMMO,			12,				nil,	"25 Medical Kit power",			"25 extra power for the Medical Kit.",	"ammo_medpower",				function(pl) pl:GiveAmmo(25, "Battery", true) end)
 item.CanMakeFromScrap = true
 item =
-GM:AddPointShopItem("nail",				ITEMCAT_AMMO,			3,				nil,							"Nail",							"It's just one nail.",					"ammo_nail",						function(pl) pl:GiveAmmo(1, "GaussEnergy", true) end)
+GM:AddPointShopItem("nail",				ITEMCAT_AMMO,			3,				nil,	"Nail",							"It's just one nail.",					"ammo_nail",					function(pl) pl:GiveAmmo(1, "GaussEnergy", true) end)
 item.NoClassicMode = true
 item.CanMakeFromScrap = true
 item =
-GM:AddPointShopItem("board",			ITEMCAT_AMMO,			20,				nil,							"Board",						"A board for aegis and prop packs.",	"ammo_sniperround",					function(pl) pl:GiveAmmo(1, "SniperRound", true) end)
-item.CanMakeFromScrap = false
+GM:AddPointShopItem("board",			ITEMCAT_AMMO,			20,				nil,	"Board",						"A board for aegis and prop packs.",	nil,							function(pl) pl:GiveAmmo(1, "SniperRound", true) end)
 item.NoCraftWithScrap = true
+item.Model = "models/props_debris/wood_board04a.mdl"
 item =
-GM:AddPointShopItem("scrap",			ITEMCAT_AMMO,			9,				nil,							"3 Scrap",						"Scrap used in remantler.",				"ammo_scrap",				function(pl) pl:GiveAmmo(3, "scrap", true) end)
-item.CanMakeFromScrap = false
+GM:AddPointShopItem("scrap",			ITEMCAT_AMMO,			9,				nil,	"3 Scrap",						"Scrap used in remantler.",				"ammo_scrap",					function(pl) pl:GiveAmmo(3, "scrap", true) end)
 item.NoCraftWithScrap = true
 -- Tier 1
 GM:AddPointShopItem("brassknuckles",	ITEMCAT_MELEE,			10,				"weapon_zs_brassknuckles").Model = "models/props_c17/utilityconnecter005.mdl"
@@ -464,12 +464,14 @@ GM:AddPointShopItem("scythe",			ITEMCAT_MELEE,			100,			"weapon_zs_scythe")
 GM:AddPointShopItem("powerfists",		ITEMCAT_MELEE,			100,			"weapon_zs_powerfists")
 -- Tier 5
 GM:AddPointShopItem("frotchet",			ITEMCAT_MELEE,			150,			"weapon_zs_frotchet")
+-- Tier 6
+GM:AddPointShopItem("ultrabutcherknf",	ITEMCAT_MELEE,			260,				"weapon_zs_ultrabutcherknife")
 
 GM:AddPointShopItem("crphmr",			ITEMCAT_TOOLS,			25,				"weapon_zs_hammer",			nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_hammer") pl:GiveAmmo(5, "GaussEnergy") end)
 GM:AddPointShopItem("wrench",			ITEMCAT_TOOLS,			20,				"weapon_zs_wrench").NoClassicMode = true
-GM:AddPointShopItem("arsenalcrate",		ITEMCAT_DEPLOYABLES,			40,				"weapon_zs_arsenalcrate").Countables = "prop_arsenalcrate"
-GM:AddPointShopItem("resupplybox",		ITEMCAT_DEPLOYABLES,			40,				"weapon_zs_resupplybox").Countables = "prop_resupplybox"
-GM:AddPointShopItem("remantler",		ITEMCAT_DEPLOYABLES,			40,				"weapon_zs_remantler").Countables = "prop_remantler"
+GM:AddPointShopItem("arsenalcrate",		ITEMCAT_DEPLOYABLES,			35,				"weapon_zs_arsenalcrate").Countables = "prop_arsenalcrate"
+GM:AddPointShopItem("resupplybox",		ITEMCAT_DEPLOYABLES,			35,				"weapon_zs_resupplybox").Countables = "prop_resupplybox"
+GM:AddPointShopItem("remantler",		ITEMCAT_DEPLOYABLES,			35,				"weapon_zs_remantler").Countables = "prop_remantler"
 GM:AddPointShopItem("msgbeacon",		ITEMCAT_DEPLOYABLES,			10,				"weapon_zs_messagebeacon").Countables = "prop_messagebeacon"
 GM:AddPointShopItem("camera",			ITEMCAT_DEPLOYABLES,			15,				"weapon_zs_camera").Countables = "prop_camera"
 GM:AddPointShopItem("tv",				ITEMCAT_DEPLOYABLES,			25,				"weapon_zs_tv").Countables = "prop_tv"
@@ -542,76 +544,78 @@ GM:AddPointShopItem("medrifle",			ITEMCAT_TOOLS,			55,				"weapon_zs_medicrifle"
 GM:AddPointShopItem("healray",			ITEMCAT_TOOLS,			125,			"weapon_zs_healingray")
 
 -- Tier 1
-GM:AddPointShopItem("cutlery",			ITEMCAT_TRINKETS,		10,				"trinket_cutlery").SubCategory =								ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("boxingtraining",	ITEMCAT_TRINKETS,		10,				"trinket_boxingtraining").SubCategory =							ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("hemoadrenali",		ITEMCAT_TRINKETS,		10,				"trinket_hemoadrenali").SubCategory =							ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("oxtank",			ITEMCAT_TRINKETS,		10,				"trinket_oxygentank").SubCategory =								ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("acrobatframe",		ITEMCAT_TRINKETS,		10,				"trinket_acrobatframe").SubCategory =							ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("portablehole",		ITEMCAT_TRINKETS,		10,				"trinket_portablehole").SubCategory =							ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("magnet",			ITEMCAT_TRINKETS,		10,				"trinket_magnet").SubCategory =									ITEMSUBCAT_TRINKETS_SPECIAL
-GM:AddPointShopItem("targetingvisi",	ITEMCAT_TRINKETS,		10,				"trinket_targetingvisori").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("pulseampi",		ITEMCAT_TRINKETS,		10,				"trinket_pulseampi").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("cutlery",			ITEMCAT_TRINKETS,		10,				"trinket_cutlery").SubCategory =						ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("boxingtraining",	ITEMCAT_TRINKETS,		10,				"trinket_boxingtraining").SubCategory =					ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("hemoadrenali",		ITEMCAT_TRINKETS,		10,				"trinket_hemoadrenali").SubCategory =					ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("oxtank",			ITEMCAT_TRINKETS,		10,				"trinket_oxygentank").SubCategory =						ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("acrobatframe",		ITEMCAT_TRINKETS,		10,				"trinket_acrobatframe").SubCategory =					ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("portablehole",		ITEMCAT_TRINKETS,		10,				"trinket_portablehole").SubCategory =					ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("magnet",			ITEMCAT_TRINKETS,		10,				"trinket_magnet").SubCategory =							ITEMSUBCAT_TRINKETS_SPECIAL
+GM:AddPointShopItem("targetingvisi",	ITEMCAT_TRINKETS,		10,				"trinket_targetingvisori").SubCategory =				ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("pulseampi",		ITEMCAT_TRINKETS,		10,				"trinket_pulseampi").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
 -- Tier 2
-GM:AddPointShopItem("momentumsupsysii",	ITEMCAT_TRINKETS,		15,				"trinket_momentumsupsysii").SubCategory =						ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("sharpkit",			ITEMCAT_TRINKETS,		15,				"trinket_sharpkit").SubCategory =								ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("nightvision",		ITEMCAT_TRINKETS,		15,				"trinket_nightvision").SubCategory =							ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("loadingframe",		ITEMCAT_TRINKETS,		15,				"trinket_loadingex").SubCategory =								ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("pathfinder",		ITEMCAT_TRINKETS,		15,				"trinket_pathfinder").SubCategory =								ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("ammovestii",		ITEMCAT_TRINKETS,		15,				"trinket_ammovestii").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("olympianframe",	ITEMCAT_TRINKETS,		15,				"trinket_olympianframe").SubCategory =							ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("autoreload",		ITEMCAT_TRINKETS,		15,				"trinket_autoreload").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("curbstompers",		ITEMCAT_TRINKETS,		15,				"trinket_curbstompers").SubCategory =							ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("vitpackagei",		ITEMCAT_TRINKETS,		15,				"trinket_vitpackagei").SubCategory =							ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("cardpackagei",		ITEMCAT_TRINKETS,		15,				"trinket_cardpackagei").SubCategory =							ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("forcedamp",		ITEMCAT_TRINKETS,		15,				"trinket_forcedamp").SubCategory =								ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("kevlar",			ITEMCAT_TRINKETS,		15,				"trinket_kevlar").SubCategory =									ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("antitoxinpack",	ITEMCAT_TRINKETS,		15,				"trinket_antitoxinpack").SubCategory =							ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("hemostasis",		ITEMCAT_TRINKETS,		15,				"trinket_hemostasis").SubCategory =								ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("bloodpack",		ITEMCAT_TRINKETS,		15,				"trinket_bloodpack").SubCategory =								ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("reactiveflasher",	ITEMCAT_TRINKETS,		15,				"trinket_reactiveflasher").SubCategory =						ITEMSUBCAT_TRINKETS_SPECIAL
-GM:AddPointShopItem("iceburst",			ITEMCAT_TRINKETS,		15,				"trinket_iceburst").SubCategory =								ITEMSUBCAT_TRINKETS_SPECIAL
-GM:AddPointShopItem("biocleanser",		ITEMCAT_TRINKETS,		15,				"trinket_biocleanser").SubCategory =							ITEMSUBCAT_TRINKETS_SPECIAL
-GM:AddPointShopItem("necrosense",		ITEMCAT_TRINKETS,		15,				"trinket_necrosense").SubCategory =								ITEMSUBCAT_TRINKETS_SPECIAL
-GM:AddPointShopItem("blueprintsi",		ITEMCAT_TRINKETS,		15,				"trinket_blueprintsi").SubCategory =							ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddPointShopItem("processor",		ITEMCAT_TRINKETS,		15,				"trinket_processor").SubCategory =								ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddPointShopItem("acqmanifest",		ITEMCAT_TRINKETS,		15,				"trinket_acqmanifest").SubCategory =							ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddPointShopItem("mainsuite",		ITEMCAT_TRINKETS,		15,				"trinket_mainsuite").SubCategory =								ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("momentumsupsysii",	ITEMCAT_TRINKETS,		15,				"trinket_momentumsupsysii").SubCategory =				ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("sharpkit",			ITEMCAT_TRINKETS,		15,				"trinket_sharpkit").SubCategory =						ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("nightvision",		ITEMCAT_TRINKETS,		15,				"trinket_nightvision").SubCategory =					ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("loadingframe",		ITEMCAT_TRINKETS,		15,				"trinket_loadingex").SubCategory =						ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("pathfinder",		ITEMCAT_TRINKETS,		15,				"trinket_pathfinder").SubCategory =						ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("ammovestii",		ITEMCAT_TRINKETS,		15,				"trinket_ammovestii").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("olympianframe",	ITEMCAT_TRINKETS,		15,				"trinket_olympianframe").SubCategory =					ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("autoreload",		ITEMCAT_TRINKETS,		15,				"trinket_autoreload").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("curbstompers",		ITEMCAT_TRINKETS,		15,				"trinket_curbstompers").SubCategory =					ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("vitpackagei",		ITEMCAT_TRINKETS,		15,				"trinket_vitpackagei").SubCategory =					ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("cardpackagei",		ITEMCAT_TRINKETS,		15,				"trinket_cardpackagei").SubCategory =					ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("forcedamp",		ITEMCAT_TRINKETS,		15,				"trinket_forcedamp").SubCategory =						ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("kevlar",			ITEMCAT_TRINKETS,		15,				"trinket_kevlar").SubCategory =							ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("antitoxinpack",	ITEMCAT_TRINKETS,		15,				"trinket_antitoxinpack").SubCategory =					ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("hemostasis",		ITEMCAT_TRINKETS,		15,				"trinket_hemostasis").SubCategory =						ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("bloodpack",		ITEMCAT_TRINKETS,		15,				"trinket_bloodpack").SubCategory =						ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("reactiveflasher",	ITEMCAT_TRINKETS,		15,				"trinket_reactiveflasher").SubCategory =				ITEMSUBCAT_TRINKETS_SPECIAL
+GM:AddPointShopItem("iceburst",			ITEMCAT_TRINKETS,		15,				"trinket_iceburst").SubCategory =						ITEMSUBCAT_TRINKETS_SPECIAL
+GM:AddPointShopItem("biocleanser",		ITEMCAT_TRINKETS,		15,				"trinket_biocleanser").SubCategory =					ITEMSUBCAT_TRINKETS_SPECIAL
+GM:AddPointShopItem("necrosense",		ITEMCAT_TRINKETS,		15,				"trinket_necrosense").SubCategory =						ITEMSUBCAT_TRINKETS_SPECIAL
+GM:AddPointShopItem("blueprintsi",		ITEMCAT_TRINKETS,		15,				"trinket_blueprintsi").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("processor",		ITEMCAT_TRINKETS,		15,				"trinket_processor").SubCategory =						ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("acqmanifest",		ITEMCAT_TRINKETS,		15,				"trinket_acqmanifest").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("mainsuite",		ITEMCAT_TRINKETS,		15,				"trinket_mainsuite").SubCategory =						ITEMSUBCAT_TRINKETS_SUPPORT
 -- Tier 3
---GM:AddPointShopItem("climbinggear",	ITEMCAT_TRINKETS,		30,				"trinket_climbinggear").SubCategory =							ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("reachem",			ITEMCAT_TRINKETS,		30,				"trinket_reachem").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("momentumsupsysiii",ITEMCAT_TRINKETS,		30,				"trinket_momentumsupsysiii").SubCategory =						ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("powergauntlet",	ITEMCAT_TRINKETS,		30,				"trinket_powergauntlet").SubCategory =							ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("hemoadrenalii",	ITEMCAT_TRINKETS,		30,				"trinket_hemoadrenalii").SubCategory =							ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("sharpstone",		ITEMCAT_TRINKETS,		30,				"trinket_sharpstone").SubCategory =								ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("longgrip",			ITEMCAT_TRINKETS,		30,				"trinket_longgrip").SubCategory =								ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("analgestic",		ITEMCAT_TRINKETS,		30,				"trinket_analgestic").SubCategory =								ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("feathfallframe",	ITEMCAT_TRINKETS,		30,				"trinket_featherfallframe").SubCategory =						ITEMSUBCAT_TRINKETS_PERFORMANCE
-GM:AddPointShopItem("aimcomp",			ITEMCAT_TRINKETS,		30,				"trinket_aimcomp").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("pulseampii",		ITEMCAT_TRINKETS,		30,				"trinket_pulseampii").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("extendedmag",		ITEMCAT_TRINKETS,		30,				"trinket_extendedmag").SubCategory =							ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("vitpackageii",		ITEMCAT_TRINKETS,		30,				"trinket_vitpackageii").SubCategory =							ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("cardpackageii",	ITEMCAT_TRINKETS,		30,				"trinket_cardpackageii").SubCategory =							ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("regenimplant",		ITEMCAT_TRINKETS,		30,				"trinket_regenimplant").SubCategory =							ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("barbedarmor",		ITEMCAT_TRINKETS,		30,				"trinket_barbedarmor").SubCategory =							ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("blueprintsii",		ITEMCAT_TRINKETS,		30,				"trinket_blueprintsii").SubCategory =							ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddPointShopItem("curativeii",		ITEMCAT_TRINKETS,		30,				"trinket_curativeii").SubCategory =								ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddPointShopItem("remedy",			ITEMCAT_TRINKETS,		30,				"trinket_remedy").SubCategory =									ITEMSUBCAT_TRINKETS_SUPPORT
+--GM:AddPointShopItem("climbinggear",	ITEMCAT_TRINKETS,		30,				"trinket_climbinggear").SubCategory =					ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("reachem",			ITEMCAT_TRINKETS,		30,				"trinket_reachem").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("momentumsupsysiii",ITEMCAT_TRINKETS,		30,				"trinket_momentumsupsysiii").SubCategory =				ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("powergauntlet",	ITEMCAT_TRINKETS,		30,				"trinket_powergauntlet").SubCategory =					ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("hemoadrenalii",	ITEMCAT_TRINKETS,		30,				"trinket_hemoadrenalii").SubCategory =					ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("sharpstone",		ITEMCAT_TRINKETS,		30,				"trinket_sharpstone").SubCategory =						ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("longgrip",			ITEMCAT_TRINKETS,		30,				"trinket_longgrip").SubCategory =						ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("analgestic",		ITEMCAT_TRINKETS,		30,				"trinket_analgestic").SubCategory =						ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("feathfallframe",	ITEMCAT_TRINKETS,		30,				"trinket_featherfallframe").SubCategory =				ITEMSUBCAT_TRINKETS_PERFORMANCE
+GM:AddPointShopItem("aimcomp",			ITEMCAT_TRINKETS,		30,				"trinket_aimcomp").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("pulseampii",		ITEMCAT_TRINKETS,		30,				"trinket_pulseampii").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("extendedmag",		ITEMCAT_TRINKETS,		30,				"trinket_extendedmag").SubCategory =					ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("vitpackageii",		ITEMCAT_TRINKETS,		30,				"trinket_vitpackageii").SubCategory =					ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("cardpackageii",	ITEMCAT_TRINKETS,		30,				"trinket_cardpackageii").SubCategory =					ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("regenimplant",		ITEMCAT_TRINKETS,		30,				"trinket_regenimplant").SubCategory =					ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("barbedarmor",		ITEMCAT_TRINKETS,		30,				"trinket_barbedarmor").SubCategory =					ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("blueprintsii",		ITEMCAT_TRINKETS,		30,				"trinket_blueprintsii").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("curativeii",		ITEMCAT_TRINKETS,		30,				"trinket_curativeii").SubCategory =						ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("remedy",			ITEMCAT_TRINKETS,		30,				"trinket_remedy").SubCategory =							ITEMSUBCAT_TRINKETS_SUPPORT
 -- Tier 4
-GM:AddPointShopItem("hemoadrenaliii",	ITEMCAT_TRINKETS,		50,				"trinket_hemoadrenaliii").SubCategory =							ITEMSUBCAT_TRINKETS_MELEE
-GM:AddPointShopItem("ammoband",			ITEMCAT_TRINKETS,		50,				"trinket_ammovestiii").SubCategory =							ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("resonance",		ITEMCAT_TRINKETS,		50,				"trinket_resonance").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("cryoindu",			ITEMCAT_TRINKETS,		50,				"trinket_cryoindu").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("refinedsub",		ITEMCAT_TRINKETS,		50,				"trinket_refinedsub").SubCategory =								ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("targetingvisiii",	ITEMCAT_TRINKETS,		50,				"trinket_targetingvisoriii").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("eodvest",			ITEMCAT_TRINKETS,		50,				"trinket_eodvest").SubCategory =								ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("composite",		ITEMCAT_TRINKETS,		50,				"trinket_composite").SubCategory =								ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("arsenalpack",		ITEMCAT_TRINKETS,		50,				"trinket_arsenalpack").SubCategory =							ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddPointShopItem("resupplypack",		ITEMCAT_TRINKETS,		50,				"trinket_resupplypack").SubCategory =							ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddPointShopItem("promanifest",		ITEMCAT_TRINKETS,		50,				"trinket_promanifest").SubCategory =							ITEMSUBCAT_TRINKETS_SUPPORT
-GM:AddPointShopItem("opsmatrix",		ITEMCAT_TRINKETS,		50,				"trinket_opsmatrix").SubCategory =								ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("hemoadrenaliii",	ITEMCAT_TRINKETS,		50,				"trinket_hemoadrenaliii").SubCategory =					ITEMSUBCAT_TRINKETS_MELEE
+GM:AddPointShopItem("ammoband",			ITEMCAT_TRINKETS,		50,				"trinket_ammovestiii").SubCategory =					ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("resonance",		ITEMCAT_TRINKETS,		50,				"trinket_resonance").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("cryoindu",			ITEMCAT_TRINKETS,		50,				"trinket_cryoindu").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("refinedsub",		ITEMCAT_TRINKETS,		50,				"trinket_refinedsub").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("targetingvisiii",	ITEMCAT_TRINKETS,		50,				"trinket_targetingvisoriii").SubCategory =				ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("eodvest",			ITEMCAT_TRINKETS,		50,				"trinket_eodvest").SubCategory =						ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("composite",		ITEMCAT_TRINKETS,		50,				"trinket_composite").SubCategory =						ITEMSUBCAT_TRINKETS_DEFENSIVE
+GM:AddPointShopItem("arsenalpack",		ITEMCAT_TRINKETS,		50,				"trinket_arsenalpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("resupplypack",		ITEMCAT_TRINKETS,		50,				"trinket_resupplypack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("promanifest",		ITEMCAT_TRINKETS,		50,				"trinket_promanifest").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("opsmatrix",		ITEMCAT_TRINKETS,		50,				"trinket_opsmatrix").SubCategory =						ITEMSUBCAT_TRINKETS_SUPPORT
 -- Tier 5
-GM:AddPointShopItem("supasm",			ITEMCAT_TRINKETS,		70,				"trinket_supasm").SubCategory =									ITEMSUBCAT_TRINKETS_OFFENSIVE
-GM:AddPointShopItem("pulseimpedance",	ITEMCAT_TRINKETS,		70,				"trinket_pulseimpedance").SubCategory =							ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("supasm",			ITEMCAT_TRINKETS,		70,				"trinket_supasm").SubCategory =							ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("pulseimpedance",	ITEMCAT_TRINKETS,		70,				"trinket_pulseimpedance").SubCategory =					ITEMSUBCAT_TRINKETS_OFFENSIVE
+-- Tier 6
+GM:AddPointShopItem("dmgbooster",		ITEMCAT_TRINKETS,		100,			"trinket_dmgbooster").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
 
 GM:AddPointShopItem("flashbomb",		ITEMCAT_OTHER,			25,				"weapon_zs_flashbomb")
 GM:AddPointShopItem("molotov",			ITEMCAT_OTHER,			30,				"weapon_zs_molotov")
@@ -636,52 +640,50 @@ GM:AddPointShopItem("nanitecloud",		ITEMCAT_OTHER,			40,				"weapon_zs_naniteclo
 item.SkillRequirement = SKILL_U_NANITECLOUD
 
 -- ZS Mutations
-GM:AddMutationItem("m_zombie_health", "Zombie Health Upgrade", "Increases health by 6.5%.", CATEGORY_MUTATIONS, 100, function(pl)
+GM:AddMutation("m_zombie_health", "Zombie Health Upgrade", "Increases health by 6.5%.", CATEGORY_MUTATIONS, 100, function(pl)
 	pl.MutationModifiers["zombie_health"] = pl.MutationModifiers["zombie_health"] + 0.065
 	return true
 end, true, 50, 4)
 
-GM:AddMutationItem("m_zombie_barricadedamage1", "Barricade Damage Upgrade I", "Increases damage to barricades by 4%", CATEGORY_MUTATIONS, 200, function(pl)
+GM:AddMutation("m_zombie_barricadedamage1", "Barricade Damage Upgrade I", "Increases damage to barricades by 4%", CATEGORY_MUTATIONS, 200, function(pl)
 	pl.MutationModifiers["barricade_damage"] = pl.MutationModifiers["barricade_damage"] + 0.04
 	return true
 end, true, false, 1)
 
-GM:AddMutationItem("m_zombie_barricadedamage2", "Barricade Damage Upgrade II", "Increases damage to barricades by 6%", CATEGORY_MUTATIONS, 325, function(pl)
+GM:AddMutation("m_zombie_barricadedamage2", "Barricade Damage Upgrade II", "Increases damage to barricades by 6%", CATEGORY_MUTATIONS, 325, function(pl)
 	pl.MutationModifiers["barricade_damage"] = pl.MutationModifiers["barricade_damage"] + 0.06
 	return true
 end, true, false, 1)
 
 
-GM:AddMutationItem("m_zombie_bloodarmordamage1", "Blood Armor Destroyer I", "Increases damage vs blood armor by 6%", CATEGORY_MUTATIONS, 275, function(pl)
+GM:AddMutation("m_zombie_bloodarmordamage1", "Blood Armor Destroyer I", "Increases damage vs blood armor by 6%", CATEGORY_MUTATIONS, 275, function(pl)
 	pl.MutationModifiers["bloodarmor_damage"] = pl.MutationModifiers["bloodarmor_damage"] + 0.06
 	return true
 end, true, false, 1)
 
 
-GM:AddMutationItem("m_zombie_bloodarmordamage2", "Blood Armor Destroyer II", "Increases damage vs blood armor by 9%", CATEGORY_MUTATIONS, 450, function(pl)
+GM:AddMutation("m_zombie_bloodarmordamage2", "Blood Armor Destroyer II", "Increases damage vs blood armor by 9%", CATEGORY_MUTATIONS, 450, function(pl)
 	pl.MutationModifiers["bloodarmor_damage"] = pl.MutationModifiers["bloodarmor_damage"] + 0.09
 	return true
 end, true, false, 1)
 
-GM:AddMutationItem("m_token_converter", "Token Converter", "Convert Zombie tokens to 15XP.", CATEGORY_MISCMUTATIONS, 150, function(pl)
+GM:AddMutation("m_token_converter", "Token Converter", "Convert Zombie tokens to 15XP.", CATEGORY_MISCMUTATIONS, 150, function(pl)
 	pl:AddZSXP(15)
 	return true
 end, false, 65, 5)
 
-GM:AddMutationItem("m_spawn_as_a_boss", "Boss Zombie", "Spawn as a boss zombie.", CATEGORY_MISCMUTATIONS, 800, function(pl)
-	if pl:GetZombieClassTable().Boss then
-		GAMEMODE:ConCommandErrorMessage(pl, "You are already a boss zombie!")
+GM:AddMutation("m_spawn_as_a_miniboss", "Miniboss Zombie", "Spawn as a miniboss zombie.", CATEGORY_MISCMUTATIONS, 135, function(pl)
+	if pl:GetZombieClassTable().MiniBoss and pl:Alive() then
+		GAMEMODE:ConCommandErrorMessage(pl, "You are already a miniboss zombie!")
 		return false
 	elseif not GAMEMODE:GetWaveActive() then
 		GAMEMODE:ConCommandErrorMessage(pl, "Wave is currently not active!")
 		return false
 	end
 
-	local lastbosswave = GAMEMODE.LastBossZombieSpawned
-	GAMEMODE:SpawnBossZombie(pl)
-	GAMEMODE.LastBossZombieSpawned = lastbosswave --prevent from next wave boss not being able to spawn
+	GAMEMODE:SpawnMiniBossZombie(pl)
 	return true
-end, true, 50)
+end, true, 15, math.huge)
 
 -- These are the honorable mentions that come at the end of the round.
 
@@ -709,6 +711,7 @@ GM.HonorableMentions[HM_STRENGTHDMG] = {Name = "Alchemist", String = "is what %s
 GM.HonorableMentions[HM_BARRICADEDESTROYER] = {Name = "Barricade Destroyer", String = "goes to %s for doing %d damage to barricades.", Callback = genericcallback, Color = COLOR_LIMEGREEN}
 GM.HonorableMentions[HM_NESTDESTROYER] = {Name = "Nest Destroyer", String = "goes to %s for destroying %d nests.", Callback = genericcallback, Color = COLOR_LIMEGREEN}
 GM.HonorableMentions[HM_NESTMASTER] = {Name = "Nest Master", String = "goes to %s for having %d zombies spawn through their nest.", Callback = genericcallback, Color = COLOR_LIMEGREEN}
+GM.HonorableMentions[HM_MOSTPOINTSGAINED] = {Name = "Most Points gained", String = "goes to %s for gaining %d points this round.", Callback = genericcallback, Color = COLOR_CYAN}
 
 -- Don't let humans use these models because they look like undead models. Must be lower case.
 GM.RestrictedModels = {
@@ -789,6 +792,30 @@ cvars.AddChangeCallback("zs_zombiedamagemultiplier", function(cvar, oldvalue, ne
 	GAMEMODE.ZombieDamageMultiplier = math.ceil(100 * (tonumber(newvalue) or 1)) * 0.01
 end)
 
+-- Used for either faster attack rate, or slower.
+GM.ZombieAttackRateMultiplier = math.Round(CreateConVar("zs_zombieattackratemultiplier", "1", FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Scale amount of zombie attack fire delay."):GetFloat(), 2)
+cvars.AddChangeCallback("zs_zombieattackratemultiplier", function(cvar, oldvalue, newvalue)
+	GAMEMODE.ZombieAttackRateMultiplier = math.ceil(100 * (tonumber(newvalue) or 1)) * 0.01
+end)
+
+-- Higher value - higher damage zombies can deal.
+GM.ZombieDamageDealtMultiplier = math.Round(CreateConVar("zs_zombiedamagedealtmultiplier", "1", FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Scales the amount of damage that zombies can deal to anything."):GetFloat(), 2)
+cvars.AddChangeCallback("zs_zombiedamagedealtmultiplier", function(cvar, oldvalue, newvalue)
+	GAMEMODE.ZombieDamageDealtMultiplier = math.ceil(100 * (tonumber(newvalue) or 1)) * 0.01
+end)
+
+-- Game feeling too easy? Higher value - more health (multiplicative)
+GM.ZombieHealthMultiplier = math.Round(CreateConVar("zs_zombiehealthmultiplier", "1", FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Zombie health will be scaled by this value."):GetFloat(), 2)
+cvars.AddChangeCallback("zs_zombiehealthmultiplier", function(cvar, oldvalue, newvalue)
+	GAMEMODE.ZombieHealthMultiplier = math.ceil(100 * (tonumber(newvalue) or 1)) * 0.01
+end)
+
+-- Are some players pointfarming and is just unacceptable? Just change those values!
+GM.ZombiePointGainMultiplier = math.Round(CreateConVar("zs_zombiepointgainmultiplier", "1", FCVAR_REPLICATED + FCVAR_ARCHIVE + FCVAR_NOTIFY, "Point gain from zombies will be scaled by this value. This does not affect XP gaining."):GetFloat(), 2)
+cvars.AddChangeCallback("zs_zombiepointgainmultiplier", function(cvar, oldvalue, newvalue)
+	GAMEMODE.ZombiePointGainMultiplier = math.ceil(100 * (tonumber(newvalue) or 1)) * 0.01
+end)
+
 GM.TimeLimit = CreateConVar("zs_timelimit", "15", FCVAR_ARCHIVE + FCVAR_NOTIFY, "Time in minutes before the game will change maps. It will not change maps if a round is currently in progress but after the current round ends. -1 means never switch maps. 0 means always switch maps."):GetInt() * 60
 cvars.AddChangeCallback("zs_timelimit", function(cvar, oldvalue, newvalue)
 	GAMEMODE.TimeLimit = tonumber(newvalue) or 15
@@ -806,9 +833,15 @@ end)
 
 -- Initial length for wave 1.
 GM.WaveOneLength = 210 --220
+-- Default: 210
 
 -- Add this many seconds for each additional wave.
 GM.TimeAddedPerWave = 15
+-- Default: 15
+
+-- Max wave duration. Useful for endless mode.
+GM.WaveLengthMax = 400
+-- Default: 400
 
 -- New players are put on the zombie team if the current wave is this or higher. Also makes them still able to use worth menu before this wave. Do not put it lower than 1 or you'll break the game.
 GM.NoNewHumansWave = 3 --2
@@ -818,15 +851,19 @@ GM.NoSuicideWave = 0
 
 -- How long 'wave 0' should last in seconds. This is the time you should give for new players to join and get ready. (There is extra 40 seconds on first round of map for players to load)
 GM.WaveZeroLength = 170 --150
+-- Default: 170
 
 -- Time humans have between waves to do stuff without NEW zombies spawning. Any dead zombies will be in spectator (crow) view and any living ones will still be living.
 GM.WaveIntermissionLength = 45
+-- Default: 45
 
 -- Added wave intermission length per wave.
 GM.TimeAddedPerWaveIntermission = 7.5
+-- Default: 7.5
 
 -- Max wave intermission length. Useful for endless mode.
 GM.WaveIntermissionLengthMax = 75
+-- Default: 75
 
 -- Time in seconds between end round and next map.
 GM.EndGameTime = 35
@@ -837,12 +874,9 @@ GM.SurvivalClips = 4 --2
 -- How long do humans have to wait before being able to get more ammo from a resupply box?
 GM.ResupplyBoxCooldown = 60
 
--- Put your unoriginal, 5MB Rob Zombie and Metallica music here.
+-- Put your unoriginal, 5MB Rob Zombie and Metallica music here. (Now accepts table values)
 GM.LastHumanSound = {
 	Sound("zombiesurvival/lasthuman.ogg"),
-	Sound("zombiesurvival/lasthuman.ogg"),
-
-	Sound("lasthuman_songs/black ops - zombies.mp3")
 }
 
 -- Sound played when humans all die. (NEW: Now supports table values for those below, choosing sound randomly)
@@ -881,12 +915,16 @@ GM.PointSaving = 0
 -- HIGHLY suggested that this is on if you enable point saving. Always false if objective map, zombie escape, classic mode, or wave number is changed by the map.
 GM.LockItemTiers = false
 
+-- Should only 
+GM.LockItemsWaveUnlockOnly = false
+
 -- Don't save more than this amount of points. 0 for infinite.
 GM.PointSavingLimit = 0
 
 -- For Classic Mode
 GM.WaveIntermissionLengthClassic = 20
 GM.WaveOneLengthClassic = 120
+GM.WaveLengthMaxClassic = 250
 GM.TimeAddedPerWaveClassic = 10
 GM.TimeAddedPerWaveIntermissionClassic = 1
 GM.WaveIntermissionLengthMaxClassic = 25
@@ -910,11 +948,17 @@ GM.ClassicZombieClass = "Classic Zombie"
 -- Enable or disable difficulty by default
 GM.DifficultyEnabledByDefault = true
 
--- Below is the options for self-redeeming. It is MORE configurable than D3Bot's self-redeeming system.
--- NOTE: Using D3bot's self-redeeming system may conflict with the current  self-redeeming system.
+-- Allow players voting for endless mode.
+GM.AllowEndlessModeVoting = true
 
--- Enable self-redeeming. HIGHLY RECOMMENDED TO USE WHEN USING BOTS, ELSE IT'S NOT RECOMMENDED!
-GM.CanSelfRedeem = false
+-- Should automatically disable endless mode on next round? (in progress)
+GM.ShouldDisableEndlessModeOnNextRound = true
+
+-- Below is the options for self-redeeming. It is MORE configurable than D3Bot's self-redeeming system.
+-- NOTE: Using D3bot's self-redeeming system may conflict with the current self-redeeming system.
+
+-- Enable self-redeeming. HIGHLY RECOMMENDED TO USE WHEN USING BOTS, ELSE IT'S NOT RECOMMENDED! (Default: false)
+GM.CanUseSelfRedeem = false
 
 -- Max wave to being able to self-redeem.
 GM.MaxSelfRedeemWave = GM.NoNewHumansWave - 1 --2

@@ -18,6 +18,7 @@ CLASS.Health = 220
 CLASS.DynamicHealth = 3
 CLASS.Speed = 180
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.VoicePitch = 0.55

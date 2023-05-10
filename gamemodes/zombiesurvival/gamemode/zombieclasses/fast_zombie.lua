@@ -16,6 +16,7 @@ CLASS.DynamicHealth = 2
 CLASS.Speed = 255
 CLASS.SWEP = "weapon_zs_fastzombie"
 
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio
 CLASS.Points = CLASS.Health/GM.NoHeadboxZombiePointRatio
 
 CLASS.CanTaunt = true

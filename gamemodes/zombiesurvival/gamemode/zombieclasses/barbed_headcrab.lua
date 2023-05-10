@@ -6,6 +6,7 @@ CLASS.Description = "description_barbed_headcrab"
 CLASS.Help = "controls_barbed_headcrab"
 
 CLASS.Health = 100
+CLASS.DamageNeedPerPoint = GM.HeadcrabZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HeadcrabZombiePointRatio
 CLASS.Speed = 160
 

@@ -14,6 +14,7 @@ CLASS.Health = 220
 CLASS.Speed = 180
 CLASS.Revives = false
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.SWEP = "weapon_zs_zombie_gore_blaster"
@@ -33,36 +34,35 @@ function CLASS:PlayDeathSound(pl)
 end
 
 if SERVER then
+	function CLASS:ReviveCallback(pl, attacker, dmginfo)
+		return false
+	end
 
-function CLASS:ReviveCallback(pl, attacker, dmginfo)
-	return false
+	function CLASS:ProcessDamage(pl, dmginfo)
+		return false
+	end
+
+	function CLASS:OnKilled(pl, attacker, inflictor, suicide, headshot, dmginfo, assister)
+		if suicide then return end
+
+		local pos = pl:WorldSpaceCenter()
+
+		local effectdata = EffectData()
+			effectdata:SetOrigin(pos)
+		util.Effect("gore_blast", effectdata, true)
+			effectdata:SetEntity(pl)
+		util.Effect("gib_player", effectdata, true, true)
+
+		pl:GodEnable()
+		util.BlastDamageEx(pl:GetActiveWeapon() or pl, pl, pos, 105, 3, DMG_GENERIC, 0.7)
+		pl:GodDisable()
+
+		return true
+	end
+
+	return
 end
 
-function CLASS:ProcessDamage(pl, dmginfo)
-	return false
-end
-
-function CLASS:OnKilled(pl, attacker, inflictor, suicide, headshot, dmginfo, assister)
-	if suicide then return end
-
-	local pos = pl:WorldSpaceCenter()
-
-	local effectdata = EffectData()
-		effectdata:SetOrigin(pos)
-	util.Effect("gore_blast", effectdata, true)
-		effectdata:SetEntity(pl)
-	util.Effect("gib_player", effectdata, true, true)
-
-	pl:GodEnable()
-	util.BlastDamageEx(pl:GetActiveWeapon() or pl, pl, pos, 105, 3, DMG_GENERIC, 0.7)
-	pl:GodDisable()
-
-	return true
-end
-
-end
-
-if not CLIENT then return end
 
 CLASS.Icon = "zombiesurvival/killicons/zombie"
 CLASS.IconColor = Color(255, 0, 0)

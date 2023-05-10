@@ -14,6 +14,9 @@ function meta:ProcessDamage(dmginfo)
 	if self.DamageVulnerability and not dmgbypass then
 		dmginfo:ScaleDamage(self.DamageVulnerability)
 	end
+	if self.AllDamageTakenMul then
+		dmginfo:ScaleDamage(self.AllDamageTakenMul)
+	end
 
 	if attacker.AttackerForward and attacker.AttackerForward:IsValid() then
 		dmginfo:SetAttacker(attacker.AttackerForward)
@@ -41,6 +44,8 @@ function meta:ProcessDamage(dmginfo)
 			dmginfo:ScaleDamage(GAMEMODE:GetZombieDamageScale(dmginfo:GetDamagePosition(), self))
 		end
 
+		dmginfo:ScaleDamage(1 / (1 + GAMEMODE:GetDifficulty() * 0.01))
+
 		self.ShouldFlinch = true
 
 		if attacker:IsValidLivingHuman() and inflictor:IsValid() and inflictor == attacker:GetActiveWeapon() then
@@ -58,7 +63,7 @@ function meta:ProcessDamage(dmginfo)
 				end
 
 				if attacker:IsSkillActive(SKILL_HEAVYSTRIKES) and not self:GetZombieClassTable().Boss and (wep.IsFistWeapon and attacker:IsSkillActive(SKILL_CRITICALKNUCKLE) or wep.MeleeKnockBack > 0) then
-					attacker:TakeSpecialDamage(math.Clamp(damage * (wep.Unarmed and 0.25 or 0.06), 0, 20), DMG_SLASH, self, self:GetActiveWeapon())
+					attacker:TakeSpecialDamage(math.Clamp(damage * 0.06, 0, 20), DMG_SLASH, self, self:GetActiveWeapon())
 				end
 
 				if attacker:IsSkillActive(SKILL_BLOODLUST) and attacker:GetPhantomHealth() > 0 and attacker:Health() < attackermaxhp then
@@ -68,7 +73,7 @@ function meta:ProcessDamage(dmginfo)
 				end
 
 				if attacker:HasTrinket("sharpkit") then
---					dmginfo:ScaleDamage(1 + self:GetFlatLegDamage()/75) -- useless??
+					dmginfo:ScaleDamage(1 + self:GetFlatLegDamage()/75)
 				end
 
 				if wep.Culinary and attacker:IsSkillActive(SKILL_MASTERCHEF) and math.random(9) == 1 then
@@ -180,17 +185,13 @@ function meta:ProcessDamage(dmginfo)
 				end
 
 				if not dmgbypass then
-					local damagemul = (self:IsSkillActive(SKILL_LASTSTAND) and self:Health() <= self:GetMaxHealth() * 0.25 and -0.1 or 0)
-					+ (self.IsFragility and 0.04 * math.max(0, GAMEMODE:GetWave() - 1) or 0)
-					-- 2.5% melee damage taken max since we don't want player to be fully immune from melee
-					damagemul = math.max(0.025, (self.MeleeDamageTakenMul or 1) + damagemul)
-					dmginfo:ScaleDamage(damagemul)
+					local meleedmgmul = (self:IsSkillActive(SKILL_LASTSTAND) and self:Health() <= self:GetMaxHealth() * 0.25 and -0.1 or 0)
+					+ (self.IsFragility and 0.04 * math.max(0, GAMEMODE:GetWave()) or 0)
+					-- 4% melee damage taken max since we don't want player to be fully immune from melee
+					meleedmgmul = math.max(0.04, (self.MeleeDamageTakenMul or 1) + meleedmgmul)
+					dmginfo:ScaleDamage(meleedmgmul)
 				end
-/*
-				if self:IsSkillActive(SKILL_LASTSTAND) and self:Health() <= self:GetMaxHealth() * 0.25 then
-					dmginfo:ScaleDamage(0.9)
-				end
-*/
+
 				if self:IsSkillActive(SKILL_BACKPEDDLER) then
 					self:AddLegDamage(8)
 				end
@@ -224,7 +225,7 @@ function meta:ProcessDamage(dmginfo)
 				end
 			end
 
-			local ratio = math.min(0.5 + self.BloodArmorDamageReductionAdd + (self:IsSkillActive(SKILL_IRONBLOOD) and self:Health() <= self:GetMaxHealth() * 0.5 and 0.25 or 0), 1)
+			local ratio = math.min(0.5 + self.BloodArmorDamageReductionAdd + (self:IsSkillActive(SKILL_IRONBLOOD) and self:Health() <= self:GetMaxHealth() * 0.5 and 0.2 or 0), 1)
 			local absorb = math.min(self:GetBloodArmor(), damage * ratio)
 			local absorbed = absorb * (1 + (attacker.MutationModifiers and attacker.MutationModifiers["bloodarmor_damage"] or 0))
 			dmginfo:SetDamage(damage - absorb)
@@ -291,6 +292,78 @@ function meta:HasWon()
 	return false
 end
 
+function meta:GetMiniBossZombieIndex()
+	local minibossclasses = {}
+	for _, classtable in pairs(GAMEMODE.ZombieClasses) do
+		if classtable.MiniBoss then
+			table.insert(minibossclasses, classtable.Index)
+		end
+	end
+
+	if #minibossclasses == 0 then return -1 end
+
+	local desired = self:GetInfo("zs_minibossclass") or ""
+
+	if self:IsBot() then
+--		desired = table.Random({})
+	end
+
+	if GAMEMODE:IsBabyMode() then
+--		desired = "Giga Gore Child"
+		return
+	elseif desired == "[RANDOM]" or desired == "" then
+		desired = "Eradicator (Miniboss)"
+	end
+
+	local minibossindex
+	for _, classindex in pairs(minibossclasses) do
+		local classtable = GAMEMODE.ZombieClasses[classindex]
+		if string.lower(classtable.Name) == string.lower(desired) then
+			minibossindex = classindex
+			break
+		end
+	end
+
+	return minibossindex or minibossclasses[1]
+end
+
+function meta:GetSemiBossZombieIndex()
+	local semibossclasses = {}
+	for _, classtable in pairs(GAMEMODE.ZombieClasses) do
+		if classtable.SemiBoss then
+			table.insert(semibossclasses, classtable.Index)
+		end
+	end
+
+	if #semibossclasses == 0 then return -1 end
+
+	local desired = self:GetInfo("zs_semibossclass") or ""
+
+	if self:IsBot() then
+		desired = table.Random({
+			"The Butcher",
+		})
+	end
+
+	if GAMEMODE:IsBabyMode() then
+--		desired = "Giga Gore Child"
+		return
+--	elseif desired == "[RANDOM]" or desired == "" then
+--		desired = "Nightmare"
+	end
+
+	local semibossindex
+	for _, classindex in pairs(semibossclasses) do
+		local classtable = GAMEMODE.ZombieClasses[classindex]
+		if string.lower(classtable.Name) == string.lower(desired) then
+			semibossindex = classindex
+			break
+		end
+	end
+
+	return semibossindex or semibossclasses[1]
+end
+
 function meta:GetBossZombieIndex()
 	local bossclasses = {}
 	for _, classtable in pairs(GAMEMODE.ZombieClasses) do
@@ -302,6 +375,16 @@ function meta:GetBossZombieIndex()
 	if #bossclasses == 0 then return -1 end
 
 	local desired = self:GetInfo("zs_bossclass") or ""
+
+	if self:IsBot() then
+		desired = table.Random({
+			"Nightmare",
+			"Ancient Nightmare",
+			"Red Marrow",
+			"The Grave Digger"
+		})
+	end
+
 	if GAMEMODE:IsBabyMode() then
 		desired = "Giga Gore Child"
 	elseif desired == "[RANDOM]" or desired == "" then
@@ -318,6 +401,36 @@ function meta:GetBossZombieIndex()
 	end
 
 	return bossindex or bossclasses[1]
+end
+
+function meta:GetSuperBossZombieIndex()
+	local superbossclasses = {}
+	for _, classtable in pairs(GAMEMODE.ZombieClasses) do
+		if classtable.SuperBoss then
+			table.insert(superbossclasses, classtable.Index)
+		end
+	end
+
+	if #superbossclasses == 0 then return -1 end
+
+	local desired = self:GetInfo("zs_superbossclass") or ""
+	if GAMEMODE:IsBabyMode() then
+--		desired = "Giga Frost Gore Child"
+		desired = "Reborn Nightmare"
+	elseif desired == "[RANDOM]" or desired == "" then
+		desired = "Reborn Nightmare"
+	end
+
+	local superbossindex
+	for _, classindex in pairs(superbossclasses) do
+		local classtable = GAMEMODE.ZombieClasses[classindex]
+		if string.lower(classtable.Name) == string.lower(desired) then
+			superbossindex = classindex
+			break
+		end
+	end
+
+	return superbossindex or superbossclasses[1]
 end
 
 function meta:ShouldReviveFrom(dmginfo, hullzplane)
@@ -345,9 +458,9 @@ function meta:NearestArsenalCrateOwnedByOther()
 	end
 end
 
-local OldLastHitGroup = meta.LastHitGroup
+meta.OldLastHitGroup = meta.OldLastHitGroup or meta.LastHitGroup
 function meta:LastHitGroup()
-	return self.m_LastHitGroupUnset and CurTime() <= self.m_LastHitGroupUnset and self.m_LastHitGroup or OldLastHitGroup(self)
+	return self.m_LastHitGroupUnset and CurTime() <= self.m_LastHitGroupUnset and self.m_LastHitGroup or self:OldLastHitGroup()
 end
 
 function meta:SetLastHitGroup(hitgroup)
@@ -644,16 +757,16 @@ function meta:GiveEmptyWeapon(weptype)
 	end
 end
 
-local OldGive = meta.Give
+meta.OldGive = meta.OldGive or meta.Give
 function meta:Give(weptype, noammo)
 	if P_Team(self) ~= TEAM_HUMAN then
-		return OldGive(self, weptype, noammo)
+		return self:OldGive(weptype, noammo)
 	end
 
 	local weps = self:GetWeapons()
 	local autoswitch = #weps == 1 and weps[1]:IsValid() and weps[1].AutoSwitchFrom
 
-	local ret = OldGive(self, weptype, noammo)
+	local ret = self:OldGive(weptype, noammo)
 
 	if autoswitch then
 		self:SelectWeapon(weptype)
@@ -832,7 +945,7 @@ local function SetModel(pl, mdl)
 	end
 end
 
-meta.OldCreateRagdoll = meta.CreateRagdoll
+meta.OldCreateRagdoll = meta.OldCreateRagdoll or meta.CreateRagdoll
 function meta:CreateRagdoll()
 	local status = self.status_overridemodel
 	if status and status:IsValid() then
@@ -1002,7 +1115,7 @@ function meta:Resupply(owner, obj)
 end
 
 -- Lets other players know about our maximum health.
-meta.OldSetMaxHealth = FindMetaTable("Entity").SetMaxHealth
+meta.OldSetMaxHealth = meta.OldSetMaxHealth or FindMetaTable("Entity").SetMaxHealth
 function meta:SetMaxHealth(num)
 	num = math.ceil(num)
 	self:SetDTInt(0, num)
@@ -1010,7 +1123,7 @@ function meta:SetMaxHealth(num)
 end
 
 function meta:PointCashOut(ent, fmtype)
-	if self.PointQueue >= 1 and P_Team(self) == TEAM_HUMAN then
+	if self.PointQueue > 0 and P_Team(self) == TEAM_HUMAN then
 		local points = self.PointQueue --math.floor(self.PointQueue)
 		self.PointQueue = self.PointQueue - points
 
@@ -1045,21 +1158,21 @@ function meta:AddPoints(points, floatingscoreobject, fmtype, nomul)
 	end
 
 	self:AddFrags(wholepoints)
-	self:AddMScore(wholepoints)
 	self:SetPoints(self:GetPoints() + wholepoints)
-	for i=1,3 do
-		self:GiveAchievementProgress("pointfarmer_"..i, wholepoints)
---	self:GiveAchievementProgress("pointfarmer_2", wholepoints)
---	self:GiveAchievementProgress("pointfarmer_3", wholepoints)
-	end
+
+	self:GiveAchievementProgress("pointfarmer_1", wholepoints)
+	self:GiveAchievementProgress("pointfarmer_2", wholepoints)
+	self:GiveAchievementProgress("pointfarmer_3", wholepoints)
 
 	if self.PointsVault then
 		self.PointsVault = self.PointsVault + wholepoints * GAMEMODE.PointSaving
 	end
 
-	if floatingscoreobject then
+	if floatingscoreobject and wholepoints >= 1 then
 		self:FloatingScore(floatingscoreobject, "floatingscore", wholepoints, fmtype or FM_NONE)
 	end
+
+	self.PointsGained = self.PointsGained + wholepoints
 
 /*
 	local xp = wholepoints
@@ -1095,7 +1208,7 @@ function meta:AddQueuePoints(points, pointgaintype)
 	local allpoints = pointgaintype == "all"
 	if pointgaintype ~= "none" then
 
-		-- maybe next update.
+		-- maybe in future update.
 /*
 		if allpoints or pointgaintype == "damage" then
 --			points = points * 1
@@ -1331,10 +1444,8 @@ function meta:Redeem(silent, noequip)
 	local frags = self:Frags()
 	if frags < 0 then
 		self:SetFrags(frags * 5)
-		self:SetMScore(frags * 5)
 	else
 		self:SetFrags(0)
-		self:SetMScore(0)
 	end
 	self:SetDeaths(0)
 
@@ -1373,10 +1484,8 @@ function meta:SelfRedeem(silent, noequip)
 	local frags = self:Frags()
 	if frags < 0 then
 		self:SetFrags(frags * 5)
-		self:SetMScore(frags * 5)
 	else
 		self:SetFrags(0)
-		self:SetMScore(0)
 	end
 	self:SetDeaths(0)
 
@@ -1419,13 +1528,11 @@ end
 
 function meta:TakeBrains(amount)
 	self:AddFrags(-amount)
-	self:AddMScore(-amount)
 	self.BrainsEaten = self.BrainsEaten - 1
 end
 
 function meta:AddBrains(amount)
 	self:AddFrags(amount)
-	self:AddMScore(amount)
 	self.BrainsEaten = self.BrainsEaten + 1
 	self:CheckRedeem()
 end
@@ -1467,7 +1574,6 @@ end
 
 function meta:GivePointPenalty(amount)
 	self:SetFrags(self:Frags() - amount)
-	self:SetMScore(self:GetMScore() - amount)
 
 	net.Start("zs_penalty")
 	net.WriteUInt(amount, 16)
@@ -1582,7 +1688,7 @@ function meta:SetLastAttacker(ent)
 	end
 end
 
-meta.OldUnSpectate = meta.UnSpectate
+meta.OldUnSpectate = meta.OldUnSpectate or meta.UnSpectate
 function meta:UnSpectate()
 	if self:GetObserverMode() ~= OBS_MODE_NONE then
 		self:OldUnSpectate(obsm)
@@ -1883,4 +1989,16 @@ function meta:BarricadeExpertPrecedence(otherpl)
 	end
 
 	return -1
+end
+
+meta.OldAddFrags = meta.OldAddFrags or meta.AddFrags
+function meta:AddFrags(frags)
+	self:SetNWInt("frags_score", self:Frags() + tonumber(frags))
+	self:OldAddFrags(tonumber(frags))
+end
+
+meta.OldSetFrags = meta.OldSetFrags or meta.SetFrags
+function meta:SetFrags(frags)
+	self:SetNWInt("frags_score", frags)
+	self:OldSetFrags(frags)
 end

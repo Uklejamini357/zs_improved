@@ -8,7 +8,7 @@ local function ContentsPaint(self, w, h)
 	if lp:IsValid() then
 		local screenscale = BetterScreenScale()
 		local health = math.max(lp:Health(), 0)
-		local healthperc = math.Clamp(health / lp:GetMaxHealthEx(true), 0, 1)
+		local healthperc = math.Clamp(health / lp:GetMaxHealthEx(), 0, 1)
 		local wid, hei = 300 * screenscale, 18 * screenscale
 
 		colHealth.r = (1 - healthperc) * 180
@@ -20,7 +20,7 @@ local function ContentsPaint(self, w, h)
 
 		local subwidth = healthperc * wid
 
-		draw.SimpleTextBlurry(health, "ZSHUDFont", x + wid + 12 * screenscale, y + 8 * screenscale, colHealth, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleTextBlurry(health, string.len(health) > 8 and "ZSHUDFontSmall" or "ZSHUDFont", x + wid + 12 * screenscale, y + 8 * screenscale, colHealth, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
 		surface.SetDrawColor(0, 0, 0, 230)
 		surface.DrawRect(x, y, wid, hei)
@@ -36,7 +36,7 @@ local function ContentsPaint(self, w, h)
 		surface.DrawTexturedRect(x + 2 + subwidth - 6, y + 1 - hei/2, 4, hei * 2)
 
 		local phantomhealth = math.max(lp:GetPhantomHealth(), 0)
-		healthperc = math.Clamp(phantomhealth / lp:GetMaxHealthEx(true), 0, 1)
+		healthperc = math.Clamp(phantomhealth / lp:GetMaxHealthEx(), 0, 1)
 
 		colHealth.r = 100
 		colHealth.g = 90
@@ -64,7 +64,8 @@ local function ContentsPaint(self, w, h)
 
 				subwidth = healthperc * wid
 
-				draw.SimpleTextBlurry(Format("%s/%s", bloodarmor, maxbloodarmor), "ZSHUDFontSmall", x + wid + 12 * screenscale, y + 8 * screenscale, colHealth, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				local text = Format("%s/%s", bloodarmor, maxbloodarmor)
+				draw.SimpleTextBlurry(text, string.len(text) > 15 and "ZSHUDFontSmallest" or string.len(text) > 11 and "ZSHUDFontSmaller" or "ZSHUDFontSmall", x + wid + 12 * screenscale, y + 8 * screenscale, colHealth, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
 				surface.SetDrawColor(0, 0, 0, 230)
 				surface.DrawRect(x, y, wid, hei)

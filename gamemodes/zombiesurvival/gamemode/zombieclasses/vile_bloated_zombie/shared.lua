@@ -11,6 +11,7 @@ CLASS.Health = 350
 CLASS.DynamicHealth = 4
 CLASS.Speed = 135
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.SWEP = "weapon_zs_vilebloatedzombie"

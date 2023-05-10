@@ -3,19 +3,20 @@ CLASS.TranslationName = "class_butcher"
 CLASS.Description = "description_butcher"
 CLASS.Help = "controls_butcher"
 
-CLASS.Boss = true
+CLASS.SemiBoss = true -- This will become demiboss soon. (Did you mean: Semiboss)
 
 CLASS.KnockbackScale = 0
 
-CLASS.Health = 1600
-CLASS.DynamicHealth = 75
+CLASS.Health = 900
+CLASS.DynamicHealth = 45
 CLASS.Speed = 215
 
 CLASS.CanTaunt = true
 
-CLASS.FearPerInstance = 1
+CLASS.FearPerInstance = 0.4
 
-CLASS.Points = 30
+CLASS.DamageNeedPerPoint = 45
+CLASS.Points = 0
 
 CLASS.SWEP = "weapon_zs_butcherknifez"
 

@@ -30,6 +30,11 @@ net.Receive("zs_nextboss", function(length)
 	GAMEMODE.NextBossZombieClass = GAMEMODE.ZombieClasses[net.ReadUInt(8)].Name
 end)
 
+net.Receive("zs_nextsuperboss", function(length)
+	GAMEMODE.NextSuperBossZombie = net.ReadEntity()
+	GAMEMODE.NextSuperBossZombieClass = GAMEMODE.ZombieClasses[net.ReadUInt(8)].Name
+end)
+
 net.Receive("zs_zvols", function(length)
 	local volunteers = {}
 	local count = net.ReadUInt(8)
@@ -165,11 +170,11 @@ net.Receive("zs_waveend", function(length)
 		GAMEMODE:CenterNotify(translate.Get("wave_x_is_over_sub"))
 
 		if MySelf:IsValid() and P_Team(MySelf) == TEAM_HUMAN then
-			if MySelf:GetZSSPRemaining() > 0 then
+			if not GAMEMODE.NoNotifyUnusedSP and MySelf:GetZSSPRemaining() > 0 then
 				GAMEMODE:CenterNotify(translate.Format("unspent_skill_points_press_x", input.LookupBinding("gm_showspare1") or "F3"))
 			end
 
-			if GAMEMODE.EndWavePointsBonus > 0 then
+			if GAMEMODE.EndWavePointsBonus > 0 and not MySelf:IsSkillActive(SKILL_POINT_OLD) then
 				local pointsbonus = GAMEMODE.EndWavePointsBonus + (GAMEMODE:GetWave() - 1) * GAMEMODE.EndWavePointsBonusPerWave + (MySelf.EndWavePointsExtra or 0)
 
 				if not MySelf.Scourer then
@@ -194,6 +199,34 @@ net.Receive("zs_gamestate", function(length)
 	gamemode.Call("SetWaveEnd", waveend)
 end)
 
+net.Receive("zs_miniboss_spawned", function(length)
+	local ent = net.ReadEntity()
+	local classindex = net.ReadUInt(8)
+	local classtbl = GAMEMODE.ZombieClasses[classindex]
+	local ki = {killicon = classtbl.SWEP}
+	local kid = {killicon = "default"}
+
+	if ent == MySelf and ent:IsValid() then
+		GAMEMODE:CenterNotify(ki, " ", COLOR_YELLOW, translate.Format("you_are_x", translate.Get(classtbl.TranslationName)), ki)
+	end
+end)
+
+net.Receive("zs_semiboss_spawned", function(length)
+	local ent = net.ReadEntity()
+	local classindex = net.ReadUInt(8)
+	local classtbl = GAMEMODE.ZombieClasses[classindex]
+	local ki = {killicon = classtbl.SWEP}
+	local kid = {killicon = "default"}
+
+	if ent == MySelf and ent:IsValid() then
+		GAMEMODE:CenterNotify(ki, " ", COLOR_YELLOW, translate.Format("you_are_x", translate.Get(classtbl.TranslationName)), ki)
+	elseif ent:IsValid() and P_Team(MySelf) == TEAM_UNDEAD then
+		GAMEMODE:CenterNotify(ki, " ", COLOR_ORANGE, translate.Format("x_has_risen_as_y", ent:Name(), translate.Get(classtbl.TranslationName)), ki)
+	else
+		GAMEMODE:CenterNotify(kid, " ", COLOR_ORANGE, translate.Get("semi_x_has_risen"), kid)
+	end
+end)
+
 net.Receive("zs_boss_spawned", function(length)
 	local ent = net.ReadEntity()
 	local classindex = net.ReadUInt(8)
@@ -202,7 +235,7 @@ net.Receive("zs_boss_spawned", function(length)
 	local kid = {killicon = "default"}
 
 	if ent == MySelf and ent:IsValid() then
-		GAMEMODE:CenterNotify(ki, " ", COLOR_RED, translate.Format("you_are_x", translate.Get(classtbl.TranslationName)), ki)
+		GAMEMODE:CenterNotify(ki, " ", COLOR_RORANGE, translate.Format("you_are_x", translate.Get(classtbl.TranslationName)), ki)
 	elseif ent:IsValid() and P_Team(MySelf) == TEAM_UNDEAD then
 		GAMEMODE:CenterNotify(ki, " ", COLOR_RED, translate.Format("x_has_risen_as_y", ent:Name(), translate.Get(classtbl.TranslationName)), ki)
 	else
@@ -216,6 +249,7 @@ net.Receive("zs_boss_spawned", function(length)
 	GAMEMODE.NextBossZombie = nil
 	GAMEMODE.NextBossZombieClass = nil
 end)
+
 net.Receive("zs_boss_slain", function(length)
 	local ent = net.ReadEntity()
 	local classindex = net.ReadUInt(8)
@@ -228,6 +262,45 @@ net.Receive("zs_boss_slain", function(length)
 
 	if MySelf:IsValid() then
 		MySelf:EmitSound("ambient/atmosphere/cave_hit4.wav", 0, 150)
+	end
+end)
+
+
+net.Receive("zs_superboss_spawned", function(length)
+	local ent = net.ReadEntity()
+	local classindex = net.ReadUInt(8)
+	local classtbl = GAMEMODE.ZombieClasses[classindex]
+	local ki = {killicon = classtbl.SWEP}
+	local kid = {killicon = "default"}
+
+	if ent == MySelf and ent:IsValid() then
+		GAMEMODE:CenterNotify(ki, " ", COLOR_RED, translate.Format("you_are_x", translate.Get(classtbl.TranslationName)), ki)
+	elseif ent:IsValid() and P_Team(MySelf) == TEAM_UNDEAD then
+		GAMEMODE:CenterNotify(ki, " ", COLOR_SOFTRED, translate.Format("x_has_risen_as_y", ent:Name(), translate.Get(classtbl.TranslationName)), ki)
+	else
+		GAMEMODE:CenterNotify(kid, " ", COLOR_SOFTRED, translate.Get("super_x_has_risen"), kid)
+	end
+
+	if MySelf:IsValid() then
+		MySelf:EmitSound(string.format("npc/zombie_poison/pz_alert%d.wav", math.random(1, 2)), 0, math.random(75, 85))
+	end
+
+	GAMEMODE.NextSuperBossZombie = nil
+	GAMEMODE.NextSuperBossZombieClass = nil
+end)
+
+net.Receive("zs_superboss_slain", function(length)
+	local ent = net.ReadEntity()
+	local classindex = net.ReadUInt(8)
+	local classtbl = GAMEMODE.ZombieClasses[classindex]
+	local ki = {killicon = classtbl.SWEP}
+
+	if ent:IsValid() then
+		GAMEMODE:CenterNotify(ki, " ", COLOR_RORANGE, translate.Format("x_has_been_slain_as_y", ent:Name(), translate.Get(classtbl.TranslationName)), ki)
+	end
+
+	if MySelf:IsValid() then
+		MySelf:EmitSound("ambient/atmosphere/cave_hit4.wav", 0, 115)
 	end
 end)
 

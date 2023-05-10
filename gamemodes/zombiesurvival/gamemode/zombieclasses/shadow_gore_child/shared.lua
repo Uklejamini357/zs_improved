@@ -10,6 +10,7 @@ CLASS.Help = "controls_shadow_gore_child"
 CLASS.Health = 15
 CLASS.Speed = 155
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 0.5
 
 CLASS.SWEP = "weapon_zs_shadowgorechild"

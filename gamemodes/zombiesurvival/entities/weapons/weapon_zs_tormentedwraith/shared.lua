@@ -6,7 +6,9 @@ SWEP.PrintName = "Tormented Wraith"
 SWEP.MeleeDelay = 0.4
 SWEP.MeleeReach = 48
 SWEP.MeleeSize = 4.5
-SWEP.MeleeDamage = 20
+SWEP.MeleeDamage = 43
+SWEP.MeleeDamageAlt = 21
+SWEP.MeleeDamageAlt2 = SWEP.MeleeDamage
 SWEP.MeleeDamageType = DMG_SLASH
 SWEP.MeleeAnimationDelay = 0
 
@@ -25,7 +27,7 @@ function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay * armdelay)
 
 	self.MeleeDelay = 0.8
-	self.MeleeDamage = 43
+	self.MeleeDamage = self.MeleeDamageAlt2
 	self:StartSwinging()
 end
 
@@ -37,7 +39,7 @@ function SWEP:SecondaryAttack()
 	self:SetNextPrimaryFire(CurTime() + self.Secondary.Delay * armdelay)
 
 	self.MeleeDelay = 0.4
-	self.MeleeDamage = 21
+	self.MeleeDamage = self.MeleeDamageAlt
 	self:StartSwinging(true)
 end
 

@@ -34,6 +34,7 @@ HM_PACIFIST = 19
 HM_SCARECROW = 20
 HM_NESTDESTROYER = 21
 HM_NESTMASTER = 22
+HM_MOSTPOINTSGAINED = 23
 
 DT_PLAYER_INT_REMORTLEVEL = 5
 DT_PLAYER_INT_XP = 6
@@ -79,6 +80,12 @@ SLOWTYPE_PULSE = 1
 SLOWTYPE_COLD = 2
 SLOWTYPE_FLAME = 3
 
+ZCLASSSELECT_NORMAL = 0
+ZCLASSSELECT_MINIBOSS = 1
+ZCLASSSELECT_SEMIBOSS = 2
+ZCLASSSELECT_BOSS = 3
+ZCLASSSELECT_SUPERBOSS = 4
+
 -- Made because these are constantly swapped in different gmod updates for some bizzare reason.
 TEXT_ALIGN_TOP_REAL = 3
 TEXT_ALIGN_BOTTOM_REAL = 4
@@ -91,7 +98,7 @@ DEFAULT_STEP_SIZE = 18
 DEFAULT_MASS = 80
 DEFAULT_MODELSCALE = 1
 
--- Humans can not carry OR drag anything heavier than this (in kg.)
+-- Humans can not carry OR drag anything heavier than this (in kg.?)
 CARRY_MAXIMUM_MASS = 300
 -- Humans can not carry anything with a volume more than this (OBBMins():Length() + OBBMaxs():Length()).
 CARRY_MAXIMUM_VOLUME = 150
@@ -104,15 +111,17 @@ CARRY_SPEEDLOSS_PERKG = 1.3
 -- but can never be slower than this.
 CARRY_SPEEDLOSS_MINSPEED = 88
 
+
+
 GM.MaxLegDamage = 3
 GM.MaxArmDamage = 3
 
 GM.UtilityKey = IN_SPEED
-GM.MenuKey = IN_WALK -- I would use the spawn menu but it has no IN_ key assignment.
+GM.MenuKey = IN_WALK -- I would use the spawn menu but it has no IN_ key assignment. (Comment: true)
 
-GM.ArsenalCrateCommission = 0.04
+GM.ArsenalCrateCommission = 0.04 -- 
 
-GM.BaseDeploySpeed = 1 -- Put this back to 1 to increase the value of it (but for what??)
+GM.BaseDeploySpeed = 1 -- Put this back to 1 to increase the value of it (Comment: but for what?? weapon draw speed?)
 
 GM.ExtraHealthPerExtraNail = 85 --75
 GM.MaxNails = 4
@@ -129,24 +138,25 @@ GM.HeadcrabZombiePointRatio = 30
 GM.NoHeadboxZombiePointRatio = 38
 GM.TorsoZombiePointRatio = 42
 GM.LegsZombiePointRatio = 37.5
-GM.SkeletonPointRatio = GM.HumanoidZombiePointRatio / 3
-
+GM.SkeletonPointRatio = GM.HumanoidZombiePointRatio / 2.25 -- Nerfed to 2.25 (from 3) due to extreme amount of point gain from skeletal walkers
 GM.NPCZombiePointRatio = 67.5 -- for NPC's
 
 
 SPEED_NORMAL = 225
+SPEED_SLOWEST1 = SPEED_NORMAL - 55
 SPEED_SLOWEST = SPEED_NORMAL - 20
 SPEED_SLOWER = SPEED_NORMAL - 14
 SPEED_SLOW = SPEED_NORMAL - 7
 SPEED_FAST = SPEED_NORMAL + 7
 SPEED_FASTER = SPEED_NORMAL + 14
 SPEED_FASTEST = SPEED_NORMAL + 20
+SPEED_FASTEST1 = SPEED_NORMAL + 28
 
 SPEED_ZOMBIEESCAPE_SLOWEST = 220
 SPEED_ZOMBIEESCAPE_SLOWER = 230
 SPEED_ZOMBIEESCAPE_SLOW = 240
 SPEED_ZOMBIEESCAPE_NORMAL = 250
-SPEED_ZOMBIEESCAPE_ZOMBIE = 260
+SPEED_ZOMBIEESCAPE_ZOMBIE = 265
 
 -- Knockback received from damage in ZE mode
 ZE_KNOCKBACKSCALE = 0.45
@@ -159,11 +169,17 @@ GM.BarricadeHealthMassFactor = 3.625 * 0.85 --3.5 * 0.85
 GM.BarricadeHealthVolumeFactor = 4.125 * 0.85 --4 * 0.85
 GM.BarricadeRepairCapacity = 1.35 --1.25
 
--- Amount of players needed for the boss to spawn. (player bots count too)
+-- Amount of players needed for the boss to spawn. (Comment: player bots count too)
 GM.BossZombiePlayersRequired = 8
 
 -- Amount (in seconds) for the boss to spawn in before wave starts
 GM.BossZombieSpawnBeforeWaveStart = 3
+
+-- Allow superboses to be spawned?
+GM.SuperBossZombies = true
+
+-- Amount of players needed for the super boss to spawn
+GM.SuperBossZombiePlayersRequired = 22
 
 GM.HumanGibs = {
 	Model("models/gibs/HGIBS.mdl"),
@@ -179,14 +195,14 @@ GM.HumanGibs = {
 GM.BannedProps = {
 }
 
--- Quite bugged.
+-- Quite bugged. (i guess?)
 GM.PropHealthMultipliers = {
-	["models/props_c17/door01_left.mdl"] = 1.5,
+	["models/props_c17/door01_left.mdl"] = 1.2,
 }
 
 -- Does not ignore max barricade health.
 GM.BarricadePropHealthMultipliers = {
-	["models/props_c17/door01_left.mdl"] = 1
+	["models/props_c17/door01_left.mdl"] = 1,
 }
 
 GM.CleanupFilter = {
@@ -311,12 +327,25 @@ GM.ScrapVals = {
 }
 
 GM.ScrapValsTrinkets = {
-	5, 10, 16, 23, 32, 56
+	5, 10, 16, 23, 32, 56, 80, 108, 140, 180
 }
 
+-- 80% cost of remantled weapon
 GM.DismantleMultipliers = {
-	1, 2, 4, 7, 11
+	1, -- (Quality Tier 0)
+	1.8, -- (QT1)
+	3.4, -- (QT2)
+	5.8, -- (QT3)
+	9.64, -- (QT4) -- 3.2 * 1.2
 }
+
+GM.ScrapRemantleCostMul = {
+	1, -- 1
+	1 + 1, -- 2
+	1 + 1 + 1, -- 3
+	1 + 1 + 1 + 1.2 -- 4.2
+}
+
 
 -- Handled in languages file.
 GM.ValidBeaconMessages = {

@@ -11,6 +11,7 @@ CLASS.Speed = 155
 
 CLASS.CanTaunt = true
 
+CLASS.DamageNeedPerPoint = GM.SkeletonPointRatio
 CLASS.Points = CLASS.Health/GM.SkeletonPointRatio
 
 CLASS.SWEP = "weapon_zs_skelesham"

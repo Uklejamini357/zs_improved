@@ -22,6 +22,7 @@ CLASS.DynamicHealth = 1
 CLASS.Speed = 155
 CLASS.JumpPower = 160
 
+CLASS.DamageNeedPerPoint = GM.SkeletonPointRatio
 CLASS.Points = CLASS.Health/GM.SkeletonPointRatio
 
 CLASS.VoicePitch = 0.8

@@ -82,16 +82,24 @@ if CLIENT then
 	end
 end
 
-for i, filename in pairs(file.Find(GM.FolderName.."/gamemode/languages/*.lua", "LUA")) do
-	LANGUAGE = {}
-	AddCSLuaFile("languages/"..filename)
-	include("languages/"..filename)
-	for k, v in pairs(LANGUAGE) do
-		translate.AddTranslation(k, v)
+local function AddLanguages(late)
+	for i, filename in pairs(file.Find(GM.FolderName.."/gamemode/"..(late and "late_languages" or "languages").."/*.lua", "LUA")) do
+		LANGUAGE = {}
+		AddCSLuaFile((late and "late_languages" or "languages").."/"..filename)
+		include((late and "late_languages" or "languages").."/"..filename)
+		for k, v in pairs(LANGUAGE) do
+			translate.AddTranslation(k, v)
+		end
+		LANGUAGE = nil
 	end
-	LANGUAGE = nil
 end
 
+AddLanguages()
+/* -- Broken
+timer.Simple(0, function()
+	AddLanguages(true)
+end)
+*/
 local meta = FindMetaTable("Player")
 if not meta then return end
 

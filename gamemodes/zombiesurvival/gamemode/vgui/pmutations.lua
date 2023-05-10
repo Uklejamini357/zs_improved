@@ -18,27 +18,40 @@ end
 
 function MakepMutationShop()
 	if pMutation and pMutation:Valid() then
-		pMutation:Remove()
-		pMutation = nil
+		pMutation:SetVisible(true)
+		pMutation:SetAlpha(0)
+		pMutation:AlphaTo(255, 0.5, 0)
+		return
 	end
 
 	local wid, hei = math.min(ScrW(), 720), ScrH() * 0.7
 	local frame = vgui.Create("DFrame")
 	pMutation = frame
 	frame:SetSize(wid, hei)
-	frame:SetDeleteOnClose(true)
+	frame:SetDeleteOnClose(false)
 --	frame:SetDraggable(true)
 	frame:SetKeyboardInputEnabled(false)
 	frame:SetTitle("")
 	frame.Paint = function()
-		draw.RoundedBox( 0, 0, 0, wid, hei, Color( 0, 0, 0, 200 ) )
+		draw.RoundedBox(0, 0, 0, wid, hei, Color(0, 0, 0, 200))
 		draw.SimpleText(Format("Zombie tokens: %s", MySelf:GetZombieTokens()), "ZSHUDFontSmall", 8, frame:GetTall() - 40, MySelf:GetZombieTokens() <= 0 and COLOR_SOFTRED or COLOR_GRAY)
 	end
 	frame.Think = function()
 		if MySelf:Team() ~= TEAM_UNDEAD then
 			frame:Remove()
 		end
+
+		if input.IsKeyDown(KEY_ESCAPE) and gui.IsGameUIVisible() then
+			timer.Simple(0, function()
+				frame:SetVisible(false)
+			end)
+			gui.HideGameUI()
+		end
 	end
+	frame:Center()
+	frame:SetAlpha(0)
+	frame:AlphaTo(255, 0.5, 0)
+	frame:MakePopup()
 
 	quickbuycheckmark = vgui.Create("DCheckBoxLabel", frame)
 	quickbuycheckmark:SetText("Quick buy mutations")
@@ -91,10 +104,6 @@ function MakepMutationShop()
 		end
 	end	
 
-	frame:Center()
-	frame:SetAlpha(0)
-	frame:AlphaTo(255, 0.5, 0)
-	frame:MakePopup()
 	return frame
 end
 
@@ -194,7 +203,10 @@ function PANEL:Think()
 	local tab = FindMutation(self.ID)
 	if not tab then return end
 	local cost = GetCost(tab)
-	self.PriceLabel:SetText(tostring(cost).." tokens")
+	local txt = tostring(cost).." tokens"
+	if self.PriceLabel:GetText() ~= txt then
+		self.PriceLabel:SetText(txt)
+	end
 	self:SetTooltip(Format("%s\n%s\n\nCost: %d zombie tokens\nPrice increase per purchase: %s\nMax purchases: %s", tab.Name, tab.Description, GetCost(tab), isnumber(tab.Rebuyable) and tab.Rebuyable or 0, tab.MaxPurchases or "No limit"))
 	if not IsBuyable(tab) then
 		self.NameLabel:SetTextColor(COLOR_RED)

@@ -22,6 +22,18 @@ function player.GetAllSpectators()
 	return t
 end
 
+function player.GetNonBotPlayers()
+	local t = {}
+
+	for _, pl in pairs(player.GetAll()) do
+		if not pl:IsBot() then
+			t[#t + 1] = pl
+		end
+	end
+
+	return t
+end
+
 function FindStartingItem(id)
 	local item = FindItem(id)
 	if item and item.WorthShop then return item end

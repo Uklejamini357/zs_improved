@@ -71,9 +71,9 @@ function PANEL:Text1Paint()
 		elseif GAMEMODE.ZombieEscape then
 			text = translate.Get("zombie_escape")
 
-			-- I'm gonna leave this as 2 for now, since it is 2 on NoX.
+			-- I'm gonna leave this as 2 for now, since it is 2 on NoX. (no)
 			--if GAMEMODE.RoundLimit > 0 then
-				round = GAMEMODE.CurrentRound
+				round = GAMEMODE.RoundLimit --GAMEMODE.CurrentRound
 				text = text .. " - " .. translate.Format("round_x_of_y", round, 2)
 			--end
 		else
@@ -217,7 +217,7 @@ function PANEL:Text1Paint()
 			end
 		else
 			--draw.SimpleText(translate.Format("points_x", MySelf:GetPoints().." / "..MySelf:Frags()), self.Font, 0, 0, COLOR_GRAY)
-			draw.SimpleText("Points: "..MySelf:GetPoints().." / Score: "..MySelf:GetMScore(), self.Font, 0, 0, COLOR_GRAY)
+			draw.SimpleText("Points: "..MySelf:GetPoints().." / Score: "..MySelf:Frags(), self.Font, 0, 0, COLOR_GRAY)
 		end
 	end
 
@@ -231,14 +231,14 @@ function PANEL:Text2Paint()
 			draw.SimpleText(MySelf.Stowage and Format("Resupply usages: %s", MySelf.StowageCaches or 0) or resupplyready and "Resupply cache is ready!" or Format("Next resupply: %ss", math.ceil(MySelf.NextUse - CurTime())), self.Font, 0, 0, (MySelf.Stowage and (MySelf.StowageCaches or 0) > 0 or resupplyready) and COLOR_GREEN or COLOR_GRAY)
 		end
 	elseif MySelf:IsValid() and MySelf:Team() == TEAM_UNDEAD then
-		draw.SimpleText(Format("Zombie Tokens: %s", MySelf:GetZombieTokens()), self.Font, 0, 0, COLOR_SOFTRED)
+		draw.SimpleText(Format("Zombie Tokens: %s", MySelf:GetZombieTokens()), self.Font, 0, 0, COLOR_RORANGE)
 	end
 
 	return true
 end
 
 function PANEL:Text3Paint()
-	draw.SimpleText(not GAMEMODE:GetDifficultyScalingEnabled() and "" or Format("Difficulty: %s", math.Round(GAMEMODE:GetDifficulty(), 2)), self.Font, 0, 0, COLOR_GRAY)
+	draw.SimpleText(not GAMEMODE:GetDifficultyScalingEnabled() and "" or Format("Add. Difficulty: %s%%", math.Round(GAMEMODE:GetDifficulty(), 2)), self.Font, 0, 0, COLOR_ORANGE)
 	return true
 end
 

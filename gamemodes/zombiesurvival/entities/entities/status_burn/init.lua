@@ -3,7 +3,7 @@ INC_SERVER()
 function ENT:Think()
 	local owner = self:GetOwner()
 
-	if self:GetDamage() <= 0 or owner:WaterLevel() > 0 or not owner:Alive() or (owner:Team() == self.Damager:Team() and owner ~= self.Damager) then
+	if self:GetDamage() <= 0 or owner:WaterLevel() > 0 or not owner:Alive() or (owner:Team() == (self.Damager and self.Damager:Team() or owner:Team()) and owner ~= self.Damager) then
 		self:Remove()
 		return
 	end

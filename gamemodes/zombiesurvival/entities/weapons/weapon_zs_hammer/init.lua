@@ -205,6 +205,7 @@ function SWEP:SecondaryAttack()
 
 		local nail = ents.Create("prop_nail")
 		if nail:IsValid() then
+			nail.HealthMultiplier = self.NailHealthMulti * (owner.BarricadeHealthMul or 1)
 			nail:SetActualOffset(tr.HitPos, trent)
 			nail:SetPos(tr.HitPos - aimvec * 8)
 			nail:SetAngles(aimvec:Angle())

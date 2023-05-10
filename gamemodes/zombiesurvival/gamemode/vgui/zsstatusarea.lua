@@ -17,7 +17,8 @@ local statusdisplays = {
 			return lp:GetPoisonDamage()
 		end,
 		Max = GM.MaxPoisonDamage or 50,
-		Icon = Material("zombiesurvival/poison.png")
+		Icon = Material("zombiesurvival/poison.png"),
+		Decimals = 0,
 	},
 
 	{
@@ -28,6 +29,7 @@ local statusdisplays = {
 		end,
 		Icon = Material("zombiesurvival/bleed.png"),
 		Max = GM.MaxBleedDamage or 50,
+		Decimals = 0,
 	},
 
 	{
@@ -135,6 +137,14 @@ local statusdisplays = {
 	},
 
 	{
+		Color = Color(40, 40, 40),
+		Name = "WEAK!",
+		ValFunc = statusValueFunction("weak"),
+		Max = 10,
+		Icon = Material("zombiesurvival/strength_shot.png")
+	},
+
+	{
 		Color = Color(245, 105, 35),
 		Name = "BATTLECRY!",
 		ValFunc = statusValueFunction("zombie_battlecry"),
@@ -161,6 +171,8 @@ self:DockMargin(0, 0, 0, 0)
 		status.GetMemberValue = statusdisp.ValFunc
 		status.MemberMaxValue = statusdisp.Max
 		status.Icon = statusdisp.Icon
+		status.Name = statusdisp.Name
+		status.Decimals = statusdisp.Decimals
 		status:Dock(LEFT)
 		table.insert(self.StatusPanels, status)
 
@@ -222,7 +234,7 @@ function PANEL:StatusThink(lp)
 	if self.MemberValue > self.LerpMemberValue then
 		self.LerpMemberValue = self.MemberValue
 	elseif self.MemberValue < self.LerpMemberValue then
-		self.LerpMemberValue = math.Approach(self.LerpMemberValue, self.MemberValue, FrameTime() * 30)
+		self.LerpMemberValue = math.Approach(self.LerpMemberValue, self.MemberValue, (self.LerpMemberValue - self.MemberValue) * (FrameTime() * 30))
 	end
 
 	if self.MemberValue < 0.1 and self:GetWide() ~= 0 then
@@ -289,8 +301,11 @@ function PANEL:Paint(w, h)
 		2
 	)
 
-	local t1 = math.ceil(value)
+	local t1 = math.Round(value, self.Decimals or 1)
 	draw.SimpleText(t1, "ZSHUDFontSmall", w / 2, y + h / 2 - boxsize/2 + 5, color_white_alpha230, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+
+	draw.SimpleText(self.Name, "ZSHUDFontStatus", w / 2, y + h / 2 - boxsize/2 - 25, color_white_alpha230, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 vgui.Register("ZSStatus", PANEL, "Panel")

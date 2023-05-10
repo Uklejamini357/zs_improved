@@ -32,6 +32,7 @@ CLASS.NoFallSlowdown = true
 CLASS.NeverAlive = true
 CLASS.AllowTeamDamage = true
 CLASS.NoDeaths = true
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 0
 
 local ACT_RUN = ACT_RUN

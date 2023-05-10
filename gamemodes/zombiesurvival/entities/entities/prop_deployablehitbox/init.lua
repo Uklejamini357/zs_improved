@@ -30,8 +30,8 @@ function ENT:OnTakeDamage(dmginfo)
 	if not (attacker:IsValid() and attacker:IsPlayer() and attacker:Team() == TEAM_HUMAN) then
 		local parent = self:GetParent()
 		if parent and parent:IsValid() then
-			parent:SetObjectHealth(parent:GetObjectHealth() - dmginfo:GetDamage())
 			parent:ResetLastBarricadeAttacker(attacker, dmginfo)
+			parent:SetObjectHealth(parent:GetObjectHealth() - dmginfo:GetDamage())
 		end
 	end
 end

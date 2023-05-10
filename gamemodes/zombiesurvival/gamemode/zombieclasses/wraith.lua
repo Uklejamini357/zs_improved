@@ -16,6 +16,7 @@ CLASS.Speed = 150
 
 CLASS.CanTaunt = true
 
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio
 CLASS.Points = CLASS.Health/GM.NoHeadboxZombiePointRatio
 
 CLASS.VoicePitch = 0.65

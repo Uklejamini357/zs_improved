@@ -15,6 +15,7 @@ CLASS.FearPerInstance = 1
 
 CLASS.CanTaunt = true
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 34
 
 CLASS.SWEP = "weapon_zs_ticklemonster"

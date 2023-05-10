@@ -9,8 +9,8 @@ SWEP.WorldModel = ""
 SWEP.MeleeDelay = 0.74
 SWEP.MeleeReach = 48
 SWEP.MeleeSize = 4.5 --1.5
-SWEP.MeleeDamage = 35
-SWEP.MeleeDamageVsProps = nil -- because
+SWEP.MeleeDamage = 34
+SWEP.MeleeDamageVsProps = nil -- because (idk)
 SWEP.MeleeForceScale = 1
 SWEP.MeleeDamageType = DMG_SLASH
 
@@ -276,7 +276,7 @@ function SWEP:PrimaryAttack()
 	local armdelay = owner:GetMeleeSpeedMul()
 
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay * armdelay)
-	self:SetNextSecondaryFire(self:GetNextPrimaryFire() + 0.5)
+	self:SetNextSecondaryFire(math.max(self:GetNextPrimaryFire() + 0.5, self:GetNextSecondaryFire()))
 
 	self:StartSwinging()
 end

@@ -17,6 +17,7 @@ CLASS.JumpPower = 250
 
 CLASS.CanTaunt = true
 
+CLASS.DamageNeedPerPoint = GM.LegsZombiePointRatio
 CLASS.Points = CLASS.Health/GM.LegsZombiePointRatio
 
 CLASS.Hull = {Vector(-16, -16, 0), Vector(16, 16, 32)}

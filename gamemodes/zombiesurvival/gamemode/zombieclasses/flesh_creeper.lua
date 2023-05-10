@@ -15,6 +15,7 @@ CLASS.Model = Model("models/antlion.mdl")
 CLASS.Speed = 160
 CLASS.JumpPower = 220
 
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio
 CLASS.Points = CLASS.Health/GM.NoHeadboxZombiePointRatio
 
 CLASS.VoicePitch = 0.55

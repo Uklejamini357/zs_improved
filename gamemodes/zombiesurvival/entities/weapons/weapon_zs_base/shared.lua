@@ -107,7 +107,7 @@ end
 
 function SWEP:GetPrimaryClipSize()
 	local owner = self:GetOwner()
-	local multi = self.Primary.ClipSize/self.RequiredClip >= 8 and owner:HasTrinket("extendedmag") and 1.15 or 1
+	local multi = owner.WeaponClipSizeMul or 1 --self.Primary.ClipSize/self.RequiredClip >= 8 and owner:HasTrinket("extendedmag") and 1.15 or 1
 
 	return math.floor(self:GetMaxClip1() * multi)
 end

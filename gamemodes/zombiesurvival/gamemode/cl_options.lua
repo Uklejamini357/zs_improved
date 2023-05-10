@@ -26,13 +26,15 @@ GM.RemortColors = {
 
 GM.SpeedToText = {
 	[SPEED_NORMAL] = "Normal",
+	[SPEED_SLOWEST1] = "Ultra Slow",
 	[SPEED_SLOWEST] = "Very Slow",
 	[SPEED_SLOWER] = "Quite Slow",
 	[SPEED_SLOW] = "Slow",
 	[SPEED_FAST] = "Fast",
 	[SPEED_FASTER] = "Quite Fast",
 	[SPEED_FASTEST] = "Very Fast",
-	[-1] = "Ultra Slow",
+	[SPEED_FASTEST1] = "Ultra Fast",
+	[-1] = "Extremely Slow",
 }
 
 GM.AmmoToPurchaseNames = {
@@ -87,9 +89,10 @@ end)
 CreateClientConVar("zs_noredeem", "0", true, true)
 CreateClientConVar("zs_alwaysvolunteer", "0", true, true)
 CreateClientConVar("zs_nobosspick", "0", true, true)
+CreateClientConVar("zs_nosuperbosspick", "0", true, true)
 CreateClientConVar("zs_nousetodeposit", "0", true, true)
 CreateClientConVar("zs_nopickupprops", "0", true, true)
-CreateClientConVar("zs_noautocheckout", "0", true, true, "Disables automatic worth checkout. Worth is automatically checked out by the time when humans who join on later waves become zombies.")
+CreateClientConVar("zs_noautocheckout", "0", true, true, "Disables automatic worth checkout. Worth is still automatically checked out on later waves. (BETA FEATURE: Enable it at your own risk.)")
 
 GM.DisableScopes = CreateClientConVar("zs_disablescopes", "0", true, false):GetBool()
 cvars.AddChangeCallback("zs_disablescopes", function(cvar, oldvalue, newvalue)
@@ -325,8 +328,29 @@ cvars.AddChangeCallback("zs_zombienvsound", function(cvar, oldvalue, newvalue)
 	GAMEMODE.ZombieNightVisionSound = tonumber(newvalue) == 1
 end)
 
-CreateConVar( "cl_playercolor", "0.24 0.34 0.41", { FCVAR_ARCHIVE, FCVAR_USERINFO }, "The value is a Vector - so between 0-1 - not between 0-255" )
-CreateConVar( "cl_weaponcolor", "0.30 1.80 2.10", { FCVAR_ARCHIVE, FCVAR_USERINFO }, "The value is a Vector - so between 0-1 - not between 0-255" )
+GM.NoRemortConfirmation = CreateClientConVar("zs_noremortconfirm", "0", true, false, "On clicking remort skill node, remort instantly without showing confirmation window"):GetBool()
+cvars.AddChangeCallback("zs_noremortconfirm", function(cvar, oldvalue, newvalue)
+	GAMEMODE.NoRemortConfirmation = tonumber(newvalue) == 1
+end)
+
+GM.SkillPanelNoAmbientSound = CreateClientConVar("zs_noskillpanelambientsound", "0", true, false):GetBool()
+cvars.AddChangeCallback("zs_noskillpanelambientsound", function(cvar, oldvalue, newvalue)
+	GAMEMODE.SkillPanelNoAmbientSound = tonumber(newvalue) == 1
+end)
+
+GM.SkillPanelNoUnlockSound = CreateClientConVar("zs_noskillunlocksound", "0", true, false):GetBool()
+cvars.AddChangeCallback("zs_noskillunlocksound", function(cvar, oldvalue, newvalue)
+	GAMEMODE.SkillPanelNoUnlockSound = tonumber(newvalue) == 1
+end)
+
+GM.NoNotifyUnusedSP = CreateClientConVar("zs_nonotifyunusedsp", "0", true, false):GetBool()
+cvars.AddChangeCallback("zs_nonotifyunusedsp", function(cvar, oldvalue, newvalue)
+	GAMEMODE.NoNotifyUnusedSP = tonumber(newvalue) == 1
+end)
+
+
+CreateConVar("cl_playercolor", "0.24 0.34 0.41", FCVAR_ARCHIVE + FCVAR_USERINFO, "The value is a Vector - so between 0-1 - not between 0-255")
+CreateConVar("cl_weaponcolor", "0.30 1.80 2.10", FCVAR_ARCHIVE + FCVAR_USERINFO, "The value is a Vector - so between 0-1 - not between 0-255")
 
 GM.BeatSetHuman = CreateClientConVar("zs_beatset_human", "default", true, false):GetString()
 cvars.AddChangeCallback("zs_beatset_human", function(cvar, oldvalue, newvalue)

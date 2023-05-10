@@ -238,7 +238,7 @@ function GM:CreateInventoryInfoViewer()
 end
 
 local NumToRomanNumeral = {
-	"I", "II", "III", "IV", "V", "VI"
+	"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"
 }
 
 function GM:InventoryAddGridItem(item, category)
@@ -270,7 +270,7 @@ function GM:InventoryAddGridItem(item, category)
 		local tier = GAMEMODE.ZSInventoryItemData[item].Tier or 1
 		trintier:SetText(NumToRomanNumeral[tier])
 		trintier:SizeToContents()
-		trintier:CenterHorizontal(0.8)
+		trintier:CenterHorizontal(string.len(NumToRomanNumeral[tier]) >= 4 and 0.75 or 0.8)
 		trintier:CenterVertical(0.8)
 	end
 

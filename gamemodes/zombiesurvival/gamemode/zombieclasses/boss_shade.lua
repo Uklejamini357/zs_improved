@@ -22,6 +22,7 @@ CLASS.Speed = 170 --125
 
 CLASS.FearPerInstance = 1
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 30
 
 CLASS.SWEP = "weapon_zs_shade"

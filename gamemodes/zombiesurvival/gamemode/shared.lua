@@ -1,8 +1,8 @@
-GM.Name		=	"Zombie Survival Improved"
+GM.Name		=	"Zombie Survival Redux"
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.1.0"
+GM.Version	=	"1.3.0?"
 
 -- No, adding a gun doesn't make your name worth being here.
 GM.Credits = {
@@ -77,7 +77,7 @@ include_library("ammoexpand")
 
 GM.EndRound = false
 GM.StartingPlayerHealth = 100
-GM.StartingPlayerSpeed = 225
+--GM.StartingPlayerSpeed = 225 -- see sh_globals.lua for editing SPEED_NORMAL
 GM.StartingWorth = 100
 GM.ZombieVolunteers = {}
 
@@ -116,10 +116,6 @@ GM.SoundDuration = {
 	["zombiesurvival/beats/defaultzombiev2/8.ogg"] = 6.038,
 	["zombiesurvival/beats/defaultzombiev2/9.ogg"] = 6.038,
 	["zombiesurvival/beats/defaultzombiev2/10.ogg"] = 6.038,
-	
-	-- Custom
-
-	["lasthuman_songs/black ops - zombies.mp3"] = 255.780,
 }
 
 local SERVER = SERVER
@@ -208,6 +204,9 @@ function GM:AssignItemProperties()
 				end
 				if not tab.Tier then
 					tab.Tier = sweptab.Tier
+				end
+				if not tab.WaveUnlock then
+					tab.WaveUnlock = sweptab.WaveUnlock
 				end
 				if not tab.MaxStock then
 					tab.MaxStock = sweptab.MaxStock
@@ -812,7 +811,7 @@ function GM:GetRagdollEyes(pl)
 end
 
 function GM:PlayerNoClip(pl, on)
-	if pl:IsAdmin() then
+	if pl:IsAdmin() and (on or pl:Alive()) then
 		if SERVER then
 			PrintMessage(HUD_PRINTCONSOLE, translate.Format(on and "x_turned_on_noclip" or "x_turned_off_noclip", pl:Name()))
 		end
@@ -883,8 +882,8 @@ function GM:GetWave()
 end
 
 if GM:GetWave() == 0 then
-	GM:SetWaveStart(GM.WaveZeroLength + 40)
-	GM:SetWaveEnd(GM.WaveZeroLength + GM:GetWaveOneLength() + 40)
+	GM:SetWaveStart(math.max(GM:GetWaveStart(), GM.WaveZeroLength + 40))
+	GM:SetWaveEnd(math.max(GM:GetWaveEnd(), GM.WaveZeroLength + GM:GetWaveOneLength() + 40))
 end
 
 function GM:GetWaveActive()
@@ -925,20 +924,20 @@ function GM:VehicleMove()
 end
 
 function GM:GetDifficultyScalingEnabled()
-	return GetGlobalBool("zs_difficulty_scaling_enabled", self.DifficultyEnabledByDefault)
+	return GetGlobalBool("zs_difficulty_add_scaling_enabled", self.DifficultyEnabledByDefault)
 end
 
 function GM:GetDifficulty()
-	if not self:GetDifficultyScalingEnabled() then return 1 end
-	return math.max(0, GetGlobalFloat("zs_difficulty", 1))
+	if not self:GetDifficultyScalingEnabled() then return 0 end
+	return GetGlobalFloat("zs_difficulty_add", 0)
 end
 
 function GM:SetDifficulty(value)
-	SetGlobalFloat("zs_difficulty", value or self:GetDifficulty())
+	SetGlobalFloat("zs_difficulty_add", value or self:GetDifficulty())
 end
 
 function GM:EnableDifficultyScaling(value)
-	SetGlobalBool("zs_difficulty_scaling_enabled", value)
+	SetGlobalBool("zs_difficulty_add_scaling_enabled", value)
 end
 
 function GM:SetArsenalRequiredToBuyItems(value)
@@ -955,6 +954,6 @@ function GM:CanRedeem(pl)
 end
 
 function GM:CanSelfRedeem(pl)
-	if not pl:IsValid() or self:GetRedeemBrains() <= 0 or self:GetWave() > self.MaxSelfRedeemWave or self:GetWave() >= self:GetNumberOfWaves() or self.NoRedeeming or pl.NoRedeeming or LASTHUMAN or self.RoundEnded or self.ZombieEscape then return false end
+	if self.CanUseSelfRedeem and not pl:IsValid() or self:GetRedeemBrains() <= 0 or self:GetWave() > self.MaxSelfRedeemWave or self:GetWave() >= self:GetNumberOfWaves() or self.NoRedeeming or pl.NoRedeeming or LASTHUMAN or self.RoundEnded or self.ZombieEscape then return false end
 	return true
 end

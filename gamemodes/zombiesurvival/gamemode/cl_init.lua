@@ -451,9 +451,14 @@ end
 function GM:OnReloaded()
 	self.BaseClass.OnReloaded(self)
 
-	chat.AddText(Color(255,0,0), "BRUH DOES THE GAMEMODE FILES RELOADING REALLY HAVE TO RUIN THE GAMEMODE CODE?!?!?!?")
+	MsgC(Color(191,0,0), "i hate shapeshiftors\n")
 
-	self:LocalPlayerFound()
+	timer.Simple(0, function()
+		self:LocalPlayerFound()
+		self:FixSkillConnections()
+		self:AssignItemProperties()
+		self:FixWeaponBase()
+	end)
 end
 
 -- The whole point of this is so we don't need to check if the local player is valid 1000 times a second.
@@ -1102,15 +1107,28 @@ function GM:ZombieHUD()
 	end
 
 	if not self:GetWaveActive() and self:GetWave() ~= 0 then
-		local pl = self.NextBossZombie
-		if pl and pl:IsValid() and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
+		local boss = self.NextBossZombie
+		local superboss = self.NextSuperBossZombie
+
+		if boss and boss:IsValid() and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
 			local x, y = ScrW() / 2, ScrH() * 0.3 + draw_GetFontHeight("ZSHUDFont")
-			if pl == MySelf then
+			if boss == MySelf then
 				draw_SimpleTextBlur(translate.Format("you_will_be_x_soon", self.NextBossZombieClass), "ZSHUDFont", x, y, Color(255, 50, 50), TEXT_ALIGN_CENTER)
 			else
-				draw_SimpleTextBlur(translate.Format("x_will_be_y_soon", pl:Name(), self.NextBossZombieClass), "ZSHUDFont", x, y, COLOR_GRAY, TEXT_ALIGN_CENTER)
+				draw_SimpleTextBlur(translate.Format("x_will_be_y_soon", boss:Name(), self.NextBossZombieClass), "ZSHUDFont", x, y, COLOR_GRAY, TEXT_ALIGN_CENTER)
 			end
 		end
+
+		if superboss and superboss:IsValid() and (self.SuperBossZombiePlayersRequired <= 0 or #player.GetAll() >= self.SuperBossZombiePlayersRequired) then
+			local x, y = ScrW() / 2, ScrH() * 0.2 + draw_GetFontHeight("ZSHUDFont")
+			local rcol = HSVToColor(RealTime() * 65 % 360, 1, 1)
+			if superboss == MySelf then
+				draw_SimpleTextBlur(translate.Format("you_will_be_x_soon", self.NextSuperBossZombieClass), "ZSHUDFont", x, y, rcol, TEXT_ALIGN_CENTER)
+			else
+				draw_SimpleTextBlur(translate.Format("x_will_be_y_soon", superboss:Name(), self.NextSuperBossZombieClass), "ZSHUDFont", x, y, rcol, TEXT_ALIGN_CENTER)
+			end
+		end
+
 	end
 end
 
@@ -1497,6 +1515,9 @@ function GM:CreateScalingFonts()
 	surface.CreateLegacyFont(fontfamily, screenscale * (20 + fontsizeadd), 0, true, false, "ZSDamageResistanceBlur", false, true)
 
 	surface.CreateFont("ZSXPBar", {font = "tahoma", size = screenscale * 14, weight = 500, antialias = false, shadow = true})
+	surface.CreateFont("ZSXPBarSmall", {font = "tahoma", size = screenscale * 12, weight = 500, antialias = false, shadow = true})
+
+	surface.CreateLegacyFont(fontfamily, screenscale * 8, fontweight, fontaa, false, "ZSHUDFontStatus", fontshadow, fontoutline)
 end
 
 function GM:CreateFonts()
@@ -1510,6 +1531,10 @@ function GM:EvaluateFilmMode()
 
 	if self.GameStatePanel and self.GameStatePanel:IsValid() then
 		self.GameStatePanel:SetVisible(visible)
+	end
+	
+	if self.GameStatePanel2 and self.GameStatePanel2:IsValid() then
+		self.GameStatePanel2:SetVisible(visible)
 	end
 
 	if self.TopNotificationHUD and self.TopNotificationHUD:IsValid() then
@@ -1575,19 +1600,16 @@ function GM:CreateVGUI()
 end
 
 function GM:CreateLateVGUI()
-	if not self.HealthHUD then
-		self.HealthHUD = vgui.Create("ZSHealthArea")
-	end
+	if IsValid(self.HealthHUD) then self.HealthHUD:Remove() end
+	self.HealthHUD = vgui.Create("ZSHealthArea")
 
-	if not self.StatusHUD then
-		self.StatusHUD = vgui.Create("ZSStatusArea")
-	end
+	if IsValid(self.StatusHUD) then self.StatusHUD:Remove() end
+	self.StatusHUD = vgui.Create("ZSStatusArea")
 
-	if not self.XPHUD then
-		self.XPHUD = vgui.Create("ZSExperienceHUD")
-		self.XPHUD:ParentToHUD()
-		self.XPHUD:InvalidateLayout()
-	end
+	if IsValid(self.XPHUD) then self.XPHUD:Remove() end
+	self.XPHUD = vgui.Create("ZSExperienceHUD")
+	self.XPHUD:ParentToHUD()
+	self.XPHUD:InvalidateLayout()
 end
 
 function GM:Initialize()
@@ -1753,8 +1775,10 @@ local function AltSelItemUpd()
 	if not activeweapon or not activeweapon:IsValid() then return end
 
 	local actwclass = activeweapon:GetClass()
-	local weapon = weapons.Get(actwclass) 
-	GAMEMODE.HumanMenuPanel.SelectedItemLabel:SetText(weapon and weapon.PrintName or Format("#%s", actwclass))
+	local weapon = weapons.Get(actwclass)
+	if !weapon then return end
+	GAMEMODE.HumanMenuPanel.SelectedItemLabel:SetText(weapon.PrintName)
+	GAMEMODE.HumanMenuPanel.SelectedItemLabel:SetTooltip(weapon.Description)
 --	GAMEMODE.HumanMenuPanel.DismantleButton:SetToolTip((not (weapon.AllowQualityWeapons or weapon.PermitDismantle) or weapon.NoDismantle) and "Cannot be dismantled." or Format("Dismantle for %s scrap.", GAMEMODE:GetDismantleScrap(weapon)))
 end
 
@@ -1762,6 +1786,7 @@ function GM:DoAltSelectedItemUpdate()
 	local item = self.ZSInventoryItemData[self.InventoryMenu.SelInv]
 	if self.InventoryMenu.SelInv then
 		self.HumanMenuPanel.SelectedItemLabel:SetText(item.PrintName)
+		self.HumanMenuPanel.SelectedItemLabel:SetTooltip(item.Description)
 
 --		local invitem = self:GetInventoryItemType(item)
 
@@ -1953,13 +1978,13 @@ function GM:PlayerBindPress(pl, bind, wasin)
 			MakepMutationShop()
 		end
 	elseif bind == "gm_showspare1" then
-		if not pl:KeyDown(IN_DUCK) and pl:Team() == TEAM_UNDEAD then
+		if not input.IsControlDown() and pl:Team() == TEAM_UNDEAD then
 			if not self.ClassicMode and self:ShouldUseAlternateDynamicSpawn() then
 				self:CenterNotify(COLOR_RED, translate.ClientGet(pl, "no_class_switch_in_this_mode"))
 			else
 				self:OpenClassSelect()
 			end
-		elseif pl:KeyDown(IN_DUCK) or pl:Team() == TEAM_HUMAN then
+		elseif input.IsControlDown() or pl:Team() == TEAM_HUMAN then
 			self:ToggleSkillWeb()
 		end	
 	elseif bind == "gm_showspare2" then
@@ -2048,6 +2073,10 @@ function GM:_CalcView(pl, origin, angles, fov, znear, zfar)
 			self.LastObserverTarget = target
 			self.LastObserverTargetPos = origin
 		end
+	end
+
+	if not pl:Alive() and pl:GetMoveType() == MOVETYPE_NOCLIP then
+		origin = pl:GetPos()
 	end
 
 	if pl:GetObserverMode() ~= OBS_MODE_NONE then
@@ -2214,11 +2243,12 @@ end
 function GM:HUDPaintBackgroundEndRound()
 	local x, y = ScrW() / 2, ScrH() * 0.8
 	local timleft = math.max(0, self.EndTime + self.EndGameTime - CurTime())
+	local a = math.abs(math.sin((self.EndTime + self.EndGameTime - CurTime()) * math.pi)) * 255
 
 	if timleft <= 0 then
 		draw_SimpleTextBlur(translate.Get("loading"), "ZSHUDFont", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
 	else
-		draw_SimpleTextBlur(translate.Format("next_round_in_x", util.ToMinutesSecondsDeciseconds(timleft)), "ZSHUDFontSmall", x, y, COLOR_WHITE, TEXT_ALIGN_CENTER)
+		draw_SimpleTextBlur(translate.Format("next_round_in_x", util.ToMinutesSecondsDeciseconds(timleft)), "ZSHUDFontSmall", x, y, timleft <= 10 and Color(255,a,a,255) or COLOR_WHITE, TEXT_ALIGN_CENTER)
 	end
 end
 

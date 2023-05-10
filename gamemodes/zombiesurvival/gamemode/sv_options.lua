@@ -118,9 +118,9 @@ cvars.AddChangeCallback("zs_achievements", function(cvar, oldvalue, newvalue)
 end)
 
 -- XP multplier gain for Humans
-GM.HumanXPGainMulti = CreateConVar("zs_xpgainmul_human", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "XP gain multiplier for humans."):GetFloat()
+GM.HumanXPMulti = CreateConVar("zs_xpgainmul_human", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY, "XP gain multiplier for humans."):GetFloat()
 cvars.AddChangeCallback("zs_xpgainmul_human", function(cvar, oldvalue, newvalue)
-	GAMEMODE.HumanXPGainMulti = tonumber(newvalue) or 1
+	GAMEMODE.HumanXPMulti = tonumber(newvalue) or 1
 end)
 
 -- XP gaining mul for Zombies
@@ -257,7 +257,7 @@ GM.HonorableMentions[HM_USEFULTOOPPOSITE].GetPlayer = function(self)
 end
 
 GM.HonorableMentions[HM_PACIFIST].GetPlayer = function(self)
-	if WINNER == TEAM_HUMAN then
+	if ROUNDWINNER == TEAM_HUMAN then
 		for _, pl in pairs(player.GetAll()) do
 			if pl.ZombiesKilled == 0 and pl:Team() == TEAM_HUMAN then return pl end
 		end
@@ -308,4 +308,8 @@ end
 
 GM.HonorableMentions[HM_NESTMASTER].GetPlayer = function(self)
 	return GetMostKey("NestSpawns")
+end
+
+GM.HonorableMentions[HM_MOSTPOINTSGAINED].GetPlayer = function(self)
+	return GetMostKey("PointsGained")
 end

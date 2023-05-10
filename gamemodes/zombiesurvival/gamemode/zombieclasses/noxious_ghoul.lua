@@ -11,6 +11,7 @@ CLASS.Health = 320
 CLASS.DynamicHealth = 4
 CLASS.Speed = 185
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 CLASS.NoPlayerColor = true
 

@@ -15,6 +15,7 @@ CLASS.Speed = 195
 
 CLASS.FearPerInstance = 1
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 35
 
 CLASS.SWEP = "weapon_zs_bonemesh"

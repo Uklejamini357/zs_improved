@@ -1,4 +1,5 @@
 include("registry.lua")
+include("skillmodifiers.lua")
 
 -- These are inverse functions of eachother!
 function GM:LevelForXP(xp)
@@ -21,8 +22,13 @@ function GM:ProgressForXP(xp)
 	return (xp - current_level_xp) / (next_level_xp - current_level_xp)
 end
 
-GM.MaxLevel = 45
+GM.MaxLevel = 55
+GM.MaxRemortableLevel = 45
+--GM.MaxRemortable2Level = 85 -- Level required for 2 remorts
 GM.MaxXP = GM:XPForLevel(GM.MaxLevel)
+GM.MaxRemortableXP = GM:XPForLevel(GM.MaxRemortableLevel)
+--GM.MaxRemortable2XP = GM:XPForLevel(GM.MaxRemortable2Level)
+GM.ExtraSP = 1
 
 -- Makes sure all skill connections are double linked
 function GM:FixSkillConnections()
@@ -44,7 +50,11 @@ end
 function GM:SkillCanUnlock(pl, skillid, skilllist)
 	local skill = self.Skills[skillid]
 	if skill then
-		if skill.RemortLevel and pl:GetZSRemortLevel() < skill.RemortLevel then
+		if (skill.RemortReq or 0) > math.max(0, pl:GetZSRemortLevel()) or (skill.RemortMaxReq or math.huge) < math.max(0, pl:GetZSRemortLevel()) then
+			return false
+		end
+
+		if not self:SkillCanUse(pl, skillid, skillslist) then
 			return false
 		end
 
@@ -64,6 +74,10 @@ function GM:SkillCanUnlock(pl, skillid, skilllist)
 	return false
 end
 
+function GM:SkillCanUse(pl, skillid, skilllist)
+	return true
+end
+
 local meta = FindMetaTable("Player")
 if not meta then return end
 
@@ -73,6 +87,10 @@ end
 
 function meta:SkillCanUnlock(skillid)
 	return GAMEMODE:SkillCanUnlock(self, skillid, self:GetUnlockedSkills())
+end
+
+function meta:SkillCanUse(skillid)
+	return GAMEMODE:SkillCanUse(self, skillid, self:GetUnlockedSkills())
 end
 
 function meta:IsSkillDesired(skillid)
@@ -221,7 +239,7 @@ function meta:ApplyTrinkets(override)
 end
 
 function meta:CanSkillsRemort()
-	return self:GetZSLevel() >= GAMEMODE.MaxLevel
+	return self:GetZSLevel() >= math.min(GAMEMODE.MaxLevel, GAMEMODE.MaxRemortableLevel)
 end
 meta.CanSkillRemort = meta.CanSkillsRemort
 
@@ -252,7 +270,17 @@ function meta:GetZSBankXP()
 end
 
 function meta:GetZSSPUsed()
-	return #self:GetUnlockedSkills()
+	local usedsp = 0
+	local allskills = GAMEMODE.Skills
+
+	for skillid in pairs(allskills) do
+		if self:IsSkillUnlocked(skillid) then
+			usedsp = usedsp + (allskills[skillid].RequiredSP or 1)
+		end
+	end
+
+--	return #self:GetUnlockedSkills() + usedsp
+	return usedsp
 end
 
 function meta:GetZSSPRemaining()
@@ -260,7 +288,29 @@ function meta:GetZSSPRemaining()
 end
 
 function meta:GetZSSPTotal()
-	return self:GetZSLevel() + self:GetZSRemortLevel()
+	local sp = 0
+	local allskills = GAMEMODE.Skills
+
+	for skillid in pairs(allskills) do
+		if self:IsSkillUnlocked(skillid) and not allskills[skillid].Disabled then
+			sp = sp + (allskills[skillid].GiveSP or 0)
+		end
+	end
+
+	return self:GetZSLevel() + self:GetZSSPExtra() + sp
+end
+
+function meta:GetZSSPExtra(remort)
+	local rl = self:GetZSRemortLevel()
+	local rsp = rl
+	
+	rsp = rsp + (rl >= 55 and 5 or
+	rl >= 20 and 4 or
+	rl >= 10 and 3 or
+	rl >= 5 and 2 or
+	rl >= 1 and 1 or 0)
+
+	return remort and rsp or rsp + GAMEMODE.ExtraSP
 end
 
 function meta:GetDesiredActiveSkills()

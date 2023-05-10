@@ -7,18 +7,18 @@ CLASS.Help = "controls_fast_zombie"
 
 CLASS.Model = Model("models/player/zombie_fast.mdl")
 
-CLASS.Wave = 20 / GM.NumberOfWaves
+CLASS.Wave = 13 / GM.NumberOfWaves
 CLASS.Infliction = 0.93
 CLASS.Revives = true
 
-CLASS.Health = 1150
-CLASS.DynamicHealth = 0
+CLASS.Health = 525
+CLASS.DynamicHealth = 5
 CLASS.Speed = 285
 CLASS.SWEP = "weapon_zs_undeadfastzombie"
 
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio / 0.6
 CLASS.Points = (CLASS.Health/GM.NoHeadboxZombiePointRatio) * 0.6
 CLASS.XP = CLASS.Health/GM.NoHeadboxZombiePointRatio
-CLASS.XP = 30
 
 CLASS.CanTaunt = true
 
@@ -232,7 +232,9 @@ local vecEyeLeft = Vector(4, -4.6, -1)
 local vecEyeRight = Vector(4, -4.6, 1)
 
 function CLASS:PrePlayerDraw(pl)
+	render.SetColorModulation(0.17, 0.95, 0)
 end
+
 
 function CLASS:PostPlayerDraw(pl)
 	render.ModelMaterialOverride()

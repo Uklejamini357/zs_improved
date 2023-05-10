@@ -17,6 +17,7 @@ CLASS.SWEP = "weapon_zs_poisonzombie"
 
 CLASS.Mass = DEFAULT_MASS * 1.5
 
+CLASS.DamageNeedPerPoint = GM.PoisonZombiePointRatio
 CLASS.Points = CLASS.Health/GM.PoisonZombiePointRatio
 
 CLASS.PainSounds = {"npc/zombie_poison/pz_pain1.wav", "npc/zombie_poison/pz_pain2.wav", "npc/zombie_poison/pz_pain3.wav"}

@@ -72,9 +72,11 @@ killicon.Add("weapon_zs_zombie_gore_blaster", "zombiesurvival/killicons/zombie",
 killicon.Add("weapon_zs_skeleton", "zombiesurvival/killicons/skeletal_walker")
 killicon.Add("weapon_zs_skeletallurker", "zombiesurvival/killicons/skeletal_lurker")
 killicon.Add("weapon_zs_freshdead", "zombiesurvival/killicons/fresh_dead")
+killicon.Add("weapon_zs_infectedcitizen", "zombiesurvival/killicons/fresh_dead")
 killicon.Add("weapon_zs_agiledead", "zombiesurvival/killicons/fresh_dead")
 killicon.Add("weapon_zs_classiczombie", "zombiesurvival/killicons/fresh_dead")
 killicon.Add("weapon_zs_superzombie", "zombiesurvival/killicons/fresh_dead")
+killicon.Add("weapon_zs_zesuperzombie", "zombiesurvival/killicons/fresh_dead")
 killicon.Add("weapon_zs_zombietorso", "zombiesurvival/killicons/torso")
 killicon.Add("weapon_zs_fastzombietorso", "zombiesurvival/killicons/fast_torso")
 killicon.Add("weapon_zs_fastzombietorso_slingshot", "zombiesurvival/killicons/fast_torso", Color(163, 94, 99))
@@ -391,6 +393,26 @@ killicon.Add("ammo_assault", "zombiesurvival/killicons/assault_rifle_ammo_icon",
 killicon.Add("ammo_bolts", "zombiesurvival/killicons/bolts_ammo_icon_2", Color(230, 230, 100))
 killicon.Add("ammo_medpower", "zombiesurvival/killicons/medpower_ammo_icon")
 killicon.Add("ammo_nail", "zombiesurvival/killicons/nail_ammo_icon_2")
+
+
+-- Custom killfeeds
+
+killicon.AddFont("weapon_zs_doomstick", "zsdeathnotice", "0")
+killicon.Add("weapon_zs_ultrabutcherknife", "zombiesurvival/killicons/weapon_zs_butcherknife2")
+
+killicon.Add("weapon_zs_darkhammer", "zombiesurvival/killicons/weapon_zs_electrohammer", Color(63, 63, 63))
+
+killicon.Add("weapon_zs_eradicator2", "zombiesurvival/killicons/poisonzombie", Color(88, 0, 0))
+killicon.Add("weapon_zs_eradicator3", "zombiesurvival/killicons/poisonzombie", Color(110, 44, 44))
+killicon.Add("weapon_zs_mutated_lacerator", "zombiesurvival/killicons/lacerator", Color(180, 225, 0))
+killicon.Add("weapon_zs_lacerator_charging_deadly", "zombiesurvival/killicons/lacerator", Color(240, 35, 0))
+killicon.Add("weapon_zs_undeadfastzombie", "zombiesurvival/killicons/fastzombie", Color(85, 245, 25))
+killicon.Add("weapon_zs_sigilannihilator", "zombiesurvival/killicons/poisonzombie", Color(63, 255, 63))
+killicon.Add("weapon_zs_rebornnightmare", "zombiesurvival/killicons/nightmare2", Color(255,255,65))
+killicon.Add("weapon_zs_mutatedhowler", "zombiesurvival/killicons/howler")
+killicon.Add("weapon_zs_omega_zombie", "zombiesurvival/killicons/zombie", Color(0, 128, 255))
+
+
 
 net.Receive("zs_crow_kill_crow", function(length)
 	local victim = net.ReadString()

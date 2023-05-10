@@ -203,6 +203,14 @@ function SWEP:PlaySwingEndSound()
 	self:EmitSound("NPC_FastZombie.Frenzy")
 end
 
+function SWEP:MeleeHit(ent, trace, damage, forcescale)
+	if ent:GetClass() == "prop_obj_sigil" then
+		damage = damage * 1.2
+	end
+
+	self.BaseClass.MeleeHit(self, ent, trace, damage, forcescale)
+end
+
 function SWEP:MeleeHitPlayer(ent, trace, damage)
 	ent:MeleeViewPunch(damage)
 	local nearest = ent:NearestPoint(trace.StartPos)

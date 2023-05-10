@@ -166,15 +166,15 @@ function ENT:DrawTranslucent()
 				local repairs = self:GetRepairs()
 				local mrps = self:GetMaxRepairs()
 
-				local repairs2 = math.max(200,repairs/10)
-				local mrps2 = math.max(200,mrps/10)
-				local nhp2 = math.max(200,nhp/10)
-				local mnhp2 = math.max(200,mnhp/10)
+				local repairs2 = math.min(repairs, 6000)
+				local mrps2 = math.min(mrps, 6000)
+				local nhp2 = math.min(nhp, 6000)
+				local mnhp2 = math.min(mnhp, 6000)
 
 				surface.SetDrawColor(0, 0, 0, 210 * vis)
 				surface.DrawRect(x - 1, y, mrps/5 + mrps/50 + 1, hei)
 
-				for i = 0, math.min(repairs), 200 do
+				for i = 0, repairs2, 200 do
 					local val = math.Clamp(repairs - i, 0, 200)
 
 					surface.SetDrawColor(100, 170, 215, 240 * vis)
@@ -194,7 +194,7 @@ function ENT:DrawTranslucent()
 				surface.SetDrawColor(0, 0, 0, 210 * vis)
 				surface.DrawRect(x - 1, y, mnhp/5 + mnhp/50 + 2, hei)
 
-				for i = 0, math.min(nhp), 200 do
+				for i = 0, nhp2, 200 do
 					local val = math.Clamp(nhp - i, 0, 200)
 
 					surface.SetDrawColor(colNail)
@@ -206,8 +206,8 @@ function ENT:DrawTranslucent()
 					col.a = 125 * vis
 
 					draw.SimpleText(displayowner, "ZS3D2DUnstyleSmallest", 0, y + 20, col, TEXT_ALIGN_CENTER)
-					draw.SimpleText(math.Round(nhp, 1) .."/".. math.Round(self:GetMaxNailHealth(), 1), "ZS3D2DUnstyleTiny", x + 25, y - 30, col, TEXT_ALIGN_CENTER)
-					draw.SimpleText(math.Round(repairs, 1) .."/".. math.Round(mrps, 1), "ZS3D2DUnstyleTiny", x + 25, y - 48, Color(207,255,255), TEXT_ALIGN_CENTER)
+					draw.SimpleText(math.Round(nhp, 1) .."/".. math.Round(self:GetMaxNailHealth(), 1).." ("..math.Round(nhp / self:GetMaxNailHealth() * 100).."%)", "ZS3D2DUnstyleTiny", x + 25, y - 30, col, TEXT_ALIGN_CENTER)
+					draw.SimpleText(math.Round(repairs, 1) .."/".. math.Round(mrps, 1).." ("..math.Round(repairs / mrps * 100).."%)", "ZS3D2DUnstyleTiny", x + 25, y - 48, Color(207,255,255), TEXT_ALIGN_CENTER)
 				end
 			end
 		cam.End3D2D()

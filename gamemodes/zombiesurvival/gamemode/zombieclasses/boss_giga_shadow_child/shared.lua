@@ -11,6 +11,7 @@ CLASS.Health = 2000
 CLASS.DynamicHealth = 100
 CLASS.Speed = 235
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 35
 
 CLASS.SWEP = "weapon_zs_gigashadowchild"

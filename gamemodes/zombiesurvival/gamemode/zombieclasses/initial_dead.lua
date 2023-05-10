@@ -12,6 +12,7 @@ CLASS.Hidden = true
 CLASS.Health = 180
 CLASS.Speed = 230
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.CanTaunt = true

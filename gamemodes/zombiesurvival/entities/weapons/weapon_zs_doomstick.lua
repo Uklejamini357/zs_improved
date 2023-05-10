@@ -3,7 +3,7 @@ AddCSLuaFile()
 SWEP.Base = "weapon_zs_baseshotgun"
 
 SWEP.PrintName = "Doom Stick"
-SWEP.Description = "An even better version of Boom Stick shotgun, giving more knockback and total damage.\nThe only one!"
+SWEP.Description = "Has more knockback and damage"
 
 if CLIENT then
 	SWEP.HUD3DBone = "ValveBiped.Gun"
@@ -49,6 +49,12 @@ SWEP.ReloadSound = Sound("Weapon_Shotgun.Reload")
 
 GAMEMODE:SetPrimaryWeaponModifier(SWEP, WEAPON_MODIFIER_RELOAD_SPEED, 0.06)
 GAMEMODE:AttachWeaponModifier(SWEP, WEAPON_MODIFIER_CLIP_SIZE, 1, 2)
+GAMEMODE:AddNewRemantleBranch(SWEP, 1, "Doomer Stick", "+1 numshots but +15% slower reload, -30% less knockback and +100% fire delay", function(wept)
+	wept.Primary.NumShots = math.max(wept.Primary.NumShots + 1, 1)
+	wept.ReloadSpeed = wept.ReloadSpeed * 0.85
+	wept.Primary.Delay = wept.Primary.Delay * 2
+	wept.Knockback = wept.Knockback * 0.7
+end)
 
 function SWEP:PrimaryAttack()
 	if not self:CanPrimaryAttack() then return end
@@ -70,3 +76,18 @@ function SWEP:PrimaryAttack()
 
 	self.IdleAnimation = CurTime() + self:SequenceDuration()
 end
+
+if SERVER then return end
+
+function SWEP:PreDrawViewModel(vm)
+	local col = HSVToColor(CurTime() * 35 % 360, 1, 1)
+	col.r = col.r / 255
+	col.g = col.g / 255
+	col.b = col.b / 255
+	render.SetColorModulation(col.r, col.g, col.b)
+end
+
+function SWEP:ViewModelDrawn()
+	render.SetColorModulation(1, 1, 1)
+end
+

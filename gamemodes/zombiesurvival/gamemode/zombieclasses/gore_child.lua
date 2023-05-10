@@ -11,6 +11,7 @@ CLASS.Hidden = true
 CLASS.Health = 20
 CLASS.Speed = 150
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 0.5
 
 CLASS.CanTaunt = true

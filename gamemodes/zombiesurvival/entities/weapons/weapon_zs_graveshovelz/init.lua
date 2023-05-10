@@ -8,7 +8,7 @@ end
 
 function SWEP:OnMeleeHit(hitent, hitflesh, tr)
 	if not hitent:IsPlayer() then
-		self.MeleeDamage = 30
+		self.MeleeDamage = self.MeleeDamageVsProps
 	end
 end
 

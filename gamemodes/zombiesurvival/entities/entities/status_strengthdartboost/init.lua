@@ -16,7 +16,7 @@ function ENT:EntityTakeDamage(ent, dmginfo)
 	if attacker ~= self:GetOwner() then return end
 
 	if attacker:IsValid() and attacker:IsPlayer() and attacker:Team() == TEAM_HUMAN --[[and inflictor == wep and wep.IsMelee]] then
-		local dmg = math.min(dmginfo:GetDamage(), ent:Health())
+		local dmg = ent:IsPlayer() and math.min(dmginfo:GetDamage(), ent:Health()) or dmginfo:GetDamage()
 		local extradamage = dmg * 0.25
 		dmginfo:SetDamage(dmg + extradamage)
 

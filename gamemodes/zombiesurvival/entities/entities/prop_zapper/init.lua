@@ -89,8 +89,8 @@ function ENT:OnTakeDamage(dmginfo)
 
 	local attacker = dmginfo:GetAttacker()
 	if not (attacker:IsValid() and attacker:IsPlayer() and attacker:Team() == TEAM_HUMAN) then
-		self:SetObjectHealth(self:GetObjectHealth() - dmginfo:GetDamage())
 		self:ResetLastBarricadeAttacker(attacker, dmginfo)
+		self:SetObjectHealth(self:GetObjectHealth() - dmginfo:GetDamage())
 	end
 end
 

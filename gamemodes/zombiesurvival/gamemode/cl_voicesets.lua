@@ -226,7 +226,12 @@ function meta:PlayZombieDeathSound()
 	if not self:CallZombieFunction0("PlayDeathSound") then
 		local snds = self:GetZombieClassTable().DeathSounds
 		if snds then
-			self:EmitSound(snds[math.random(#snds)])
+			local snd = snds[math.random(#snds)]
+			if type(snd) == "table" then
+				self:EmitSound(snd[1], snd[2], snd[3])
+			else
+				self:EmitSound(snd)
+			end
 		end
 	end
 end
@@ -257,7 +262,11 @@ function meta:PlayZombiePainSound()
 	if snds then
 		local snd = snds[math.random(#snds)]
 		if snd then
-			self:EmitSound(snd)
+			if type(snd) == "table" then
+				self:EmitSound(snd[1], snd[2], snd[3])
+			else
+				self:EmitSound(snd)
+			end
 		end
 	end
 end

@@ -11,6 +11,7 @@ CLASS.Health = 1825
 CLASS.DynamicHealth = 100
 CLASS.Speed = 165
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 30
 
 CLASS.SWEP = "weapon_zs_anightmare"

@@ -49,7 +49,7 @@ net.Receive("zs_skill_is_unlocked", function(len, pl)
 	local activate = net.ReadBool()
 	local skill = GAMEMODE.Skills[skillid]
 
-	if skill and (skill.RemortReq or 0) <= math.max(0, pl:GetZSRemortLevel()) and not pl:IsSkillUnlocked(skillid) and pl:GetZSSPRemaining() >= 1 and pl:SkillCanUnlock(skillid) and not skill.Disabled then
+	if skill and not pl:IsSkillUnlocked(skillid) and (skill.RequiredSP == 0 or pl:GetZSSPRemaining() >= (skill.RequiredSP or 1)) and pl:SkillCanUnlock(skillid) and not skill.Disabled then
 		pl:SetSkillUnlocked(skillid, true)
 
 		local msg = "You've unlocked a skill: "..skill.Name
@@ -185,7 +185,8 @@ function meta:SetZSRemortLevel(level)
 end
 
 function meta:SetZSXP(xp)
-	self:SetDTInt(DT_PLAYER_INT_XP, math.Clamp(xp, 0, GAMEMODE.MaxXP))
+	-- no one is gonna plan to make infinite max XP but whatever
+	self:SetDTInt(DT_PLAYER_INT_XP, math.Clamp(xp, 0, math.min(2147483647, GAMEMODE.MaxXP)))
 end
 
 function meta:SetZSBankXP(xp)
@@ -194,21 +195,50 @@ end
 
 function meta:AddZSXP(xp)
 	-- TODO: Level change checking. Cache the "XP for next level" in the vault load and compare it here instead of checking every add.
-	self:SetZSXP(self:GetZSXP() + xp)
+	self.XPRemainder = self.XPRemainder + xp
+	local xpgain = math.floor(self.XPRemainder)
+	self:SetZSXP(self:GetZSXP() + xpgain)
+	self.XPRemainder = self.XPRemainder - xpgain
 end
 
 function meta:AddZSBankXP(xp)
 	self:SetZSBankXP(self:GetZSBankXP() + xp)
 end
 
--- Added this function due to new XP Gaining Multiplier, more accurate and will be used 
-function meta:GainZSXP(xp, ignoreendround)
+local allowbankxp = false
+
+-- Added this function due to new XP Gaining Multiplier, and is more accurate (Additionally, gain 1 Banked XP per every 20 XP if max level)
+function meta:GainZSXP(xp, ignoreendround, ignoremul)
 	if not ignoreendround and GAMEMODE.RoundEnded then return end
-	xp = xp * (GAMEMODE.PlayerXPGainMulti or 1)
-	xp = self:Team() == TEAM_HUMAN and xp * (GAMEMODE.HumanXPGainMulti or 1) or self:Team() == TEAM_UNDEAD and xp * (GAMEMODE.ZombieXPMulti or 1) or xp 
-	self.XPRemainder = self.XPRemainder + (xp * (self.XPGainMul or 1))
-	self:AddZSXP(math.floor(self.XPRemainder))
-	self.XPRemainder = self.XPRemainder - math.floor(self.XPRemainder)
+	xp = ignoremul and (self:Team() == TEAM_HUMAN and xp * (GAMEMODE.HumanXPMulti or 1) or self:Team() == TEAM_UNDEAD and xp * (GAMEMODE.ZombieXPMulti or 1)) or xp 
+
+/*
+	self.XPRemainder = self.XPRemainder + (xp * (ignoremul and self.XPGainMul or 1))
+	if allowbankxp and self:GetZSXP() >= GAMEMODE.MaxXP then
+		local bankxpneed = 20
+		if self.XPRemainder >= bankxpneed then
+			local givexp = math.floor(self.XPRemainder / bankxpneed)
+			self:AddZSBankXP(givexp)
+			self.XPRemainder = self.XPRemainder - math.floor(givexp * bankxpneed)
+		end
+	else
+		self:AddZSXP(math.floor(self.XPRemainder))
+		self.XPRemainder = self.XPRemainder - math.floor(self.XPRemainder)
+	end
+*/
+	xp = self.XPRemainder + (xp * (ignoremul and self.XPGainMul or 1))
+	if allowbankxp and self:GetZSXP() >= GAMEMODE.MaxXP then
+		local bankxpneed = 20
+		if xp >= bankxpneed then
+			local givexp = math.floor(xp / bankxpneed)
+			self:AddZSBankXP(givexp)
+			xp = xp - math.floor(givexp * bankxpneed)
+		end
+	else
+		self:AddZSXP(math.floor(xp))
+		xp = xp - math.floor(xp)
+	end
+	self.XPRemainder = xp
 end
 
 -- Done on team switch to anything except human.
@@ -272,18 +302,20 @@ function meta:SetUnlockedSkills(skills, nosend)
 end
 
 function meta:SkillsRemort()
-	local rl = self:GetZSRemortLevel() + 1
+	local give2remorts = false --self:GetZSLevel() >= GAMEMODE.MaxRemortable2Level
+	local rl = self:GetZSRemortLevel() + (give2remorts and 2 or 1)
+	local xp = self:GetZSXP() - (give2remorts and GAMEMODE.MaxRemortable2XP or GAMEMODE.MaxRemortableXP)
 	local myname = self:Name()
 
 	self:SetZSRemortLevel(rl)
-	self:SetZSXP(0)
+	self:SetZSXP(xp / 10)
 	self:SetUnlockedSkills({})
 	self:SetDesiredActiveSkills({})
 	self.NextSkillReset = nil
 	self.XPRemainder = 0
 
 	self:CenterNotify(COLOR_CYAN, translate.ClientFormat(self, "you_have_remorted_now_rl_x", rl))
-	self:CenterNotify(COLOR_YELLOW, translate.ClientFormat(self, "you_now_have_x_extra_sp", rl))
+	self:CenterNotify(COLOR_YELLOW, translate.ClientFormat(self, "you_now_have_x_extra_sp", self:GetZSSPExtra(true))) -- rl
 	for _, pl in pairs(player.GetAll()) do
 		if pl ~= self then
 			pl:CenterNotify(COLOR_CYAN, translate.ClientFormat(pl, "x_has_remorted_to_rl_y", myname, rl))

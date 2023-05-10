@@ -9,6 +9,7 @@ CLASS.KnockbackScale = 0
 
 CLASS.FearPerInstance = 1
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 35
 
 CLASS.Model = Model("models/headcrab.mdl")

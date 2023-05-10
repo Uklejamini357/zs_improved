@@ -85,7 +85,9 @@ timer.Create("StatTrackingSaveTimer", 60, 0, function()
 	end
 
 	for k,v in pairs(skc) do
-		stattrack:IncreaseElementKV(STATTRACK_TYPE_SKILL, GAMEMODE.Skills[k].Name, "SkillMinutes", v)
+		if GAMEMODE.Skills[k] then
+			stattrack:IncreaseElementKV(STATTRACK_TYPE_SKILL, GAMEMODE.Skills[k].Name, "SkillMinutes", v)
+		end
 	end
 
 	stattrack:SaveStatTrackingFiles()

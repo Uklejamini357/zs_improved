@@ -401,13 +401,14 @@ function PANEL:RefreshPlayer()
 	self.m_PlayerLabel:SetText(name)
 	self.m_PlayerLabel:SetAlpha(240)
 
-	self.m_ScoreLabel:SetText(pl:GetMScore())
+	self.m_ScoreLabel:SetText(pl:Frags())
 	self.m_ScoreLabel:SetAlpha(240)
 
 	local rlvl = pl:GetZSRemortLevel()
 	self.m_RemortLabel:SetText(rlvl > 0 and rlvl or "")
 
-	local rlvlmod = math.floor((rlvl % 40) / 4)
+	local rlvlcol = 4
+	local rlvlmod = math.floor((rlvl % (rlvlcol * 10)) / rlvlcol)
 	local hcolor, hlvl = COLOR_GRAY, 0
 	for rlvlr, rcolor in pairs(GAMEMODE.RemortColors) do
 		if rlvlmod >= rlvlr and rlvlr >= hlvl then
@@ -441,7 +442,7 @@ function PANEL:RefreshPlayer()
 		self.m_Friend:SetImage(GAMEMODE.ZSFriends[pl:SteamID()] and "icon16/heart_delete.png" or "icon16/heart.png")
 	end
 
-	self:SetZPos(-pl:GetMScore())
+	self:SetZPos(-pl:Frags())
 
 	if pl:Team() ~= self._LastTeam then
 		self._LastTeam = pl:Team()

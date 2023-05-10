@@ -9,6 +9,7 @@ CLASS.Health = 125
 CLASS.DynamicHealth = 3
 CLASS.Speed = 170
 
+CLASS.DamageNeedPerPoint = GM.HumanoidZombiePointRatio
 CLASS.Points = CLASS.Health/GM.HumanoidZombiePointRatio
 
 CLASS.CanTaunt = true

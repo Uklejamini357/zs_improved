@@ -365,7 +365,7 @@ function meta:ResetLastBarricadeAttacker(attacker, dmginfo)
 	end
 end
 
-meta.OldSetPhysicsAttacker = meta.SetPhysicsAttacker
+meta.OldSetPhysicsAttacker = meta.OldSetPhysicsAttacker or meta.SetPhysicsAttacker
 function meta:SetPhysicsAttacker(ent)
 	if string.sub(self:GetClass(), 1, 12) == "func_physbox" and ent:IsValid() then
 		self.PBAttacker = ent
@@ -439,7 +439,7 @@ function meta:DamageNails(attacker, inflictor, damage, dmginfo)
 	if attacker:IsPlayer() then
 		-- :O)
 		if attacker.SpawnProtection then
-			damage = damage * 5
+			damage = damage * 3.5
 			dmginfo:SetDamage(damage)
 			self:AddUselessDamage(damage)
 		end
@@ -810,18 +810,14 @@ function meta:ProcessNPCDamage(dmginfo)
 				attacker:SetBloodArmor(math.min(attacker.MaxBloodArmor, attacker:GetBloodArmor() + math.min(damage, self:Health()) * attacker.MeleeDamageToBloodArmorMul * attacker.BloodarmorGainMul * 0.2))
 			end
 
-			if attacker:IsSkillActive(SKILL_HEAVYSTRIKES) and not self:GetZombieClassTable().Boss and (wep.IsFistWeapon and attacker:IsSkillActive(SKILL_CRITICALKNUCKLE) or wep.MeleeKnockBack > 0) then
-				attacker:TakeSpecialDamage(math.Clamp(damage * (wep.Unarmed and 0.07 or 0.012), 0, 20), DMG_SLASH, self, self:GetActiveWeapon())
+			if attacker:IsSkillActive(SKILL_HEAVYSTRIKES) and (wep.IsFistWeapon and attacker:IsSkillActive(SKILL_CRITICALKNUCKLE) or wep.MeleeKnockBack > 0) then
+				attacker:TakeSpecialDamage(math.Clamp(damage * 0.06, 0, 20), DMG_SLASH, self, self:GetActiveWeapon())
 			end
 
 			if attacker:IsSkillActive(SKILL_BLOODLUST) and attacker:GetPhantomHealth() > 0 and attacker:Health() < attackermaxhp then
 				local toheal = math.min(attacker:GetPhantomHealth(), math.min(self:Health(), damage * 0.05))
 				attacker:SetHealth(math.min(attacker:Health() + toheal, attackermaxhp))
 				attacker:SetPhantomHealth(attacker:GetPhantomHealth() - toheal)
-			end
-
-			if attacker:HasTrinket("sharpkit") then
-				dmginfo:SetDamage(dmginfo:GetDamage() * (1 + self:GetFlatLegDamage()/75))
 			end
 		end
 	end

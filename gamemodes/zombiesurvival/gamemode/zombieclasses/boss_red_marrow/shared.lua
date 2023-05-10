@@ -9,6 +9,7 @@ CLASS.KnockbackScale = 0
 
 CLASS.FearPerInstance = 1
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 30
 
 CLASS.Model = Model("models/player/skeleton.mdl")

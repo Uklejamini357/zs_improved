@@ -40,7 +40,7 @@ end
 function GM:AddWeaponBreakdownRecipe(weapon, result)
 	local datatab = {Result = result, Index = index}
 	self.Breakdowns[weapon] = datatab
-	for i = 1, 3 do
+	for i = 1, #self.WeaponQualities do
 		self.Breakdowns[self:GetWeaponClassOfQuality(weapon, i)] = datatab
 		self.Breakdowns[self:GetWeaponClassOfQuality(weapon, i, 1)] = datatab
 	end
@@ -86,10 +86,12 @@ GM.Assemblies["weapon_zs_avelyn"]								= {"trinket_ammovestiii",	"weapon_zs_ch
 GM.Assemblies["weapon_zs_asmd"]									= {"comp_precision",		"weapon_zs_quasar"}
 GM.Assemblies["weapon_zs_enkindler"]							= {"comp_launcher",			"weapon_zs_cinderrod"}
 GM.Assemblies["weapon_zs_proliferator"]							= {"comp_linearactuator",	"weapon_zs_galestorm"}
+GM.Assemblies["weapon_zs_darkhammer"]							= {"comp_darkbattery",		"weapon_zs_electrohammer_q4"}
 GM.Assemblies["trinket_electromagnet"]							= {"comp_electrobattery",	"trinket_magnet"}
 GM.Assemblies["trinket_projguide"]								= {"comp_cpuparts",			"trinket_targetingvisori"}
 GM.Assemblies["trinket_projwei"]								= {"comp_busthead",			"trinket_projguide"}
 GM.Assemblies["trinket_controlplat"]							= {"comp_cpuparts",			"trinket_mainsuite"}
+GM.Assemblies["comp_darkbattery"]								= {"trinket_electromagnet",	"comp_electrobattery"}
 
 GM:AddInventoryItemData("comp_modbarrel",		"Modular Barrel",			"A modular barrel suited for pairing up with another gun barrel.",								"models/props_c17/trappropeller_lever.mdl")
 GM:AddInventoryItemData("comp_burstmech",		"Burst Fire Mechanism",		"A mechanism that could be used to make a gun burst fire.",										"models/props_c17/trappropeller_lever.mdl")
@@ -98,6 +100,10 @@ GM:AddInventoryItemData("comp_busthead",		"Bust Head",				"A bust head that coul
 GM:AddInventoryItemData("comp_sawblade",		"Saw Blade",				"A sharp saw blade ready to be fitted onto fast moving objects.",								"models/props_junk/sawblade001a.mdl")
 GM:AddInventoryItemData("comp_propanecan",		"Propane Canister",			"A propane canister. With the correct setup, has the potential to ignite things.",				"models/props_junk/propane_tank001a.mdl")
 GM:AddInventoryItemData("comp_electrobattery",	"Electrobattery",			"An electrobattery. Could be used to improve repairing motions.",								"models/items/car_battery01.mdl")
+GM:AddInventoryItemData("comp_darkbattery",		"Dark Electrobattery",		"Contains power of dark matter and can be used to craft dark hammer.",							{
+	["base"] = { type = "Model", model = "models/items/car_battery01.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(0, 0, 0), angle = Angle(0, 0, 0), size = Vector(0, 0, 0), color = Color(63, 63, 63, 255), surpresslightning = false, skin = 0, bodygroup = {} },
+--	["base+"] = { type = "Model", model = "models/props_combine/tprotato1.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "base", pos = Vector(0.492, -1.03, 0), angle = Angle(0, -78.715, 90), size = Vector(0.03, 0.02, 0.032), color = Color(50, 50, 66, 255), surpresslightning = false, material = "models/props_pipes/pipeset_metal02", skin = 0, bodygroup = {} }
+})
 --GM:AddInventoryItemData("comp_hungrytether",	"Hungry Tether",			"A hungry tether from a devourer that comes from a devourer rib.",								"models/gibs/HGIBS_rib.mdl")]]
 GM:AddInventoryItemData("comp_contaecore",		"Contained Energy Core",	"A contained energy core, that has an internal charging mechanism.",							"models/Items/combine_rifle_cartridge01.mdl")
 GM:AddInventoryItemData("comp_pumpaction",		"Pump Action Mechanism",	"A standard pump action mechanism from a blaster shotgun.",										"models/props_c17/trappropeller_lever.mdl")
@@ -293,6 +299,7 @@ GM:AddSkillModifier(trinket, SKILLMOD_PULSE_WEAPON_SLOW_MUL, -0.25)
 trinket = GM:AddTrinket("Cryogenic Inductor", "cryoindu", false, oveles, oweles, 4, "Ice based weapons have a chance to shatter zombies based on how much health they have\nMax explosion damage is 100")
 
 trinket = GM:AddTrinket("Extended Magazine", "extendedmag", false, oveles, oweles, 3, "Increases the clip size of weapons with 8 or more clip size by +15%")
+GM:AddSkillModifier(trinket, SKILLMOD_CLIP_SIZE_MUL, 0.15)
 
 trinket = GM:AddTrinket("Pulse Impedance Module", "pulseimpedance", false, oveles, oweles, 5, "Slow from pulse weapons and stun batons also slow zombie attack speed\n+24% slow from pulse weapons and stun batons")
 GM:AddSkillFunction(trinket, function(pl, active) pl.PulseImpedance = active end)
@@ -308,6 +315,8 @@ GM:AddSkillModifier(trinket, SKILLMOD_PROP_THROW_STRENGTH_MUL, 0.35)
 GM:AddSkillModifier(trinket, SKILLMOD_PROP_CARRY_SLOW_MUL, -0.2)
 GM:AddSkillModifier(trinket, SKILLMOD_WEAPON_WEIGHT_SLOW_MUL, -0.3)
 GM:AddSkillModifier(trinket, SKILLMOD_PROP_CARRY_CAPACITY_MASS_MUL, 0.1)
+
+GM:AddSkillModifier(GM:AddTrinket("Damage booster", "dmgbooster", false, oveles, oweles, 6, "+3% damage dealt"), SKILLMOD_DAMAGE_DEALT_MUL, 0.03)
 
 -- Defensive Trinkets
 trinket, trinketwep = GM:AddTrinket("Kevlar Underlay", "kevlar", false, develes, deweles, 2, "-11% melee damage taken\n-11% projectile damage taken")
@@ -450,7 +459,7 @@ local core_w = {
 	["black_core"] = { type = "Model", model = "models/dav0r/hoverball.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(4, 2, 0), angle = Angle(0, 0, 0), size = Vector(0.349, 0.349, 0.349), color = Color(20, 20, 20, 255), surpresslightning = false, material = "models/shiny", skin = 0, bodygroup = {} }
 }
 
-GM:AddTrinket("Bleak Soul", "bleaksoul", false, core_v, core_w, nil, "Blinds and knocks zombies away when attacked\nRecharges every 35 seconds")
+GM:AddTrinket("Bleak Soul", "bleaksoul", false, core_v, core_w, nil, "Blinds and knocks zombies away when attacked - this ability recharges every 35 seconds\nProtects from blinding by Reborn Nightmare")
 
 core_w = {
 	["black_core_2"] = { type = "Sprite", sprite = "effects/splashwake3", bone = "ValveBiped.Bip01_R_Hand", rel = "black_core", pos = Vector(0, 0.1, -0.201), size = { x = 7.697, y = 7.697 }, color = Color(255, 255, 255, 255), nocull = false, additive = true, vertexalpha = true, vertexcolor = true, ignorez = false},

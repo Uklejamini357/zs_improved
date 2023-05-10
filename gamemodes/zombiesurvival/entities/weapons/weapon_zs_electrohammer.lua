@@ -1,6 +1,7 @@
 AddCSLuaFile()
 
 SWEP.PrintName = "Electrohammer"
+SWEP.Description = "Hammer powered by Electrobattery, giving better repairing rate.\nRepairs at 1.4x rate."
 
 if CLIENT then
 
@@ -23,7 +24,8 @@ SWEP.Base = "weapon_zs_hammer"
 
 SWEP.MeleeDamage = 22 --40
 SWEP.HealStrength = 1.4
-SWEP.ReinforceDuration = 3
+SWEP.ReinforceDuration = 2.5
+SWEP.NailHealthMulti = 1
 
 SWEP.ViewModel = "models/weapons/v_hammer/c_hammer.mdl"
 SWEP.WorldModel = "models/weapons/w_hammer.mdl"

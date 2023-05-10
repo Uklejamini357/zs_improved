@@ -35,23 +35,24 @@ local function CanBuy(item, pan)
 		return false
 	end
 
-	if item.Tier and GAMEMODE.LockItemTiers and not GAMEMODE.ZombieEscape and not GAMEMODE.ObjectiveMap and not GAMEMODE:IsClassicMode() then
-		if not GAMEMODE:GetWaveActive() then -- We can buy during the wave break before hand.
-			if GAMEMODE:GetWave() + 1 < item.Tier then
+	local waveunlock = item.WaveUnlock or item.Tier
+	if waveunlock and GAMEMODE.LockItemTiers and not GAMEMODE.ZombieEscape and not GAMEMODE.ObjectiveMap and not GAMEMODE:IsClassicMode() then
+--		if not GAMEMODE:GetWaveActive() then -- We can buy during the wave break before hand.
+			if (GAMEMODE:GetWaveActive() and GAMEMODE:GetWave() or GAMEMODE:GetWave() + 1) < waveunlock then
 				return false
 			end
-		elseif GAMEMODE:GetWave() < item.Tier then
-			return false
-		end
+--		elseif GAMEMODE:GetWave() < (item.WaveUnlock or item.Tier) then
+--			return false
+--		end
 	end
 
 	if item.MaxStock and not GAMEMODE:HasItemStocks(item.Signature) then
 		return false
 	end
 
-	if not pan.NoPoints and MySelf:GetPoints() < math.floor(item.Price * (MySelf.ArsenalDiscount or 1)) then
+	if not pan.NoPoints and MySelf:GetPoints() < math.floor(item.Price * MySelf:GetArsenalPrices()) then
 		return false
-	elseif pan.NoPoints and MySelf:GetAmmoCount("scrap") < math.ceil(GAMEMODE:PointsToScrap(item.Price)) then
+	elseif pan.NoPoints and MySelf:GetAmmoCount("scrap") < math.ceil(GAMEMODE:PointsToScrap(item.Price) * MySelf:GetRemantlerPrices()) then
 		return false
 	end
 
@@ -144,7 +145,7 @@ function GM:ViewerStatBarUpdate(viewer, display, sweptable)
 			stattext = speedtotext[SPEED_NORMAL]
 			if speedtotext[sweptable[statshow[1]]] then
 				stattext = speedtotext[sweptable[statshow[1]]]
-			elseif sweptable[statshow[1]] < SPEED_SLOWEST then
+			elseif sweptable[statshow[1]] < SPEED_SLOWEST1 then
 				stattext = speedtotext[-1]
 			end
 		elseif statshow[1] == "ClipSize" then
@@ -256,7 +257,7 @@ local function ItemPanelDoClick(self)
 	purl:SetVisible(true)
 
 	local ppurbl = viewer.m_PurchasePrice
-	local price = self.NoPoints and math.ceil(GAMEMODE:PointsToScrap(shoptbl.Worth)) or math.floor(shoptbl.Worth * (MySelf.ArsenalDiscount or 1))
+	local price = self.NoPoints and math.ceil(GAMEMODE:PointsToScrap(shoptbl.Worth) * MySelf:GetRemantlerPrices()) or math.floor(shoptbl.Worth * MySelf:GetArsenalPrices())
 	ppurbl:SetText(price .. (self.NoPoints and " Scrap" or " Points"))
 	ppurbl:SizeToContents()
 	ppurbl:SetPos(purb:GetWide() / 2 - ppurbl:GetWide() / 2, purb:GetTall() * 0.75 - ppurbl:GetTall() * 0.5)
@@ -275,7 +276,7 @@ local function ItemPanelDoClick(self)
 	purl:SetVisible(canammo)
 
 	ppurbl = viewer.m_AmmoPrice
-	price = math.floor(9 * (MySelf.ArsenalDiscount or 1))
+	price = math.floor(9 * MySelf:GetArsenalPrices())
 	ppurbl:SetText(price .. " Points")
 	ppurbl:SizeToContents()
 	ppurbl:SetPos(purb:GetWide() / 2 - ppurbl:GetWide() / 2, purb:GetTall() * 0.75 - ppurbl:GetTall() * 0.5)
@@ -354,8 +355,32 @@ function GM:AddShopItem(list, i, tab, issub, nopointshop)
 	itempan.Paint = ItemPanelPaint
 	itempan.DoClick = ItemPanelDoClick
 	itempan.DoRightClick = function()
+		local points = tab.Price * MySelf:GetArsenalPrices()
 		local menu = DermaMenu(itempan)
-		menu:AddOption("Buy", function() RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap") end)
+		menu:AddOption("Buy", function()
+			RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
+		end)
+		if MySelf:GetPoints() >= points * 2 then
+			menu:AddOption("Buy x2", function()
+				for i=1,2 do
+					RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
+				end
+			end)
+		end
+		if MySelf:GetPoints() >= points * 5 then
+			menu:AddOption("Buy x5", function()
+				for i=1,5 do
+					RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
+				end
+			end)
+		end
+		if MySelf:GetPoints() >= points * 10 then
+			menu:AddOption("Buy x10", function()
+				for i=1,10 do
+					RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
+				end
+			end)
+		end
 		menu:Open()
 	end
 	list:AddItem(itempan)
@@ -402,12 +427,22 @@ function GM:AddShopItem(list, i, tab, issub, nopointshop)
 		pricelabel:SetTextColor(COLOR_RED)
 		pricelabel:SetText(GAMEMODE.Skills[tab.SkillRequirement].Name)
 	else
-		local points = math.floor(tab.Price * (MySelf.ArsenalDiscount or 1))
+		local points = math.floor(tab.Price * MySelf:GetArsenalPrices())
 		local price = tostring(points)
 		if nopointshop then
-			price = tostring(math.ceil(self:PointsToScrap(tab.Price)))
+			price = tostring(math.ceil(self:PointsToScrap(tab.Price) * MySelf:GetRemantlerPrices()))
 		end
-		pricelabel:SetText(price..(nopointshop and " Scrap" or " Points"))
+		local txt = price..(nopointshop and " Scrap" or " Points")
+		pricelabel:SetText(txt)
+		pricelabel.Think = function(self)
+			points = math.floor(tab.Price * MySelf:GetArsenalPrices())
+			price = tostring(nopointshop and math.ceil(GAMEMODE:PointsToScrap(tab.Price) * MySelf:GetRemantlerPrices()) or points)
+			txt = price..(nopointshop and " Scrap" or " Points")
+			if txt == self:GetText() then return end
+			self:SetText(txt)
+			self:SizeToContents()
+			self:AlignRight(alignri)
+		end
 	end
 	pricelabel:SizeToContents()
 	pricelabel:AlignRight(alignri)

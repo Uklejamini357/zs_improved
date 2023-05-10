@@ -11,6 +11,7 @@ CLASS.Health = 460
 CLASS.DynamicHealth = 6
 CLASS.SWEP = "weapon_zs_wildpoisonzombie"
 
+CLASS.DamageNeedPerPoint = GM.PoisonZombiePointRatio
 CLASS.Points = CLASS.Health/GM.PoisonZombiePointRatio
 
 local math_random = math.random

@@ -15,6 +15,7 @@ CLASS.Health = 100
 CLASS.Speed = 130
 CLASS.JumpPower = 120
 
+CLASS.DamageNeedPerPoint = GM.TorsoZombiePointRatio
 CLASS.Points = CLASS.Health/GM.TorsoZombiePointRatio
 
 CLASS.Hull = {Vector(-16, -16, 0), Vector(16, 16, 20)}

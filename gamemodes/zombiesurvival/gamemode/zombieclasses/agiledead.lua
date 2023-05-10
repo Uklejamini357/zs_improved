@@ -12,6 +12,7 @@ CLASS.SWEP = "weapon_zs_agiledead"
 CLASS.Unlocked = true
 
 CLASS.Health = 125
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio
 CLASS.Points = CLASS.Health/GM.NoHeadboxZombiePointRatio
 CLASS.Speed = 220
 

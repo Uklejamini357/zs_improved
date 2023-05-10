@@ -94,7 +94,7 @@ function SWEP:MeleeSwing()
 	self.IdleAnimation = CurTime() + self:SequenceDuration()
 
 	local hit = false
-	local tr = owner:CompensatedPenetratingMeleeTrace(self.MeleeRange * (owner.MeleeRangeMul or 1), self.MeleeSize)
+	local tr = owner:CompensatedPenetratingMeleeTrace(self.MeleeRange * (owner.MeleeRangeMul or 1) + (owner.MeleeRangeAdd or 0), self.MeleeSize)
 	local damage = self:GetDamage(self:GetTracesNumPlayers(tr))
 	local ent
 

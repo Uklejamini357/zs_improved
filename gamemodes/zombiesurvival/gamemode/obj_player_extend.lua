@@ -245,6 +245,20 @@ function meta:NearArsenalCrate()
 end
 meta.IsNearArsenalCrate = meta.NearArsenalCrate
 
+function meta:GetArsenalPrices()
+	local mul = self.ArsenalDiscount
+
+	if self:IsSkillActive(SKILL_COMMISIONED_BUYER) then
+		mul = mul + (GAMEMODE:GetWaveActive() and 0.15 or -0.03)
+	end
+
+	if self:IsSkillActive(SKILL_TORMENT15) then
+		mul = mul + (GAMEMODE:GetWave() * 0.01)
+	end
+
+	return math.max(0.1, mul)
+end
+
 function meta:NearRemantler()
 	local pos = self:EyePos()
 
@@ -258,6 +272,12 @@ function meta:NearRemantler()
 	end
 
 	return false
+end
+
+function meta:GetRemantlerPrices()
+	local mul = self.RemantlerPrices
+
+	return math.max(0.1, mul)
 end
 
 function meta:GetResupplyAmmoType()
@@ -666,7 +686,7 @@ function meta:ShouldNotCollide(ent)
 	return false
 end
 
-meta.OldSetHealth = FindMetaTable("Entity").SetHealth
+meta.OldSetHealth = meta.OldSetHealth or FindMetaTable("Entity").SetHealth
 function meta:SetHealth(health)
 	self:OldSetHealth(health)
 	if P_Team(self) == TEAM_HUMAN and 1 <= health then
@@ -950,8 +970,7 @@ function meta:NearestRemantler()
 end
 
 function meta:GetMaxZombieHealth(dynamic_health)
-	return dynamic_health and self:GetNWInt("zs_zombiedynhealth", self:GetZombieClassTable().Health + (GAMEMODE:GetWave() * tonumber(self:GetZombieClassTable().DynamicHealth or 0)))
-	or self:GetNWInt("zs_zombiehealth", self:GetZombieClassTable().Health)
+	return self:GetNWInt("zs_zombiedynhealth", self:GetZombieClassTable().Health + (GAMEMODE:GetWave() * tonumber(self:GetZombieClassTable().DynamicHealth or 0)))
 end
 
 local oldmaxhealth = FindMetaTable("Entity").GetMaxHealth
@@ -964,7 +983,7 @@ function meta:GetMaxHealth(dynamic_health)
 end
 
 if not meta.OldAlive then
-	meta.OldAlive = meta.Alive
+	meta.OldAlive = meta.OldAlive or meta.Alive
 	function meta:Alive()
 		return self:GetObserverMode() == OBS_MODE_NONE and not self.NeverAlive and self:OldAlive()
 	end
@@ -992,7 +1011,7 @@ function meta:GetRight()
 end
 
 function meta:GetZombieMeleeSpeedMul()
-	return 1 * (1 + math.Clamp(self:GetArmDamage() / GAMEMODE.MaxArmDamage, 0, 1)) / (self:GetStatus("zombie_battlecry") and 1.2 or 1)
+	return 1 * (1 + math.Clamp(self:GetArmDamage() / GAMEMODE.MaxArmDamage, 0, 1)) / ((self:GetStatus("zombie_battlecry") and 1.2 or 1) * GAMEMODE.ZombieAttackRateMultiplier)
 end
 
 function meta:GetMeleeSpeedMul()
@@ -1007,14 +1026,7 @@ function meta:GetPhantomHealth()
 	return self:GetDTFloat(DT_PLAYER_FLOAT_PHANTOMHEALTH)
 end
 
-function meta:GetMScore()
-	return self:GetNWInt("metascore", 0)
-end
-
-function meta:AddMScore(metascore)
-	self:SetNWInt("metascore", self:GetNWInt("metascore") + tonumber(metascore))
-end
-
-function meta:SetMScore(metascore)
-	self:SetNWInt("metascore", metascore)
+meta.OldFrags = meta.OldFrags or meta.Frags
+function meta:Frags()
+	return self:GetNWInt("frags_score", self:OldFrags() or 0)
 end

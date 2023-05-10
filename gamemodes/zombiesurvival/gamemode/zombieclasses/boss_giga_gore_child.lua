@@ -11,6 +11,7 @@ CLASS.Health = 2500
 CLASS.DynamicHealth = 125
 CLASS.Speed = 230
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 40
 
 CLASS.CanTaunt = true

@@ -14,6 +14,7 @@ CLASS.Health = 75
 CLASS.Speed = 150
 CLASS.JumpPower = 130
 
+CLASS.DamageNeedPerPoint = GM.TorsoZombiePointRatio
 CLASS.Points = CLASS.Health/GM.TorsoZombiePointRatio
 
 CLASS.PainSounds = {"NPC_FastZombie.Pain"}

@@ -245,6 +245,9 @@ function GM:AddResources()
 	resource.AddFile("materials/zombiesurvival/filmgrain/filmgrain.vmt")
 	resource.AddFile("materials/zombiesurvival/filmgrain/filmgrain.vtf")
 
+	for _, filename in pairs(file.Find("sound/zombies/hate/*.wav", "GAME")) do
+		resource.AddFile("sound/zombies/hate/"..filename)
+	end
 	for _, filename in pairs(file.Find("sound/zombiesurvival/*.ogg", "GAME")) do
 		resource.AddFile("sound/zombiesurvival/"..filename)
 	end
@@ -367,6 +370,14 @@ function GM:AddResources()
 	resource.AddFile("sound/weapons/melee/keyboard/keyboard_hit-02.ogg")
 	resource.AddFile("sound/weapons/melee/keyboard/keyboard_hit-03.ogg")
 	resource.AddFile("sound/weapons/melee/keyboard/keyboard_hit-04.ogg")
+	resource.AddFile("sound/weapons/melee/chainsaw_die_01.wav")
+	resource.AddFile("sound/weapons/melee/chainsaw_gore_01.wav")
+	resource.AddFile("sound/weapons/melee/chainsaw_gore_02.wav")
+	resource.AddFile("sound/weapons/melee/chainsaw_gore_03.wav")
+	resource.AddFile("sound/weapons/melee/chainsaw_gore_04.wav")
+	resource.AddFile("sound/weapons/melee/chainsaw_idle.wav")
+	resource.AddFile("sound/weapons/melee/chainsaw_start_01.wav")
+	resource.AddFile("sound/weapons/melee/chainsaw_start_02.wav")
 
 	resource.AddFile("sound/weapons/zs_sawnoff/sawnoff_fire1.ogg")
 	resource.AddFile("sound/weapons/zs_sawnoff/barrelup.ogg")
@@ -463,19 +474,23 @@ function GM:Initialize()
 	self:AddNetworkStrings()
 	self:RegisterFood()
 	self:LoadProfiler()
+	self:LoadServerVault()
 
 	self:SetPantsMode(self.PantsMode, true)
 	self:SetClassicMode(self:IsClassicMode(), true)
 	self:SetEndlessMode(self:IsEndlessMode(), true)
 	self:SetBabyMode(self:IsBabyMode(), true)
 	self:SetRedeemBrains(self.DefaultRedeem)
-	self:SetDifficulty(1)
 
 	self:RefreshMapIsObjective()
+	self:EndlessModeCheck()
 
 	game.ConsoleCommand("fire_dmgscale 1\n")
 	game.ConsoleCommand("mp_flashlight 1\n")
 	game.ConsoleCommand("sv_gravity 600\n")
+
+	self.EndlessModeVoters = {}
+
 	print(self.Name.." version "..self.Version)
 end
 
@@ -491,6 +506,7 @@ function GM:AddNetworkStrings()
 	util.AddNetworkString("zs_topnotify")
 	util.AddNetworkString("zs_zvols")
 	util.AddNetworkString("zs_nextboss")
+	util.AddNetworkString("zs_nextsuperboss")
 	util.AddNetworkString("zs_classunlock")
 	util.AddNetworkString("zs_sigilcorrupted")
 	util.AddNetworkString("zs_sigiluncorrupted")
@@ -505,8 +521,12 @@ function GM:AddNetworkStrings()
 	util.AddNetworkString("zs_lifestatsbd")
 	util.AddNetworkString("zs_lifestatshd")
 	util.AddNetworkString("zs_lifestatsbe")
+	util.AddNetworkString("zs_miniboss_spawned")
+	util.AddNetworkString("zs_semiboss_spawned")
 	util.AddNetworkString("zs_boss_spawned")
 	util.AddNetworkString("zs_boss_slain")
+	util.AddNetworkString("zs_superboss_spawned")
+	util.AddNetworkString("zs_superboss_slain")
 	util.AddNetworkString("zs_commission")
 	util.AddNetworkString("zs_healother")
 	util.AddNetworkString("zs_healby")
@@ -809,16 +829,16 @@ function GM:RemoveUnusedEntities()
 	util.RemoveAll("prop_ragdoll")
 
 
-	-- Remove NPCs because first of all this game is PvP and NPCs can cause crashes.
-	util.RemoveAll("npc_maker")
-	util.RemoveAll("npc_template_maker")
-	util.RemoveAll("npc_zombie")
-	util.RemoveAll("npc_zombie_torso")
-	util.RemoveAll("npc_fastzombie")
-	util.RemoveAll("npc_headcrab")
-	util.RemoveAll("npc_headcrab_fast")
-	util.RemoveAll("npc_headcrab_black")
-	util.RemoveAll("npc_poisonzombie")
+	-- Remove NPCs because first of all this game is PvP and NPCs can cause crashes. (Comment: are you sure?)
+--	util.RemoveAll("npc_maker")
+--	util.RemoveAll("npc_template_maker")
+--	util.RemoveAll("npc_zombie")
+--	util.RemoveAll("npc_zombie_torso")
+--	util.RemoveAll("npc_fastzombie")
+--	util.RemoveAll("npc_headcrab")
+--	util.RemoveAll("npc_headcrab_fast")
+--	util.RemoveAll("npc_headcrab_black")
+--	util.RemoveAll("npc_poisonzombie")
 	
 	-- Such a headache. Just remove them all.
 	util.RemoveAll("item_ammo_crate")
@@ -1105,6 +1125,26 @@ function GM:PlayerSelectSpawn(pl)
 	return LastSpawnPoints[teamid] or #tab > 0 and table.Random(tab) or pl
 end
 
+local function MiniBossZombieSort(za, zb)
+	local ascore = za.WaveBarricadeDamage * 0.25 + za.WaveHumanDamage
+	local bscore = zb.WaveBarricadeDamage * 0.25 + zb.WaveHumanDamage
+	if ascore == bscore then
+		return za:Deaths() < zb:Deaths()
+	end
+
+	return ascore > bscore
+end
+
+local function SemiBossZombieSort(za, zb)
+	local ascore = za.WaveBarricadeDamage * 0.1 + za.WaveHumanDamage
+	local bscore = zb.WaveBarricadeDamage * 0.1 + zb.WaveHumanDamage
+	if ascore == bscore then
+		return za:Deaths() < zb:Deaths()
+	end
+
+	return ascore > bscore
+end
+
 local function BossZombieSort(za, zb)
 	local ascore = za.WaveBarricadeDamage * 0.05 + za.WaveHumanDamage
 	local bscore = zb.WaveBarricadeDamage * 0.05 + zb.WaveHumanDamage
@@ -1113,6 +1153,90 @@ local function BossZombieSort(za, zb)
 	end
 
 	return ascore > bscore
+end
+
+local function SuperBossZombieSort(za, zb)
+	local ascore = za.BarricadeDamage * 0.05 + (za.DamageDealt and za.DamageDealt[TEAM_UNDEAD] or 0)
+	local bscore = zb.BarricadeDamage * 0.05 + (za.DamageDealt and za.DamageDealt[TEAM_UNDEAD] or 0)
+	if ascore == bscore then
+		return za:Deaths() < zb:Deaths()
+	end
+
+	return ascore > bscore
+end
+
+function GM:SpawnMiniBossZombie(bossplayer, silent, bossindex, triggerboss)
+	if not bossplayer then
+		bossplayer = self:CalculateNextMiniBoss()
+	end
+
+	if not bossplayer then return end
+
+	if not bossindex then
+		bossindex = bossplayer:GetMiniBossZombieIndex()
+	end
+
+	if bossindex == -1 then return end
+
+	if not triggerboss then
+		bossplayer.BossDeathNotification = true
+		GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_ZOMBIECLASS, GAMEMODE.ZombieClasses[bossindex].Name, "BossSpawn", 1)
+	end
+
+	self.LastBossZombieSpawned = self:GetWave()
+
+	local curclass = bossplayer.DeathClass or bossplayer:GetZombieClass()
+	bossplayer:KillSilent()
+	bossplayer:SetZombieClass(bossindex)
+	bossplayer:DoHulls(bossindex, TEAM_UNDEAD)
+	bossplayer.DeathClass = nil
+	bossplayer:UnSpectateAndSpawn()
+	bossplayer.DeathClass = curclass
+	bossplayer.BossHealRemaining = 300
+
+	if not silent then
+		net.Start("zs_miniboss_spawned")
+		net.WriteEntity(bossplayer)
+		net.WriteUInt(bossindex, 8)
+		net.Send(bossplayer)
+	end
+end
+
+function GM:SpawnSemiBossZombie(bossplayer, silent, bossindex, triggerboss)
+	if not bossplayer then
+		bossplayer = self:CalculateNextSemiBoss()
+	end
+
+	if not bossplayer then return end
+
+	if not bossindex then
+		bossindex = bossplayer:GetSemiBossZombieIndex()
+	end
+
+	if bossindex == -1 then return end
+
+	if not triggerboss then
+		bossplayer.BossDeathNotification = true
+		GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_ZOMBIECLASS, GAMEMODE.ZombieClasses[bossindex].Name, "BossSpawn", 1)
+	end
+
+	self.LastBossZombieSpawned = self:GetWave()
+
+	local curclass = bossplayer.DeathClass or bossplayer:GetZombieClass()
+	bossplayer:KillSilent()
+	bossplayer:SetZombieClass(bossindex)
+	bossplayer:DoHulls(bossindex, TEAM_UNDEAD)
+	bossplayer.DeathClass = nil
+	bossplayer:UnSpectateAndSpawn()
+	bossplayer.DeathClass = curclass
+	bossplayer.BossHealRemaining = 550
+
+	if not silent then
+		net.Start("zs_semiboss_spawned")
+			net.WriteEntity(bossplayer)
+			net.WriteUInt(bossindex, 8)
+		net.Broadcast()
+	end
 end
 
 function GM:SpawnBossZombie(bossplayer, silent, bossindex, triggerboss)
@@ -1146,6 +1270,43 @@ function GM:SpawnBossZombie(bossplayer, silent, bossindex, triggerboss)
 
 	if not silent then
 		net.Start("zs_boss_spawned")
+			net.WriteEntity(bossplayer)
+			net.WriteUInt(bossindex, 8)
+		net.Broadcast()
+	end
+end
+
+function GM:SpawnSuperBossZombie(bossplayer, silent, bossindex, triggerboss)
+	if not bossplayer then
+		bossplayer = self:CalculateNextSuperBoss()
+	end
+
+	if not bossplayer then return end
+
+	if not bossindex then
+		bossindex = bossplayer:GetSuperBossZombieIndex()
+	end
+
+	if bossindex == -1 then return end
+
+	if not triggerboss then
+		bossplayer.BossDeathNotification = true
+		GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_ZOMBIECLASS, GAMEMODE.ZombieClasses[bossindex].Name, "BossSpawn", 1)
+	end
+
+	self.LastSuperBossZombieSpawned = self:GetWave()
+
+	local curclass = bossplayer.DeathClass or bossplayer:GetZombieClass()
+	bossplayer:KillSilent()
+	bossplayer:SetZombieClass(bossindex)
+	bossplayer:DoHulls(bossindex, TEAM_UNDEAD)
+	bossplayer.DeathClass = nil
+	bossplayer:UnSpectateAndSpawn()
+	bossplayer.DeathClass = curclass
+	bossplayer.BossHealRemaining = 2250
+
+	if not silent then
+		net.Start("zs_superboss_spawned")
 			net.WriteEntity(bossplayer)
 			net.WriteUInt(bossindex, 8)
 		net.Broadcast()
@@ -1210,6 +1371,7 @@ function GM:SortZombieSpawnDistances(allplayers)
 end
 
 function GM:ShouldRestartRound()
+	if GetGlobalBool("gamemode_code_ruined") then return true end
 	if self.TimeLimit == -1 or self.RoundLimit == -1 then return true end
 
 	local roundlimit = self.RoundLimit
@@ -1232,6 +1394,7 @@ function GM:ShouldRestartRound()
 end
 
 local NextTick = 0
+local NextTick2 = 0
 function GM:Think()
 	local time = CurTime()
 	local wave = self:GetWave()
@@ -1244,15 +1407,25 @@ function GM:Think()
 		elseif self:GetWaveStart() ~= -1 then
 			if self:GetWaveStart() <= time then
 				gamemode.Call("SetWaveActive", true)
-			elseif self.BossZombies and not self.PantsMode and not self:IsClassicMode() and not self.ZombieEscape
-			and self.LastBossZombieSpawned ~= wave and wave > 0 --and not self.RoundEnded
-			and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
-				if self:GetWaveStart() - tonumber(self.BossZombieSpawnBeforeWaveStart or 5) <= time then
-					for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.02 + (self:GetWave() * 0.01)))) do
-						self:SpawnBossZombie()
+			elseif not self.PantsMode and not self:IsClassicMode() and not self.ZombieEscape then
+				if self.BossZombies and self.LastBossZombieSpawned ~= wave and wave > 0 --and not self.RoundEnded
+				and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
+					if self:GetWaveStart() - tonumber(self.BossZombieSpawnBeforeWaveStart or 5) <= time then
+						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.01 + (self:GetWave() * 0.005)))) do
+							self:SpawnBossZombie()
+						end
+					else
+						self:CalculateNextBoss()
 					end
-				else
-					self:CalculateNextBoss()
+				end
+
+				if self.SuperBossZombies and self.LastSuperBossZombieSpawned ~= wave and (self.LastSuperBossZombieSpawned or GAMEMODE:GetNumberOfWaves() - 1) >= wave and wave > 0 --and not self.RoundEnded
+				and (self.SuperBossZombiePlayersRequired <= 0 or #player.GetAll() >= self.SuperBossZombiePlayersRequired) then
+					if self:GetWaveStart() - 10 <= time then
+						self:SpawnSuperBossZombie()
+					else
+						self:CalculateNextSuperBoss()
+					end
 				end
 			end
 		end
@@ -1271,13 +1444,15 @@ function GM:Think()
 				P_BarricadeGhostingThink(pl)
 			end
 
-			if pl.PointQueue >= 1 and time >= pl.LastDamageDealtTime + 1.5 then
+			if pl.PointQueue > 0 and time >= pl.LastDamageDealtTime + 1.5 then
 				pl:PointCashOut(pl.LastDamageDealtPos or pl:GetPos(), FM_NONE)
 			end
 
 			if P_GetPhantomHealth(pl) > 0 and P_Alive(pl) and pl:IsSkillActive(SKILL_BLOODLUST) then
 				pl:SetPhantomHealth(math_max(0, P_GetPhantomHealth(pl) - 4 * FrameTime()))
 			end
+		elseif P_Team(pl) == TEAM_UNDEAD then
+			pl:CallZombieFunction0("Think")
 		end
 	end
 
@@ -1316,10 +1491,17 @@ function GM:Think()
 					pl:GiveStatus("drown")
 				end
 
+				if pl:IsSkillActive(SKILL_POINT_OLD) and self:GetWave() >= 1 and time >= pl.BonusDamageCheck + 60 then
+					pl.BonusDamageCheck = time
+					pl:AddPoints(2)
+					pl:GainZSXP(1)
+					pl:PrintTranslatedMessage(HUD_PRINTCONSOLE, "minute_points_added", 2)
+				end
+
 				local healmax = pl:IsSkillActive(SKILL_D_FRAIL) and math.floor(pl:GetMaxHealth() * 0.25) or pl:GetMaxHealth()
 
-				if pl:IsSkillActive(SKILL_REGENERATOR) and time >= pl.NextRegenerate and pl:Health() < math.min(healmax, pl:GetMaxHealth() * 0.6) then
-					pl.NextRegenerate = time + 6
+				if pl:IsSkillActive(SKILL_REGENERATOR) and time >= pl.NextRegenerate and pl:Health() < math.min(healmax, pl:GetMaxHealth() * (pl:IsSkillActive(SKILL_OVERREGENERATOR) and 0.7 or 0.6)) then
+					pl.NextRegenerate = time + (pl:IsSkillActive(SKILL_OVERREGENERATOR) and 5 or 7)
 					pl:SetHealth(math.min(healmax, pl:Health() + 1))
 				end
 
@@ -1411,12 +1593,15 @@ function GM:Think()
 			end
 		end
 
-		if self:GetEscapeStage() == ESCAPESTAGE_DEATH then
-			for _, pl in pairs(allplayers) do
-				if P_Team(pl) == TEAM_HUMAN then
-					pl:TakeSpecialDamage(10 + (pl.ESCAPESTAGE_DEATH_DMGTAKEN or 0) * 1, DMG_ACID)
-					pl.ESCAPESTAGE_DEATH_DMGTAKEN = (pl.ESCAPESTAGE_DEATH_DMGTAKEN or 0) + 1
-				end
+	end
+
+	if self:GetEscapeStage() == ESCAPESTAGE_DEATH and NextTick2 < time then
+		NextTick2 = time + 3
+
+		for _, pl in pairs(allplayers) do
+			if P_Team(pl) == TEAM_HUMAN then
+				pl:TakeSpecialDamage(5 + (pl.ESCAPESTAGE_DEATH_DMGTAKEN or 0) * 0.5, DMG_ACID)
+				pl.ESCAPESTAGE_DEATH_DMGTAKEN = (pl.ESCAPESTAGE_DEATH_DMGTAKEN or 0) + 1
 			end
 		end
 	end
@@ -1455,7 +1640,47 @@ function GM:CalculateZombieVolunteers()
 	end
 end
 
+GM.LastCalculatedMiniBossTime = 0
+GM.LastCalculatedSemiBossTime = 0
 GM.LastCalculatedBossTime = 0
+GM.LastCalculatedSuperBossTime = 0
+function GM:CalculateNextMiniBoss()
+	local zombies = {}
+	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
+		if (ent:IsBot() or ent:GetInfo("zs_nominibosspick") == "0") and not ent:GetZombieClassTable().MiniBoss then
+			table.insert(zombies, ent)
+		end
+	end
+
+	table.sort(zombies, MiniBossZombieSort)
+	local newboss = zombies[1]
+
+	if newboss ~= self.LastCalculatedBoss or CurTime() >= self.LastCalculatedMiniBossTime + 2 then
+		self.LastCalculatedBoss = newboss
+		self.LastCalculatedMiniBossTime = CurTime()
+	end
+
+	return newboss
+end
+
+function GM:CalculateNextSemiBoss()
+	local zombies = {}
+	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
+		if (ent:IsBot() or ent:GetInfo("zs_nosemibosspick") == "0") and not ent:GetZombieClassTable().SemiBoss then
+			table.insert(zombies, ent)
+		end
+	end
+	table.sort(zombies, SemiBossZombieSort)
+	local newboss = zombies[1]
+
+	if newboss ~= self.LastCalculatedBoss or CurTime() >= self.LastCalculatedBossTime + 2 then
+		self.LastCalculatedBoss = newboss
+		self.LastCalculatedBossTime = CurTime()
+	end
+
+	return newboss
+end
+
 function GM:CalculateNextBoss()
 	local zombies = {}
 	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
@@ -1482,6 +1707,34 @@ function GM:CalculateNextBoss()
 	end
 
 	return newboss
+end
+
+function GM:CalculateNextSuperBoss()
+	local zombies = {}
+	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
+		if (ent:IsBot() or ent:GetInfo("zs_nosuperbosspick") == "0") and not ent:GetZombieClassTable().SuperBoss then
+			table.insert(zombies, ent)
+		end
+	end
+	table.sort(zombies, SuperBossZombieSort)
+	local newsuperboss = zombies[1]
+
+	if newsuperboss ~= self.LastCalculatedSuperBoss or CurTime() >= self.LastCalculatedSuperBossTime + 2 then
+		self.LastCalculatedSuperBoss = newsuperboss
+		self.LastCalculatedSuperBossTime = CurTime()
+
+		net.Start("zs_nextsuperboss")
+		if newsuperboss and newsuperboss:IsValid() then
+			net.WriteEntity(newsuperboss)
+			net.WriteUInt(newsuperboss:GetSuperBossZombieIndex(), 8)
+		else
+			net.WriteEntity(NULL)
+			net.WriteUInt(1, 8)
+		end
+		net.Broadcast()
+	end
+
+	return newsuperboss
 end
 
 function GM:LastBite(victim, attacker)
@@ -1516,18 +1769,22 @@ function GM:CalculateInfliction(victim, attacker)
 	local infliction = math.max(zombies / players, self.CappedInfliction)
 	self.CappedInfliction = infliction
 
-	if humans == 1 and 2 < zombies then
+	if humans == 1 and 1 > wonhumans and 3 <= zombies then
 		gamemode.Call("LastHuman", hum)
-	elseif 1 <= infliction then
+	elseif 1 <= infliction and humans <= 0 then
 		infliction = 1
 
 		if wonhumans >= 1 then
-			gamemode.Call("EndRound", TEAM_HUMAN)
+			if not self.NoEndRound then
+				gamemode.Call("EndRound", TEAM_HUMAN)
+			end
 		else
-			gamemode.Call("EndRound", TEAM_UNDEAD)
-
-			if attacker and attacker:IsValid() and attacker:IsPlayer() and attacker:Team() == TEAM_UNDEAD and attacker ~= victim then
+			if attacker and attacker:IsValidZombie() and attacker ~= victim then
 				gamemode.Call("LastBite", victim, attacker)
+			end
+
+			if not self.NoEndRound then
+				gamemode.Call("EndRound", TEAM_UNDEAD)
 			end
 		end
 	end
@@ -1678,10 +1935,8 @@ function GM:PlayerRepairedObject(pl, other, health, wep)
 	pl:AddPoints(points * (pl.PointsGainMul or 1))
 	pl:GainZSXP(points * 0.95)
 
-	for i=1,2 do
-		pl:GiveAchievementProgress("repair_man_"..i, health)
-	end
---	pl:GiveAchievementProgress("repair_man_2", health)
+	pl:GiveAchievementProgress("repair_man_1", health)
+	pl:GiveAchievementProgress("repair_man_2", health)
 
 	net.Start("zs_repairobject")
 	net.WriteEntity(other)
@@ -1726,6 +1981,11 @@ function GM:PostDoHonorableMentions()
 end
 
 function GM:PostEndRound(winner)
+	if winner == TEAM_HUMAN then
+		gamemode.Call("OnRoundWin")
+	elseif winner == TEAM_UNDEAD then
+		gamemode.Call("OnRoundLose")
+	end
 	self:SaveAllVaults()
 end
 
@@ -1806,6 +2066,7 @@ function GM:RestartLua()
 	self.CachedHMs = nil
 	self.TheLastHuman = nil
 	self.LastBossZombieSpawned = nil
+	self.LastSuperBossZombieSpawned = nil
 	self.UseSigils = nil
 	--self:SetAllSigilsDestroyed(false)
 
@@ -1850,7 +2111,6 @@ function GM:RestartLua()
 
 	self:RevertZombieClasses()
 	self:ClearItemStocks(true)
-	self:SetDifficulty(1)
 end
 
 -- I don't know.
@@ -1880,6 +2140,7 @@ function GM:DoRestartGame()
 
 	self:SetUseSigils(false)
 	self:SetEscapeStage(ESCAPESTAGE_NONE)
+	self:EndlessModeCheck()
 
 	self:SetWave(0)
 	self:SetWaveActive(false)
@@ -1914,7 +2175,6 @@ function GM:RestartGame()
 		pl:StripWeapons()
 		pl:StripAmmo()
 		pl:SetFrags(0)
-		pl:SetMScore(0)
 		pl:SetDeaths(0)
 		pl:SetPoints(0)
 		pl:SetZombieTokens(0)
@@ -1949,6 +2209,17 @@ function GM:RestartGame()
 	end
 
 	timer.Simple(0.25, function() GAMEMODE:DoRestartGame() end)
+end
+
+function GM:EndlessModeCheck()
+	if self.AllowEndlessModeVoting and not self.ObjectiveMap and not self.ZombieEscape then
+		if self.NextRoundIsEndless and not self.EndlessMode then
+			GetConVar("zs_endlessmode"):SetBool(true)
+			self.NextRoundIsEndless = false
+		elseif not self.NextRoundIsEndless and self.EndlessMode then
+			GetConVar("zs_endlessmode"):SetBool(false)
+		end
+	end
 end
 
 function GM:InitPostEntityMap(fromze)
@@ -2016,6 +2287,12 @@ local function EndRoundSetupPlayerVisibility(pl)
 	end
 end
 
+function GM:OnRoundWin()
+end
+
+function GM:OnRoundLose()
+end
+
 function GM:OnPlayerWin(pl)
 	local xp = math.Clamp(#player.GetAll() * 6, 20, 200) * (self.WinXPMulti or 1)
 	if self.ZombieEscape then
@@ -2023,9 +2300,17 @@ function GM:OnPlayerWin(pl)
 	end
 
 	if pl:IsSkillActive(SKILL_TORMENT1) and pl:IsSkillActive(SKILL_TORMENT2) and pl:IsSkillActive(SKILL_TORMENT3) and pl:IsSkillActive(SKILL_TORMENT4) and pl:IsSkillActive(SKILL_TORMENT5) and
-	pl:IsSkillActive(SKILL_TORMENT6) and pl:IsSkillActive(SKILL_TORMENT7) and pl:IsSkillActive(SKILL_TORMENT8) and pl:IsSkillActive(SKILL_TORMENT9) and pl:IsSkillActive(SKILL_TORMENT10) then 
+	pl:IsSkillActive(SKILL_TORMENT6) and pl:IsSkillActive(SKILL_TORMENT7) and pl:IsSkillActive(SKILL_TORMENT8) and pl:IsSkillActive(SKILL_TORMENT9) and pl:IsSkillActive(SKILL_TORMENT10) and
+	not (pl:IsSkillActive(SKILL_ANTITORMENT1) and pl:IsSkillActive(SKILL_ANTITORMENT2) and pl:IsSkillActive(SKILL_ANTITORMENT3) and pl:IsSkillActive(SKILL_ANTITORMENT4)) then
 		xp = xp * 1.5
+
+		if pl:IsSkillActive(SKILL_TORMENT11) and pl:IsSkillActive(SKILL_TORMENT12) and pl:IsSkillActive(SKILL_TORMENT13) and pl:IsSkillActive(SKILL_TORMENT14) and pl:IsSkillActive(SKILL_TORMENT15) and
+		pl:IsSkillActive(SKILL_TORMENT16) and pl:IsSkillActive(SKILL_TORMENT17) and pl:IsSkillActive(SKILL_TORMENT18) and pl:IsSkillActive(SKILL_TORMENT19) and pl:IsSkillActive(SKILL_TORMENT20) then
+			xp = xp * 1.75
+		end
+	
 	end
+
 	pl:GainZSXP(xp, true)
 
 	if self.ObjectiveMap then
@@ -2034,24 +2319,27 @@ function GM:OnPlayerWin(pl)
 		pl:GiveAchievement("ze_win")
 	elseif self.ClassicMode then
 		pl:GiveAchievement("classicmode_win")
-	else
+	elseif not self.BabyMode and not self.EndlessMode then
 		pl:GiveAchievement("round_winner_1")
 		pl:GiveAchievementProgress("round_winner_2", 1)
 		pl:GiveAchievementProgress("round_winner_3", 1)
 	end
 
 	if not self.ObjectiveMap and not self.ZombieEscape and not self.BabyMode and not self.ClassicMode and not self.EndlessMode then
-		if self:GetDifficulty() >= 1.25 then
+		if self:GetDifficulty() >= 25 then
 			pl:GiveAchievementProgress("difficult_survival", 1)
 		end
 
-		if self:GetDifficulty() >= 1.5 then
+		if self:GetDifficulty() >= 50 then
 			pl:GiveAchievementProgress("hardmode", 1)
 		end
 	end
 end
 
 function GM:OnPlayerLose(pl)
+end
+
+function GM:OnPlayerLoseRound(pl)
 end
 
 function GM:EndRound(winner)
@@ -2072,10 +2360,10 @@ function GM:EndRound(winner)
 	end
 
 	if self:ShouldRestartRound() then
-		timer.Simple(self.EndGameTime - 1, function() gamemode.Call("PreRestartRound") end)
-		timer.Simple(self.EndGameTime, function() gamemode.Call("RestartRound") end)
+		timer.Create("zs_endround_pre_restart_round_timer", self.EndGameTime - 1, 1, function() gamemode.Call("PreRestartRound") end)
+		timer.Create("zs_endround_restart_round_timer", self.EndGameTime, 1, function() gamemode.Call("RestartRound") end)
 	else
-		timer.Simple(self.EndGameTime, function() gamemode.Call("LoadNextMap") end)
+		timer.Create("zs_endround_load_next_map_timer", self.EndGameTime, 1, function() gamemode.Call("LoadNextMap") end)
 	end
 
 	-- Get rid of some lag.
@@ -2106,7 +2394,7 @@ function GM:EndRound(winner)
 			if not self.ZombieEscape and self.EndlessMode then
 				pl:PrintTranslatedMessage(HUD_PRINTTALK, "humans_lost", self:GetWave())
 			end
-			gamemode.Call("OnPlayerLose", pl)
+			gamemode.Call("OnPlayerLoseRound", pl)
 		end
 	end
 
@@ -2130,7 +2418,7 @@ function GM:EndRound(winner)
 
 	gamemode.Call("PostEndRound", winner)
 
-	self:SetWaveStart(CurTime() + 9999)
+	self:SetWaveStart(CurTime() + 9999) -- i wonder why...
 end
 
 function GM:ScalePlayerDamage(pl, hitgroup, dmginfo)
@@ -2197,7 +2485,7 @@ function GM:PlayerReadyRound(pl)
 	elseif pl:Team() == TEAM_HUMAN then
 		if self:GetWave() <= 0 and self.StartingWorth > 0 and not self.StartingLoadout and not self.ZombieEscape then
 			pl:SendLua("InitialWorthMenu()")
-		else
+		elseif pl:GetInfo("zs_noautocheckout") ~= "1" then
 			gamemode.Call("GiveDefaultOrRandomEquipment", pl)
 		end
 	end
@@ -2334,8 +2622,10 @@ function GM:PlayerInitialSpawnRound(pl)
 	pl.ZombiesKilledAssists = 0
 	pl.Headshots = 0
 	pl.BrainsEaten = 0
+	pl.PointsGained = 0
 
 	pl.ResupplyBoxUsedByOthers = 0
+	pl.BonusDamageCheck = 0
 
 	pl.WaveJoined = self:GetWave()
 
@@ -2389,15 +2679,16 @@ function GM:PlayerInitialSpawnRound(pl)
 	pl.MutationModifiers["barricade_damage"] = 0
 	pl.MutationModifiers["bloodarmor_damage"] = 0
 
---
 	pl.SelfRedeemTimes = 0
 	pl.SelfRedeemCooldown = 0
-
+	
 	--local nosend = not pl.DidInitPostEntity
 	pl.DamageVulnerability = nil
 	pl.SelfRedeemedOnce = nil
+	pl.RedemptionOfUndeadUsed = nil
+	pl.LastKilledBy = nil
 
-	self:LoadVault(pl) -- WARNING: This can cause some unexpected problems. Especially when player are managing their skills.
+	self:LoadVault(pl) -- WARNING: This can cause some unexpected problems. Especially when player are managing their skills and then round restarts.
 
 	local uniqueid = pl:UniqueID()
 
@@ -2443,7 +2734,6 @@ function GM:PlayerInitialSpawnRound(pl)
 
 	if pl:Team() == TEAM_UNDEAD and self.StoredUndeadFrags[uniqueid] then
 		pl:SetFrags(self.StoredUndeadFrags[uniqueid])
-		pl:SetMScore(self.StoredUndeadFrags[uniqueid])
 		self.StoredUndeadFrags[uniqueid] = nil
 	end
 end
@@ -2464,6 +2754,40 @@ end
 function GM:PostPlayerSelfRedeemed(pl, silent, noequip)
 end
 
+function GM:PlayerSay(pl, text, team)
+	if !pl:IsBot() then
+		if string.sub(text, 1, 12) == "!voteendless" or string.sub(text, 1, 12) == "/voteendless" then
+			if self.AllowEndlessModeVoting then
+				if not self.EndlessMode then
+					local votes = table.Count(self.EndlessModeVoters) + 1
+					local reqvotes = math.ceil(#player.GetNonBotPlayers() * 0.65)
+
+					if not (self.EndlessModeVoters[pl] or self.NextRoundIsEndless) then
+						self.EndlessModeVoters[pl] = true
+						PrintMessage(3, Format("%s has voted to enable endless mode! (%d/%d)", pl:Name(), votes, reqvotes))
+						if votes >= reqvotes then
+							PrintMessage(3, "Endless mode will now enable on next round.")
+							self.NextRoundIsEndless = true
+							self.EndlessModeVoters = {}
+						end
+					elseif self.NextRoundIsEndless then
+						pl:PrintMessage(3, "Endless mode will be enabled on next round!")
+					else
+						pl:PrintMessage(3, Format("You have already voted! (%d/%d)", votes, reqvotes))
+					end
+				else
+					pl:PrintMessage(3, "Endless mode is already enabled!")
+				end
+			else
+				pl:PrintMessage(3, "Voting for endless mode is disabled!")
+			end
+
+			return false
+		end
+	end
+	
+	return text
+end
 
 function GM:PlayerDisconnected(pl)
 	pl.Disconnecting = true
@@ -2471,6 +2795,7 @@ function GM:PlayerDisconnected(pl)
 	local uid = pl:UniqueID()
 
 	self.PreviouslyDied[uid] = CurTime()
+	self.EndlessModeVoters[pl] = nil
 
 	if pl:Team() == TEAM_HUMAN then
 		pl:DropAll()
@@ -2665,7 +2990,7 @@ local function TimedOut(pl)
 end
 
 function GM:GiveDefaultOrRandomEquipment(pl)
-	if not self.CheckedOut[pl:UniqueID()] and not self.ZombieEscape and pl:GetInfo("zs_noautocheckout") ~= "1" then
+	if not self.CheckedOut[pl:UniqueID()] and not self.ZombieEscape then
 		if self.StartingLoadout then
 			self:GiveStartingLoadout(pl)
 		else
@@ -2824,6 +3149,7 @@ end
 
 function GM:EntityTakeDamage(ent, dmginfo)
 	local attacker, inflictor = dmginfo:GetAttacker(), dmginfo:GetInflictor()
+	local directdmg = bit.band(dmginfo:GetDamageType(), DMG_DIRECT) ~= 0
 
 	if attacker == inflictor and attacker:IsProjectile() and dmginfo:GetDamageType() == DMG_CRUSH then -- Fixes projectiles doing physics-based damage.
 		dmginfo:SetDamage(0)
@@ -2839,6 +3165,14 @@ function GM:EntityTakeDamage(ent, dmginfo)
 		return
 	end
 
+	if attacker:IsValidLivingHuman() and attacker.AllDamageDealtMul and not directdmg then
+		dmginfo:ScaleDamage(attacker.AllDamageDealtMul)
+	end
+
+	if attacker:IsValidZombie() and not directdmg then
+		dmginfo:ScaleDamage(self.ZombieDamageDealtMultiplier)
+	end
+
 	-- Props about to be broken props take 3x damage from anything except zombies
 	if ent._BARRICADEBROKEN and not (attacker:IsPlayer() and attacker:Team() == TEAM_UNDEAD) then
 		dmginfo:SetDamage(dmginfo:GetDamage() * 3)
@@ -2846,6 +3180,12 @@ function GM:EntityTakeDamage(ent, dmginfo)
 
 	if ent.GetObjectHealth and not (attacker:IsPlayer() and attacker:Team() == TEAM_HUMAN) then
 		ent.m_LastDamaged = CurTime()
+	end
+	
+	if ent:GetClass() == "prop_obj_sigil" and ent.GetSigilHealthBase and ent:GetSigilHealthBase() ~= 0 then
+		if attacker:IsValidZombie() and attacker:GetZombieClassTable().Name == "Sigil Annihilator" then
+			dmginfo:ScaleDamage(2.5)
+		end
 	end
 
 	if ent.ProcessDamage and ent:ProcessDamage(dmginfo) then return end
@@ -2921,8 +3261,13 @@ function GM:EntityTakeDamage(ent, dmginfo)
 						elseif myteam == TEAM_HUMAN and otherteam == TEAM_UNDEAD then
 							ent.DamagedBy[attacker] = (ent.DamagedBy[attacker] or 0) + damage
 							if time >= ent.m_LastWaveStartSpawn + 3.5 and time >= ent.m_LastGasHeal + 2 then
-								local points = damage / ent:GetMaxHealth() * ent:GetZombieClassTable().Points
-								local xp = damage / ent:GetMaxHealth() * (ent:GetZombieClassTable().XP or ent:GetZombieClassTable().Points)
+								local zclass = ent:GetZombieClassTable()
+								local points = zclass.DamageNeedPerPoint and zclass.DamageNeedPerPoint ~= 0 and (damage / zclass.DamageNeedPerPoint) or (damage / ent:GetMaxHealth() * zclass.Points)
+								local xp = zclass.DamageNeedPerXP and zclass.DamageNeedPerXP ~= 0 and (damage / zclass.DamageNeedPerXP) or (damage / ent:GetMaxHealth() * (zclass.XP or zclass.Points))
+
+								if self.ZombiePointGainMultiplier then
+									points = points * self.ZombiePointGainMultiplier
+								end
 
 								if POINTSMULTIPLIER then
 									points = points * POINTSMULTIPLIER
@@ -2932,8 +3277,8 @@ function GM:EntityTakeDamage(ent, dmginfo)
 								end
 
 								attacker:AddQueuePoints(points, "damage")
-								attacker:GainZSXP(xp * math.Clamp(0.5 + (self:GetDifficulty() / 2), 0.85, 1.2))
-								print(xp * math.Clamp(0.5 + (self:GetDifficulty() / 2), 0.85, 1.2), xp, math.Clamp(0.5 + (self:GetDifficulty() / 2), 0.85, 1.2))
+								attacker:GainZSXP(xp)
+--								print(xp)
 
 								GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_WEAPON, inflictor:GetClass(), "PointsEarned", points)
 								GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_WEAPON, inflictor:GetClass(), "Damage", damage)
@@ -2972,12 +3317,15 @@ function GM:EntityTakeDamage(ent, dmginfo)
 						if POINTSMULTIPLIER then
 							points = points * POINTSMULTIPLIER
 						end
+						if self.ZombiePointGainMultiplier then
+							points = points * self.ZombiePointGainMultiplier
+						end
 						if ent.PointsMultiplier then
 							points = points * ent.PointsMultiplier
 						end
 
 						attacker:AddQueuePoints(points, "damage")
-						attacker:GainZSXP((damage / GAMEMODE.NPCZombiePointRatio) * math.Clamp(0.5 + (self:GetDifficulty() / 2), 0.85, 1.2) * 0.75)
+						attacker:GainZSXP((damage / GAMEMODE.NPCZombiePointRatio) * 0.75)
 
 						GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_WEAPON, inflictor:GetClass(), "PointsEarned", points)
 						GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_WEAPON, inflictor:GetClass(), "Damage", damage)
@@ -3038,6 +3386,10 @@ function GM:EntityTakeDamage(ent, dmginfo)
 			ent.TotalHeal = health
 		end
 
+		if attacker:IsValidPlayer() and attacker:IsSkillActive(SKILL_DOOR_DESTROYER) then
+			dmginfo:ScaleDamage(3)
+		end
+
 		if gamemode.Call("ShouldAntiGrief", ent, attacker, dmginfo, ent.TotalHeal) then
 			attacker:AntiGrief(dmginfo)
 			if dmginfo:GetDamage() <= 0 then return end
@@ -3072,6 +3424,10 @@ function GM:EntityTakeDamage(ent, dmginfo)
 		if not ent.Heal then
 			ent.Heal = ent:BoundingRadius() * 35
 			ent.TotalHeal = ent.Heal
+		end
+
+		if attacker:IsValidPlayer() and attacker:IsSkillActive(SKILL_DOOR_DESTROYER) then
+			dmginfo:ScaleDamage(3)
 		end
 
 		if dmginfo:GetDamage() >= 20 and attacker:IsPlayer() and attacker:Team() == TEAM_UNDEAD then
@@ -3251,7 +3607,6 @@ function GM:SetRandomToZombie()
 
 	pl:ChangeTeam(TEAM_UNDEAD)
 	pl:SetFrags(0)
-	pl:SetMScore(0)
 	pl:SetDeaths(0)
 
 	self.StartingZombie[pl:UniqueID()] = true
@@ -3304,7 +3659,7 @@ function GM:OnPlayerChangedTeam(pl, oldteam, newteam)
 
 	pl.PointQueue = 0
 
-	timer.Simple(0, function() gamemode.Call("CalculateInfliction") end)
+	timer.Simple(0, function() gamemode.Call("CalculateInfliction", pl, pl.LastKilledBy) end)
 end
 
 function GM:SetToDefaultZombieClass(pl)
@@ -3476,7 +3831,6 @@ function GM:SetClosestsToZombie()
 			self.InitialVolunteers[pl:UniqueID()] = true
 		end
 		pl:SetFrags(0)
-		pl:SetMScore(0)
 		pl:SetDeaths(0)
 
 		local unlocked = {}
@@ -3511,6 +3865,7 @@ function GM:PlayerHurt(victim, attacker, healthremaining, damage)
 
 	if victim:Team() == TEAM_HUMAN then
 		victim:PlayPainSound()
+		victim.BonusDamageCheck = CurTime()
 
 		if healthremaining < 75 then
 			victim:ResetSpeed(nil, healthremaining)
@@ -3743,30 +4098,23 @@ function GM:HumanKilledZombie(pl, attacker, inflictor, dmginfo, headshot, suicid
 		end
 	end
 
-	if self:GetDifficulty() < 1.5 then
-		-- 1000 zombie kills is enough to get to difficulty 1.5 from difficulty 1
-		self:SetDifficulty(self:GetDifficulty() + 0.0005)
-	end
 	attacker.ZombiesKilled = attacker.ZombiesKilled + 1
-	for i = 1,4 do
-		attacker:GiveAchievementProgress("zombie_killer_"..i, 1)
-/*
-		attacker:GiveAchievementProgress("zombie_killer_1", 1)
-		attacker:GiveAchievementProgress("zombie_killer_2", 1)
-		attacker:GiveAchievementProgress("zombie_killer_3", 1)
-		attacker:GiveAchievementProgress("zombie_killer_4", 1)
-*/
-	end
+	attacker:GiveAchievementProgress("zombie_killer_1", 1)
+	attacker:GiveAchievementProgress("zombie_killer_2", 1)
+	attacker:GiveAchievementProgress("zombie_killer_3", 1)
+	attacker:GiveAchievementProgress("zombie_killer_4", 1)
 
+	local add_diff
 	if pl:GetZombieClassTable().Boss then
-		for i = 1,2 do
-			attacker:GiveAchievementProgress("boss_slayer_"..i, 1)
-/*
-			attacker:GiveAchievementProgress("boss_slayer_1", 1)
-			attacker:GiveAchievementProgress("boss_slayer_2", 1)
-*/
-		end
-	end
+		attacker:GiveAchievementProgress("boss_slayer_1", 1)
+		attacker:GiveAchievementProgress("boss_slayer_2", 1)
+
+		add_diff = 0.25
+
+	else
+		add_diff = 0.05
+	end	
+	self:SetDifficulty(self:GetDifficulty() + (add_diff / (1 + #player.GetAll() * 0.2)))
 
 	if mostdamager then
 		attacker:PointCashOut(pl, FM_LOCALKILLOTHERASSIST)
@@ -3802,6 +4150,16 @@ function GM:HumanKilledZombie(pl, attacker, inflictor, dmginfo, headshot, suicid
 		if wep.OnZombieKilled then
 			wep:OnZombieKilled(pl, totaldamage, dmginfo)
 		end
+
+		if attacker:IsSkillActive(SKILL_REDEMPTION_UNDEAD) and not attacker.RedemptionOfUndeadUsed and not pl:IsBot() and not self.InitialVolunteers[pl:UniqueID()] then
+			timer.Simple(0.05, function()
+				if !pl:IsValid() or attacker.RedemptionOfUndeadUsed then return end
+				attacker.RedemptionOfUndeadUsed = true
+				pl:Redeem()
+				pl:CenterNotify(COLOR_CYAN, Format("You were redeemed by %s!", attacker:GetName()))
+				attacker:CenterNotify(COLOR_CYAN, Format("%s has been redeemed!", pl:GetName()))
+			end)
+		end
 	end
 
 	gamemode.Call("PostHumanKilledZombie", pl, attacker, inflictor, dmginfo, mostdamager, mostassistdamage, headshot)
@@ -3818,7 +4176,7 @@ function GM:ZombieKilledHuman(pl, attacker, inflictor, dmginfo, headshot, suicid
 	local plpos = pl:GetPos()
 	local dist = 999999999
 	local xp = 17 + (pl:GetMaxHealth() / 40)
-	local tokensgain = 12 + (pl:GetMaxHealth() / 13) + (math.min(23, pl:GetMScore() * 0.06))
+	local tokensgain = 12 + (pl:GetMaxHealth() / 13) + (math.min(23, pl:Frags() * 0.06))
 
 	xp = self.InitialVolunteers[attacker:UniqueID()] and xp or math.floor(xp / 3.5)
 
@@ -3862,7 +4220,6 @@ local function DelayedChangeToZombie(pl)
 	if pl:IsValid() then
 		if pl.ChangeTeamFrags then
 			pl:SetFrags(pl.ChangeTeamFrags)
-			pl:SetMScore(pl.ChangeTeamFrags)
 			pl.ChangeTeamFrags = 0
 		end
 
@@ -3888,6 +4245,7 @@ function GM:DoPlayerDeath(pl, attacker, dmginfo)
 	local headshot = pl:WasHitInHead()
 
 	if suicide then attacker = pl:GetLastAttacker() or attacker end
+	pl.LastKilledBy = attacker
 	pl:SetLastAttacker()
 
 	if inflictor == NULL then inflictor = attacker end
@@ -3933,7 +4291,20 @@ function GM:DoPlayerDeath(pl, attacker, dmginfo)
 
 		pl:PlayZombieDeathSound()
 
-		if classtable.Boss and not self.ObjectiveMap and pl.BossDeathNotification then
+		if classtable.SuperBoss and not self.ObjectiveMap and pl.BossDeathNotification then
+			net.Start("zs_superboss_slain")
+				net.WriteEntity(pl)
+				net.WriteUInt(classtable.Index, 8)
+			net.Broadcast()
+
+			timer.Simple(0, function()
+				for i=1,2 do
+					pl:MakeBossDrop() -- makes boss drops 2 times for superboss
+				end
+			end)
+
+			pl.BossDeathNotification = nil
+		elseif classtable.Boss and not self.ObjectiveMap and pl.BossDeathNotification then
 			net.Start("zs_boss_slain")
 				net.WriteEntity(pl)
 				net.WriteUInt(classtable.Index, 8)
@@ -3951,7 +4322,7 @@ function GM:DoPlayerDeath(pl, attacker, dmginfo)
 		end
 
 		if self:GetWaveActive() then
-			pl.StartSpectating = ct + (self.EndlessMode and math.Clamp(2 - (self:GetWave() / 100), 1, 2) or 2)
+			pl.StartSpectating = ct + (pl:GetZombieClassTable().Boss and 3.5 or pl:GetZombieClassTable().Boss and 2.5 or (self.EndlessMode and math.Clamp(2 - (self:GetWave() / 100), 1, 2) or 2))
 		else
 			pl.StartCrowing = ct + 3
 		end
@@ -4226,26 +4597,28 @@ function GM:PlayerSpawn(pl)
 			pl:SetPlayerColor(Vector(255, 255, 255))
 		end
 
-		local hp
+		local hp = classtab.Health
 		local dynhp
-		if classtab.Boss then
-			hp = classtab.Health
-			dynhp = (classtab.Health + (math.max(0, self:GetWave() - 1) * tonumber(classtab.DynamicHealth or 0))) * ((1 + self:GetDifficulty()) / 2)
-			pl:SetHealth(dynhp)
-			pl:SetNWInt("zs_zombiehealth", hp)
-			pl:SetNWInt("zs_zombiedynhealth", dynhp)
+		local zeobjlowundead = team.NumPlayers(TEAM_UNDEAD) * 2 < team.NumPlayers(TEAM_HUMAN) -- only true when less than 33% players are zombies and for objective/zombie escape maps
+		local lowundead = team.NumPlayers(TEAM_UNDEAD) * 2 < team.NumPlayers(TEAM_HUMAN)
+		local healthmulti = (self.ObjectiveMap or self.ZombieEscape) and (zeobjlowundead and 1.25 or 1) or lowundead and 1.2 or 1
+
+		dynhp = classtab.Health + (math.max(0, self:GetWave() - 1) * tonumber(classtab.DynamicHealth or 0)) * self.ZombieHealthMultiplier
+		if classtab.SuperBoss then
+			dynhp = dynhp + (#player.GetAll() * 15)
+		elseif classtab.Boss then
+			dynhp = dynhp + (#player.GetAll() * 5)
+		elseif classtab.SemiBoss then
+			dynhp = dynhp + (math.floor(#player.GetAll() * 0.55) * 5)
+		elseif classtab.MiniBoss then
+			dynhp = dynhp * healthmulti
+			dynhp = dynhp + (math.floor(#player.GetAll() * 0.3) * 5)
 		else
-			local zeobjlowundead = team.NumPlayers(TEAM_UNDEAD) * 2 < team.NumPlayers(TEAM_HUMAN) -- only true when less than 33% players are zombies and for objective/zombie escape maps
-			local lowundead = team.NumPlayers(TEAM_UNDEAD) * 2 < team.NumPlayers(TEAM_HUMAN)
-
-			local healthmulti = (self.ObjectiveMap or self.ZombieEscape) and (zeobjlowundead and 1.25 or 1) or lowundead and 1.2 or 1
-
-			hp = classtab.Health
-			dynhp = (classtab.Health + (math.max(0, self:GetWave() - 1) * tonumber(classtab.DynamicHealth or 0))) * (1 + (pl.MutationModifiers["zombie_health"] or 0)) * healthmulti * self:GetDifficulty()
-			pl:SetHealth(dynhp)
-			pl:SetNWInt("zs_zombiehealth", hp)
-			pl:SetNWInt("zs_zombiedynhealth", dynhp)
+			dynhp = dynhp * healthmulti
 		end
+		pl:SetHealth(dynhp * (1 + (pl.MutationModifiers["zombie_health"] or 0)))
+		pl:SetNWInt("zs_zombiehealth", hp)
+		pl:SetNWInt("zs_zombiedynhealth", dynhp)
 
 		if classtab.SWEP then
 			pl:Give(classtab.SWEP)
@@ -4267,7 +4640,7 @@ function GM:PlayerSpawn(pl)
 		end
 
 		if not pl.Revived and not pl:GetZombieClassTable().NeverAlive and pl.SpawnedOnSpawnPoint and not pl.DidntSpawnOnSpawnPoint then
-			pl:GiveStatus("zombiespawnbuff", self.ObjectiveMap and 1.35 or 2.75)
+			pl:GiveStatus("zombiespawnbuff", self.ObjectiveMap and 1.5 or 3)
 		end
 		pl.DidntSpawnOnSpawnPoint = nil
 		pl.SpawnedOnSpawnPoint = nil
@@ -4293,13 +4666,11 @@ function GM:PlayerSpawn(pl)
 
 		pl:CallZombieFunction0("OnSpawned")
 	elseif pl:Team() == TEAM_HUMAN then
-/*
-		local status = pl:GiveStatus("revive_slump_human")
+		local status = pl:GetStatus("revive_slump_human")
 		if status then
-			status:SetReviveTime(CurTime())
-			status:SetZombieInitializeTime(CurTime())
+			status:SetReviveTime(CurTime() + 0.5)
+			status:SetZombieInitializeTime(CurTime() + 0.5)
 		end
-*/
 		pl.PointQueue = 0
 		pl.PackedItems = {}
 		pl:ClearUselessDamage()
@@ -4323,6 +4694,8 @@ function GM:PlayerSpawn(pl)
 		end
 
 		--pl.HumanSpeedAdder = nil
+
+		pl.BonusDamageCheck = CurTime()
 
 		pl:SetNoTarget(false)
 		pl:SetMaxHealth(100)
@@ -4478,10 +4851,12 @@ function GM:WaveStateChanged(newstate)
 			end
 
 			for _, pl in pairs(humans) do
-				if pl.PlayerReady then -- There's a chance they might not be ready to send their desired cart yet.
+				if pl.PlayerReady and pl:GetInfo("zs_noautocheckout") ~= "1" then -- There's a chance they might not be ready to send their desired cart yet.
 					gamemode.Call("GiveDefaultOrRandomEquipment", pl)
-
 				end
+
+				pl.BonusDamageCheck = CurTime()
+
 				if not self.CheckedOut[pl:UniqueID()] and (self:GetWave() >= tonumber(self.NoNewHumansWave or 2)) then
 					TimedOut(pl)
 				end
@@ -4523,7 +4898,7 @@ function GM:WaveStateChanged(newstate)
 			gamemode.Call("SetWaveEnd", -1)
 			SetGlobalInt("numwaves", -1)
 		else
-			gamemode.Call("SetWaveEnd", self:GetWaveStart() + self:GetWaveOneLength() + (self:GetWave() - 1) * (GetGlobalBool("classicmode") and self.TimeAddedPerWaveClassic or self.TimeAddedPerWave))
+			gamemode.Call("SetWaveEnd", self:GetWaveStart() + math.min(self.ClassicMode and self.WaveLengthMaxClassic or self.WaveLengthMax, self:GetWaveOneLength() + (self:GetWave() - 1) * (self.ClassicMode and self.TimeAddedPerWaveClassic or self.TimeAddedPerWave)))
 		end
 
 		net.Start("zs_wavestart")
@@ -4559,23 +4934,29 @@ function GM:WaveStateChanged(newstate)
 			end
 		end
 
-	elseif not self.EndlessMode and self:GetWave() >= self:GetNumberOfWaves() then -- Last wave is over
+	elseif not self.EndlessMode and self:GetWave() >= self:GetNumberOfWaves() then -- Last wave is over (or not?)
 		if self:GetUseSigils() then
-			if self:GetEscapeStage() == ESCAPESTAGE_BOSS then
+			if self:GetEscapeStage() == ESCAPESTAGE_DEATH then
+				for _,pl in pairs(team.GetPlayers(TEAM_HUMAN)) do
+					if pl:Alive() then
+						pl:Kill()
+					end
+				end
+
+				gamemode.Call("SetWaveEnd", -1)
+			elseif self:GetEscapeStage() == ESCAPESTAGE_BOSS then
 				-- 2 minutes is enough to decide people left are stuck or griefing.
 				self:SetEscapeStage(ESCAPESTAGE_DEATH)
 
---				for _, pl in pairs(player.GetAll()) do --in progress.
+--				for _, pl in pairs(player.GetAll()) do --in progress. (??? what do you mean)
 --				end
 
-				gamemode.Call("SetWaveEnd", -1)
+				gamemode.Call("SetWaveEnd", CurTime() + 45)
 			elseif self:GetEscapeStage() == ESCAPESTAGE_ESCAPE then
 				self:SetEscapeStage(ESCAPESTAGE_BOSS)
 
 				-- Some time to get out with everyone spawning as bosses.
 				gamemode.Call("SetWaveEnd", CurTime() + 45)
-
-			-- Start spawning boss zombies.
 			elseif self:GetEscapeStage() == ESCAPESTAGE_NONE then
 				-- If we're using sigils, remove them all and spawn the doors.
 				for _, sigil in pairs(ents.FindByClass("prop_obj_sigil")) do
@@ -4608,7 +4989,9 @@ function GM:WaveStateChanged(newstate)
 			end
 		else
 			-- If not using sigils then humans all win.
-			gamemode.Call("EndRound", TEAM_HUMAN)
+			if not self.NoEndRound then
+				gamemode.Call("EndRound", TEAM_HUMAN)
+			end
 
 			local curwave = self:GetWave()
 			for _, ent in pairs(ents.FindByClass("logic_waves")) do
@@ -4642,7 +5025,7 @@ function GM:WaveStateChanged(newstate)
 				if self.EndWaveHealthBonus > 0 and pl:Health() < pl:GetMaxHealth() then
 					pl:SetHealth(math.min(pl:GetMaxHealth(), pl:Health() + self.EndWaveHealthBonus))
 				end
-				if pointsbonus then
+				if pointsbonus and not pl:IsSkillActive(SKILL_POINT_OLD) then
 					local pointsreward = pointsbonus + (pl.EndWavePointsExtra or 0)
 
 					if pl:IsSkillActive(SKILL_SCOURER) then
@@ -4651,15 +5034,19 @@ function GM:WaveStateChanged(newstate)
 						pl:AddPoints(pointsreward, nil, nil, true)
 					end
 					pl:GainZSXP(pointsreward * 0.5)
+				end
 
-					if not self.ObjectiveMap and not self.ZombieEscape and not self.ClassicMode and self.EndlessMode then
-						if self:GetWave() >= 10 then
-							pl:GiveAchievement("survivor_1")
-						end
+				if not self.ObjectiveMap and not self.ZombieEscape and not self.ClassicMode and self.EndlessMode then
+					if self:GetWave() >= 8 then
+						pl:GiveAchievement("survivor_1")
+					end
 
-						if self:GetWave() >= 15 then
-							pl:GiveAchievement("survivor_2")
-						end
+					if self:GetWave() >= 11 then
+						pl:GiveAchievement("survivor_2")
+					end
+					
+					if self:GetWave() >= 14 then
+						pl:GiveAchievement("survivor_3")
 					end
 				end
 			elseif pl:Team() == TEAM_UNDEAD and not pl:Alive() and not pl.Revive then
@@ -4748,8 +5135,12 @@ function GM:BuyZombieMutation(pl, str)
 
 	if tab.Callback and not tab.Callback(pl) then return end
 	pl:TakeZombieTokens(cost)
-	pl:PrintMessage(HUD_PRINTTALK, Format("Purchased %s for %d zombie tokens!", tab.Name, cost) )
-	print(Format("%s has purchased %s for %d zombie tokens!", pl:GetName(), tab.Name, cost))
+	pl:PrintMessage(HUD_PRINTTALK, Format("Purchased %s for %d zombie tokens!", tab.Name, cost))
+/*
+	if pl:IsBot() then
+		print(Format("%s has purchased %s for %d zombie tokens!", pl:GetName(), tab.Name, cost))
+	end
+*/
 	pl:SendLua("surface.PlaySound(\"ambient/levels/labs/coinslot1.wav\")")
 	pl.UsedMutations[tab.Signature] = tab.Rebuyable and (pl.UsedMutations[tab.Signature] or 0) + 1 or true
 
@@ -4769,7 +5160,7 @@ net.Receive("zs_changeclass", function(len, sender)
 	local suicide = net.ReadBool()
 	local classtab = GAMEMODE.ZombieClasses[classname]
 --	local nestspawn
-	if not classtab or classtab.Disabled or classtab.Hidden and not (classtab.CanUse and classtab:CanUse(sender)) then return end
+	if not classtab or classtab.Disabled or classtab.Hidden and not (classtab.CanUse and classtab:CanUse(sender)) or classtab.MiniBoss or classtab.SemiBoss or classtab.Boss or classtab.SuperBoss then return end
 
 	if not gamemode.Call("IsClassUnlocked", classname) then
 		sender:CenterNotify(COLOR_RED, translate.ClientFormat(sender, "class_not_unlocked_will_be_unlocked_x", classtab.Wave))
@@ -4786,10 +5177,12 @@ net.Receive("zs_changeclass", function(len, sender)
 		end
 		if nestspawn and sender:Alive() and GAMEMODE:GetWaveActive() and (CurTime() < GAMEMODE:GetWaveEnd() - 4 or GAMEMODE:GetWaveEnd() < 0) and not sender:GetZombieClassTable().Boss and gamemode.Call("CanPlayerSuicide", sender) and sender:GetZombieClassTable().Index ~= sender.DeathClass then
 			local pos = sender:GetPos()
+			local ang = sender:EyeAngles()
 			sender:KillSilent()
 			sender:RefreshDynamicSpawnPoint()
 			sender:UnSpectateAndSpawn()
 			sender:SetPos(pos)
+			sender:SetEyeAngles(ang)
 			sender:CenterNotify(Format("You are now %s.", translate.ClientGet(sender, classtab.TranslationName)))
 			return
 */		if suicide and sender:Alive() and GAMEMODE:GetWaveActive() and (CurTime() < GAMEMODE:GetWaveEnd() - 4 or GAMEMODE:GetWaveEnd() < 0) and not sender:GetZombieClassTable().Boss and gamemode.Call("CanPlayerSuicide", sender) then
@@ -4809,8 +5202,8 @@ net.Receive("zs_zsfriend", function(len, sender)
 	sender.ZSFriends[zsfriendent] = isfriend
 
 	net.Start("zs_zsfriendadded")
-		net.WriteEntity(sender)
-		net.WriteBool(isfriend)
+	net.WriteEntity(sender)
+	net.WriteBool(isfriend)
 	net.Send(zsfriendent)
 end)
 
@@ -4858,60 +5251,79 @@ net.Receive("zs_redeembutton", function(len, sender)
 	end
 end)
 
--- in progress
+-- in progress but works
 net.Receive("zs_zebuy", function(len, sender)
 	if not GAMEMODE.ZombieEscape then return false end
 	local str = net.ReadString()
 	local string
 	local cost
+	local callback
 
 	if str == "zegrenade" then
 		cost = 30
+		string = "ZE Grenade"
+		callback = function(sender)
+			sender:Give("weapon_zs_zegrenade")
+		end
 
 		if sender:HasWeapon("weapon_zs_zegrenade") then
 			GAMEMODE:ConCommandErrorMessage(sender, "You already have a grenade!")
-			return false
+			return
 		end
 
-		if sender:GetPoints() < cost then
-			GAMEMODE:ConCommandErrorMessage(sender, translate.ClientGet(sender, "dont_have_enough_points"))
-			return false
-		end
-
-		sender:TakePoints(cost)
-		sender:SendLua("surface.PlaySound(\"ambient/levels/labs/coinslot1.wav\")")
-		sender:Give("weapon_zs_zegrenade")
-		sender:PrintTranslatedMessage(HUD_PRINTTALK, "purchased_x_for_y_points", "ZE Grenade", cost)
 /*
 	elseif str == "bloodarmor" then
 		cost = 10
+		string = "Max blood armor"
+		callback = function(sender)
+			sender:SetBloodArmor(sender.MaxBloodArmor)
+		end
+
 		if sender:GetBloodArmor() >= sender.MaxBloodArmor then return false end
-		sender:SetBloodArmor(sender.MaxBloodArmor)
 */
 	elseif str == "health" then
 		cost = 10
+		string = "+25% health"
+		callback = function(sender)
+			sender:SetHealth(math.min(sender:GetMaxHealth(), sender:Health() + sender:GetMaxHealth() * 0.25))
+		end
+
 		if sender:Health() >= sender:GetMaxHealth() then
 			GAMEMODE:ConCommandErrorMessage(sender, "You are at max health!")
-			return false
+			return
 		end
 
-		if sender:GetPoints() < cost then
-			GAMEMODE:ConCommandErrorMessage(sender, translate.ClientGet(sender, "dont_have_enough_points"))
-			return false
-		end
-
-		sender:TakePoints(cost)
-		sender:SendLua("surface.PlaySound(\"ambient/levels/labs/coinslot1.wav\")")
-		sender:SetHealth(math.min(sender:GetMaxHealth(), sender:Health() + sender:GetMaxHealth() * 0.25))
-		sender:PrintTranslatedMessage(HUD_PRINTTALK, "purchased_x_for_y_points", "+25% health", cost)
+	else return
 	end
 
+	if sender:GetPoints() < cost then
+		GAMEMODE:ConCommandErrorMessage(sender, translate.ClientGet(sender, "dont_have_enough_points"))
+		return
+	end
+
+	sender:TakePoints(cost)
+	sender:SendLua("surface.PlaySound(\"ambient/levels/labs/coinslot1.wav\")")
+	callback(sender)
+	sender:PrintTranslatedMessage(HUD_PRINTTALK, "purchased_x_for_y_points", str, cost)
 end)
 
 function GM:OnReloaded()
-	print("BRUH YOU ARE NOT SUPPOSED TO REFRESH GAMEMODE CODE WHILE SERVER IS ACTIVE\
-	OK YOU KNOW WHAT I AM RESTARTING THE SERVER")
-	timer.Simple(2, function()
+	timer.Simple(0, function()
+		self:FixSkillConnections()
+		self:SetupSpawnPoints()
+		self:AssignItemProperties()
+		self:FixWeaponBase()
+	end)
+
+/*	-- old feature
+	if self.DONT_RESTART_MAP_ON_RELOAD_GAMEMODE or self.gm_code_ruined then return end
+
+	timer.Simple(2.25, function()
 		RunConsoleCommand("changelevel", game.GetMap())
 	end)
+	self.gm_code_ruined = true
+*/
+
+	SetGlobalBool("gamemode_code_ruined", true)
+	BroadcastLua("chat.AddText(Color(223, 0, 0), \"BRUH DOES THE GAMEMODE FILES RELOADING REALLY HAVE TO RUIN THE GAMEMODE CODE?!?!?!?\")")
 end

@@ -1,4 +1,4 @@
-CLASS.Base = "boss_butcher"
+CLASS.Base = "semiboss_butcher"
 
 CLASS.Name = "The Grave Digger"
 CLASS.TranslationName = "class_gravedigger"
@@ -6,6 +6,7 @@ CLASS.Description = "description_gravedigger"
 CLASS.Help = "controls_gravedigger"
 
 CLASS.Boss = true
+CLASS.SemiBoss = false
 
 CLASS.Health = 1600
 CLASS.DynamicHealth = 80
@@ -15,6 +16,7 @@ CLASS.CanTaunt = true
 
 CLASS.FearPerInstance = 1
 
+CLASS.DamageNeedPerPoint = 0
 CLASS.Points = 30
 
 CLASS.SWEP = "weapon_zs_graveshovelz"

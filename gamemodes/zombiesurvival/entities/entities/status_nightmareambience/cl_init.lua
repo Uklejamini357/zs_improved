@@ -5,8 +5,10 @@ ENT.RenderGroup = RENDERGROUP_NONE
 function ENT:Initialize()
 	self:DrawShadow(false)
 
+	local owner = self:GetOwner()
+	local classname = owner:GetZombieClassTable().Name
 	self.AmbientSound = CreateSound(self, "zombiesurvival/nightmare_ambiance.ogg")
-	self.AmbientSound:PlayEx(0.8, 100)
+	self.AmbientSound:PlayEx(0.8, classname == "Reborn Nightmare" and 85 or 100)
 end
 
 function ENT:OnRemove()

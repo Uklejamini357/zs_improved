@@ -127,7 +127,7 @@ end
 
 function SWEP:SetNextAttack()
 	local owner = self:GetOwner()
-	local armdelay = owner:GetMeleeSpeedMul()
+	local armdelay = owner:GetMeleeSpeedMul() * (owner.MeleeFireDelay or 1)
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay + self.SwingTime * armdelay)
 	self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay * armdelay)
 end

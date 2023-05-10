@@ -297,14 +297,14 @@ function MakepWorth()
 					if not item then continue end
 					priceall = item.Worth + priceall
 					if #savetab == _ + 1 then
-						names = "\""..(item.Name or weapons.Get(item).PrintName or "?").."\" "..names
+						names = "\""..(item.Name or weapons.Get(item).PrintName or "?").."\" - "..item.Worth.." worth "..names
 					else
-						names = "\""..(item.Name or weapons.Get(item).PrintName or "?").."\", "..names
+						names = "\""..(item.Name or weapons.Get(item).PrintName or "?").."\" - "..item.Worth.." worth\n"..names
 					end
 				end
 			end
 		end
-		--local priceall = translate.Get("w_cost")..priceall
+
 		names = string.sub(names,0, string.len(names)-1)
 
 		local cartname = savetab[1]
