@@ -1183,8 +1183,6 @@ function GM:SpawnMiniBossZombie(bossplayer, silent, bossindex, triggerboss)
 		GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_ZOMBIECLASS, GAMEMODE.ZombieClasses[bossindex].Name, "BossSpawn", 1)
 	end
 
-	self.LastBossZombieSpawned = self:GetWave()
-
 	local curclass = bossplayer.DeathClass or bossplayer:GetZombieClass()
 	bossplayer:KillSilent()
 	bossplayer:SetZombieClass(bossindex)
@@ -1219,8 +1217,6 @@ function GM:SpawnSemiBossZombie(bossplayer, silent, bossindex, triggerboss)
 		bossplayer.BossDeathNotification = true
 		GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_ZOMBIECLASS, GAMEMODE.ZombieClasses[bossindex].Name, "BossSpawn", 1)
 	end
-
-	self.LastBossZombieSpawned = self:GetWave()
 
 	local curclass = bossplayer.DeathClass or bossplayer:GetZombieClass()
 	bossplayer:KillSilent()
@@ -1408,10 +1404,22 @@ function GM:Think()
 			if self:GetWaveStart() <= time then
 				gamemode.Call("SetWaveActive", true)
 			elseif not self.PantsMode and not self:IsClassicMode() and not self.ZombieEscape then
+				if self.SemiBossZombies and self.LastSemiBossZombiesSpawned ~= wave and wave > 0 --and not self.RoundEnded
+				and (self.SemiBossZombiePlayersRequired <= 0 or #player.GetAll() >= self.SemiBossZombiePlayersRequired) then
+					if self:GetWaveStart() - tonumber(self.SemiBossZombieSpawnBeforeWaveStart or 1) <= time then
+						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.032 + (self:GetWave() * 0.013)))) do
+							self:SpawnSemiBossZombie()
+						end
+						self.LastSemiBossZombiesSpawned = wave
+					else
+						self:CalculateNextBoss()
+					end
+				end
+
 				if self.BossZombies and self.LastBossZombieSpawned ~= wave and wave > 0 --and not self.RoundEnded
 				and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
 					if self:GetWaveStart() - tonumber(self.BossZombieSpawnBeforeWaveStart or 5) <= time then
-						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.01 + (self:GetWave() * 0.005)))) do
+						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.011 + (self:GetWave() * 0.004)))) do
 							self:SpawnBossZombie()
 						end
 					else
@@ -1640,10 +1648,11 @@ function GM:CalculateZombieVolunteers()
 	end
 end
 
-GM.LastCalculatedMiniBossTime = 0
+--GM.LastCalculatedMiniBossTime = 0
 GM.LastCalculatedSemiBossTime = 0
 GM.LastCalculatedBossTime = 0
 GM.LastCalculatedSuperBossTime = 0
+/* -- Maybe not this time
 function GM:CalculateNextMiniBoss()
 	local zombies = {}
 	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
@@ -1662,7 +1671,7 @@ function GM:CalculateNextMiniBoss()
 
 	return newboss
 end
-
+*/
 function GM:CalculateNextSemiBoss()
 	local zombies = {}
 	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
@@ -2065,6 +2074,7 @@ GM.StoredUndeadFrags = {}
 function GM:RestartLua()
 	self.CachedHMs = nil
 	self.TheLastHuman = nil
+	self.LastSemiBossZombiesSpawned = nil
 	self.LastBossZombieSpawned = nil
 	self.LastSuperBossZombieSpawned = nil
 	self.UseSigils = nil
@@ -4607,20 +4617,20 @@ function GM:PlayerSpawn(pl)
 
 		dynhp = classtab.Health + (math.max(0, self:GetWave() - 1) * tonumber(classtab.DynamicHealth or 0)) * self.ZombieHealthMultiplier
 		if classtab.SuperBoss then
-			dynhp = dynhp + (#player.GetAll() * 15)
+			dynhp = dynhp + (#player.GetAll() * 35)
 		elseif classtab.Boss then
-			dynhp = dynhp + (#player.GetAll() * 5)
+			dynhp = dynhp + (#player.GetAll() * 15)
 		elseif classtab.SemiBoss then
-			dynhp = dynhp + (math.floor(#player.GetAll() * 0.55) * 5)
+			dynhp = dynhp + (#player.GetAll() * 10)
 		elseif classtab.MiniBoss then
 			dynhp = dynhp * healthmulti
-			dynhp = dynhp + (math.floor(#player.GetAll() * 0.3) * 5)
+			dynhp = dynhp + (#player.GetAll() * 5)
 		else
 			dynhp = dynhp * healthmulti
 		end
-		pl:SetHealth(dynhp * (1 + (pl.MutationModifiers["zombie_health"] or 0)))
-		pl:SetNWInt("zs_zombiehealth", hp)
-		pl:SetNWInt("zs_zombiedynhealth", dynhp)
+		pl:SetHealth(math.min(2147483647, dynhp * (1 + (pl.MutationModifiers["zombie_health"] or 0))))
+		pl:SetNWInt("zs_zombiehealth", math.min(2147483647, hp))
+		pl:SetNWInt("zs_zombiedynhealth", math.min(2147483647, dynhp))
 
 		if classtab.SWEP then
 			pl:Give(classtab.SWEP)

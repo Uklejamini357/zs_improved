@@ -315,6 +315,7 @@ SKILL_QUICKFIRE = 209
 SKILL_POINT_OLD = 210
 SKILL_ENDLESS = 211
 SKILL_CAPACITY = 212
+SKILL_PULSEEXPERT = 213
 
 
 SKILLMOD_HEALTH = 1
@@ -516,9 +517,8 @@ s = GM:AddSkill(SKILL_REGENERATOR, "Regenerator", GOOD.."Regenerate 1 health eve
 -5, -2, {SKILL_OVERREGENERATOR}, TREE_HEALTHTREE)
 GM:AddSkillModifier(SKILL_REGENERATOR, SKILLMOD_HEALTH, -6)
 
-s = GM:AddSkill(SKILL_OVERREGENERATOR, "Over-Regenerator", GOOD.."Regenerate 1 health every 5s when below 70% health instead\n"..BAD.."-5 maximum health\n"..BAD.."Must have Regenerator skill active for this skill to work",
+s = GM:AddSkill(SKILL_OVERREGENERATOR, "Over-Regenerator", GOOD.."Regenerate 1 health every 5s when below 70% health instead\n"..BAD.."On taking damage, unable to regenerate health for 30 seconds\n"..BAD.."Must have Regenerator skill active for this skill to work",
 -5, 0, {}, TREE_HEALTHTREE)
-GM:AddSkillModifier(SKILL_OVERREGENERATOR, SKILLMOD_HEALTH, -5)
 
 s = GM:AddSkill(SKILL_BLOODARMOR, "Blood Armor", GOOD.."Regenerate 1 blood armor every 8s upto your blood armor max\nBase maximum blood armor = 20\nBase blood armor damage absorption = 50%\n"..BAD.."-13 maximum health",
 2, 2, {SKILL_IRONBLOOD, SKILL_BLOODLETTER, SKILL_D_HEMOPHILIA}, TREE_HEALTHTREE)
@@ -937,10 +937,16 @@ s = GM:AddSkill(SKILL_FIELDAMP, "Field Amplifier", GOOD.."-20% zapper and repair
 GM:AddSkillModifier(SKILL_FIELDAMP, SKILLMOD_FIELD_RANGE_MUL, -0.4)
 GM:AddSkillModifier(SKILL_FIELDAMP, SKILLMOD_FIELD_DELAY_MUL, -0.2)
 
-s = GM:AddSkill(SKILL_TECHNICIAN, "Field Technician", GOOD.." +3% zapper and repair field range\n"..GOOD.."-3% zapper and repair field delay",
-4, 3, {}, TREE_BUILDINGTREE)
+s = GM:AddSkill(SKILL_TECHNICIAN, "Field Technician", GOOD.."+3% zapper and repair field range\n"..GOOD.."-3% zapper and repair field delay",
+4, 3, {SKILL_PULSEEXPERT}, TREE_BUILDINGTREE)
 GM:AddSkillModifier(SKILL_TECHNICIAN, SKILLMOD_FIELD_RANGE_MUL, 0.03)
 GM:AddSkillModifier(SKILL_TECHNICIAN, SKILLMOD_FIELD_DELAY_MUL, -0.03)
+
+s = GM:AddSkill(SKILL_PULSEEXPERT, "Pulse expert", GOOD.."+10% pulse slowdown\n"..GOOD.."+5% reload speed for Pulse weapons\n"..BAD.."+25% zapper and repair field delay",
+6, 4, {}, TREE_BUILDINGTREE)
+GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_PULSE_WEAPON_SLOW_MUL, 0.1)
+GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_RELOADSPEED_PULSE_MUL, 0.05)
+GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_FIELD_DELAY_MUL, 0.25)
 
 s = GM:AddSkill(SKILL_U_ROLLERMINE, "Unlock: Rollermine", GOOD.."Unlocks purchasing Rollermines\nRolls along the ground, shocking zombies and dealing damage",
 3, -5, {}, TREE_BUILDINGTREE)
@@ -1228,7 +1234,7 @@ GM:AddSkillModifier(SKILL_BATTLER1, SKILLMOD_MELEE_DAMAGE_MUL, 0.04)
 s = GM:AddSkill(SKILL_BATTLER2, "Battler II", GOOD.."+4% melee damage",
 -6, -4, {SKILL_BATTLER3, SKILL_LIGHTWEIGHT}, TREE_MELEETREE)
 s.CanUseInZE = true
-GM:AddSkillModifier(SKILL_BATTLER2, SKILLMOD_MELEE_DAMAGE_MUL, 0.05)
+GM:AddSkillModifier(SKILL_BATTLER2, SKILLMOD_MELEE_DAMAGE_MUL, 0.04)
 
 s = GM:AddSkill(SKILL_BATTLER3, "Battler III", GOOD.."+5% melee damage",
 -4, -2, {SKILL_BATTLER4, SKILL_LANKY1}, TREE_MELEETREE)
@@ -1238,18 +1244,18 @@ GM:AddSkillModifier(SKILL_BATTLER3, SKILLMOD_MELEE_DAMAGE_MUL, 0.05)
 s = GM:AddSkill(SKILL_BATTLER4, "Battler IV", GOOD.."+5% melee damage",
 -2, 0, {SKILL_BATTLER5, SKILL_MASTERCHEF, SKILL_D_CLUMSY}, TREE_MELEETREE)
 s.CanUseInZE = true
-GM:AddSkillModifier(SKILL_BATTLER4, SKILLMOD_MELEE_DAMAGE_MUL, 0.06)
+GM:AddSkillModifier(SKILL_BATTLER4, SKILLMOD_MELEE_DAMAGE_MUL, 0.05)
 
 s = GM:AddSkill(SKILL_BATTLER5, "Battler V", GOOD.."+6% melee damage",
 0, 2, {SKILL_BATTLER6, SKILL_GLASSWEAPONS, SKILL_BLOODLUST}, TREE_MELEETREE)
 s.CanUseInZE = true
-GM:AddSkillModifier(SKILL_BATTLER5, SKILLMOD_MELEE_DAMAGE_MUL, 0.07)
+GM:AddSkillModifier(SKILL_BATTLER5, SKILLMOD_MELEE_DAMAGE_MUL, 0.06)
 
 s = GM:AddSkill(SKILL_BATTLER6, "Battler VI", GOOD.."+7% melee damage",
 0, -1, {}, TREE_MELEETREE)
 s.RemortReq = 1
 s.CanUseInZE = true
-GM:AddSkillModifier(SKILL_BATTLER6, SKILLMOD_MELEE_DAMAGE_MUL, 0.08)
+GM:AddSkillModifier(SKILL_BATTLER6, SKILLMOD_MELEE_DAMAGE_MUL, 0.07)
 
 s = GM:AddSkill(SKILL_LASTSTAND, "Last Stand", GOOD.."1.85x melee damage when below 25% health\n"..GOOD.."-10% melee damage taken when below 25% health\n"..BAD.."0.8x melee weapon damage at any other time\n"..BAD.."-5 maximum health\n"..BAD.."-5 maximum blood armor",
 0, 6, {}, TREE_MELEETREE)
@@ -1343,28 +1349,28 @@ GM:AddSkillModifier(SKILL_BRASH, SKILLMOD_MELEE_ATTACK_DELAY_MUL, -0.02)
 GM:AddSkillModifier(SKILL_BRASH, SKILLMOD_MELEE_MOVEMENTSPEED_ON_KILL, -15)
 
 -- Torment Skill Tree
-s = GM:AddSkill(SKILL_TORMENT1, "Torment I", GOOD.."+1% XP gain multiplier\n"..BAD.."-3 movement speed",
+s = GM:AddSkill(SKILL_TORMENT1, "Torment I", GOOD.."+1.25% XP gain multiplier\n"..BAD.."-4 movement speed",
 -4, -2, {SKILL_NONE, SKILL_TORMENT2}, TREE_TORMENTTREE)
-GM:AddSkillModifier(SKILL_TORMENT1, SKILLMOD_XP_MULTI, 0.01)
-GM:AddSkillModifier(SKILL_TORMENT1, SKILLMOD_SPEED, -3)
+GM:AddSkillModifier(SKILL_TORMENT1, SKILLMOD_XP_MULTI, 0.0125)
+GM:AddSkillModifier(SKILL_TORMENT1, SKILLMOD_SPEED, -4)
 
-s = GM:AddSkill(SKILL_TORMENT2, "Torment II", GOOD.."+1.25% XP gain multiplier\n"..BAD.."-6 maximum health",
+s = GM:AddSkill(SKILL_TORMENT2, "Torment II", GOOD.."+1.5% XP gain multiplier\n"..BAD.."-6 maximum health",
 -4, 0, {SKILL_TORMENT3}, TREE_TORMENTTREE)
 s.RemortReq = 1
-GM:AddSkillModifier(SKILL_TORMENT2, SKILLMOD_XP_MULTI, 0.0125)
+GM:AddSkillModifier(SKILL_TORMENT2, SKILLMOD_XP_MULTI, 0.015)
 GM:AddSkillModifier(SKILL_TORMENT2, SKILLMOD_HEALTH, -6)
 
-s = GM:AddSkill(SKILL_TORMENT3, "Torment III", GOOD.."+1.5% XP gain multiplier\n"..BAD.."+20% medical kit cooldown\n"..BAD.."-10% repair rate",
+s = GM:AddSkill(SKILL_TORMENT3, "Torment III", GOOD.."+1.75% XP gain multiplier\n"..BAD.."+25% medical kit cooldown\n"..BAD.."-15% repair rate",
 -4, 2, {SKILL_TORMENT4}, TREE_TORMENTTREE)
-GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_XP_MULTI, 0.015)
-GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_MEDKIT_COOLDOWN_MUL, 0.2)
-GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_REPAIRRATE_MUL, -0.1)
+GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_XP_MULTI, 0.0175)
+GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_MEDKIT_COOLDOWN_MUL, 0.25)
+GM:AddSkillModifier(SKILL_TORMENT3, SKILLMOD_REPAIRRATE_MUL, -0.15)
 
-s = GM:AddSkill(SKILL_TORMENT4, "Torment IV", GOOD.."+2% XP gain multiplier\n"..BAD.."+4% melee damage taken\n"..BAD.."+2% arsenal item prices",
+s = GM:AddSkill(SKILL_TORMENT4, "Torment IV", GOOD.."+2% XP gain multiplier\n"..BAD.."+5% melee damage taken\n"..BAD.."+2% arsenal item prices",
 -4, 4, {SKILL_TORMENT5}, TREE_TORMENTTREE)
 s.RemortReq = 2
 GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_XP_MULTI, 0.02)
-GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, 0.04)
+GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, 0.05)
 GM:AddSkillModifier(SKILL_TORMENT4, SKILLMOD_ARSENAL_DISCOUNT, 0.02)
 
 s = GM:AddSkill(SKILL_TORMENT5, "Torment V", GOOD.."+2.25% XP gain multiplier\n"..BAD.."-7 maximum blood armor\n"..BAD.."-5% jumping power\n"..BAD.."+25% effect of aim shake effects",
@@ -1381,24 +1387,25 @@ GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_XP_MULTI, 0.025)
 GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_HEALTH, -9)
 GM:AddSkillModifier(SKILL_TORMENT6, SKILLMOD_RESUPPLY_DELAY_MUL, 0.1)
 
-s = GM:AddSkill(SKILL_TORMENT7, "Torment VII", GOOD.."+3% XP gain multiplier\n"..BAD.."+7% melee damage taken\n"..BAD.."-3 starting points\n"..BAD.."-3% point gain multiplier",
+s = GM:AddSkill(SKILL_TORMENT7, "Torment VII", GOOD.."+2.85% XP gain multiplier\n"..BAD.."+7% melee damage taken\n"..BAD.."-3 starting points\n"..BAD.."-3% point gain multiplier",
 2, 2, {SKILL_TORMENT8, SKILL_THE_EXCHANGE4}, TREE_TORMENTTREE)
-GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_XP_MULTI, 0.03)
+GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_XP_MULTI, 0.0285)
 GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, 0.07)
 GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_POINTS, -3)
 GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_POINT_MULTIPLIER, -0.03)
 
-s = GM:AddSkill(SKILL_TORMENT8, "Torment VIII", GOOD.."+3.25% XP gain multiplier\n"..BAD.."-10 movement speed\n"..BAD.."+20% sigil teleportation time\n"..BAD.."+50% time to eat food",
+s = GM:AddSkill(SKILL_TORMENT8, "Torment VIII", GOOD.."+3.15% XP gain multiplier\n"..BAD.."-10 movement speed\n"..BAD.."+20% sigil teleportation time\n"..BAD.."+50% time to eat food\nTorment IX skill disabled due to balancing issue",
 4, 0, {SKILL_TORMENT9, SKILL_COMMISIONED_BUYER}, TREE_TORMENTTREE)
 s.RemortReq = 4
+s.Disabled = true
 GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_XP_MULTI, 0.0325)
 GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_SPEED, -10)
 GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_SIGIL_TELEPORT_MUL, 0.2)
 GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_FOODEATTIME_MUL, 0.5)
 
-s = GM:AddSkill(SKILL_TORMENT9, "Torment IX", GOOD.."+2.5% XP gain multiplier\n"..BAD.."-20% barricade phasing movement speed",
+s = GM:AddSkill(SKILL_TORMENT9, "Torment IX", GOOD.."+3.5% XP gain multiplier\n"..BAD.."-20% barricade phasing movement speed",
 6, -2, {SKILL_TORMENT10}, TREE_TORMENTTREE)
-GM:AddSkillModifier(SKILL_TORMENT9, SKILLMOD_XP_MULTI, 0.06)
+GM:AddSkillModifier(SKILL_TORMENT9, SKILLMOD_XP_MULTI, 0.035)
 GM:AddSkillModifier(SKILL_TORMENT9, SKILLMOD_BARRICADE_PHASE_SPEED_MUL, -0.2)
 
 s = GM:AddSkill(SKILL_TORMENT10, "Torment X", GOOD.."+3.5% XP gain multiplier\n+75% damage vs. yourself\n-15% weapon reload speed\nIf torment skills are active and no anti-torment skill is active:\n"..VERYGOOD.."You gain 1.5x more XP on win round\n"..VERYGOOD.."Also gives progress to achievement on round win!",
@@ -1408,14 +1415,15 @@ GM:AddSkillModifier(SKILL_TORMENT10, SKILLMOD_XP_MULTI, 0.035)
 GM:AddSkillModifier(SKILL_TORMENT10, SKILLMOD_SELF_DAMAGE_MUL, 0.75)
 GM:AddSkillModifier(SKILL_TORMENT10, SKILLMOD_RELOADSPEED_MUL, -0.15)
 
-s = GM:AddSkill(SKILL_TORMENT11, "Torment XI", GOOD.."+2% XP gain multiplier\n"..BAD.."+7.5% remantler prices\n"..BAD.."+10% bleed damage taken\nIt is not recommended to unlock further skills.\nMany debuffs on Torment >XI are present, even damage debuffs.\nOnly the brave shall go past Torment XI.",
+s = GM:AddSkill(SKILL_TORMENT11, "Torment XI", GOOD.."+2% XP gain multiplier\n"..BAD.."+7.5% remantler prices\n"..BAD.."+10% bleed damage taken\nIt is not recommended to unlock further skills.\nMany debuffs on Torment >XI are present, even damage debuffs.\nOnly the brave shall go past Torment XI.\nYou need 7SP in order to be able to unlock all other skills up ahead.",
 6, 0, {SKILL_TORMENT12}, TREE_TORMENTTREE)
 s.RemortReq = 8
+s.RequiredSP = 7
 GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_XP_MULTI, 0.02)
 GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_REMANTLER_PRICE_MUL, 0.075)
 GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_BLEED_DAMAGE_TAKEN_MUL, 0.1)
 
-s = GM:AddSkill(SKILL_TORMENT12, "Torment XII", GOOD.."+2.25% XP gain multiplier\n"..BAD.."-10% melee damage\n"..BAD.."-5% weapon bullet damage",
+s = GM:AddSkill(SKILL_TORMENT12, "Torment XII", GOOD.."+2.25% XP gain multiplier\n"..BAD.."-10% melee damage\n"..BAD.."-5% weapon bullet damage\nSide note: Torment XIII is disabled due to current balancing issue",
 4, 2, {SKILL_TORMENT13}, TREE_TORMENTTREE)
 GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_XP_MULTI, 0.0225)
 GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_MELEE_DAMAGE_MUL, -0.1)
@@ -1424,6 +1432,7 @@ GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_BULLET_DAMAGE_MUL, -0.05)
 s = GM:AddSkill(SKILL_TORMENT13, "Torment XIII", GOOD.."+2.5% XP gain multiplier\n"..BAD.."+5% all damage taken\n"..BAD.."-15% deployable health",
 2, 4, {SKILL_TORMENT14}, TREE_TORMENTTREE)
 s.RemortReq = 9
+s.Disabled = true
 GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_XP_MULTI, 0.025)
 GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_DAMAGE_TAKEN_MUL, 0.05)
 GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_DEPLOYABLE_HEALTH_MUL, -0.15)
@@ -1441,14 +1450,14 @@ GM:AddSkillModifier(SKILL_TORMENT15, SKILLMOD_XP_MULTI, 0.045)
 GM:AddSkillModifier(SKILL_TORMENT15, SKILLMOD_HEALING_RECEIVED, -0.35)
 GM:AddSkillModifier(SKILL_TORMENT15, SKILLMOD_KNOCKDOWN_RECOVERY_MUL, 0.3)
 
-s = GM:AddSkill(SKILL_TORMENT16, "Torment XVI", GOOD.."+2.75% XP gain multiplier\n+15% weapon fire delay\n+25% fall damage taken",
+s = GM:AddSkill(SKILL_TORMENT16, "Torment XVI", GOOD.."+2.75% XP gain multiplier\n"..BAD.."+15% weapon fire delay\n"..BAD.."+25% fall damage taken",
 4, 6, {SKILL_TORMENT17}, TREE_TORMENTTREE)
 s.RemortReq = 11
 GM:AddSkillModifier(SKILL_TORMENT16, SKILLMOD_XP_MULTI, 0.0275)
 GM:AddSkillModifier(SKILL_TORMENT16, SKILLMOD_WEAPON_FIREDELAY_MUL, 0.15)
 GM:AddSkillModifier(SKILL_TORMENT16, SKILLMOD_FALLDAMAGE_DAMAGE_MUL, 0.25)
 
-s = GM:AddSkill(SKILL_TORMENT17, "Torment XVII", GOOD.."+3% XP gain multiplier\n",
+s = GM:AddSkill(SKILL_TORMENT17, "Torment XVII", GOOD.."+3% XP gain multiplier\n"..BAD.."+25% resupply delay",
 6, 6, {SKILL_TORMENT18}, TREE_TORMENTTREE)
 s.RemortReq = 12
 GM:AddSkillModifier(SKILL_TORMENT17, SKILLMOD_XP_MULTI, 0.03)

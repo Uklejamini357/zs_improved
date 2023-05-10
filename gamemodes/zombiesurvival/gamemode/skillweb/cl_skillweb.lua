@@ -1855,13 +1855,24 @@ function GM:DrawXPBar(x, y, w, h, xpw, barwm, hm, level)
 			lx = x + barw - 1
 			surface.DrawLine(lx, y - 1, lx, y + 5)
 		end
-
+/*	-- Not yet.
+		local rlvlcol = 4
+		local rlvlmod = math.floor((rlevel % (rlvlcol * 10)) / rlvlcol)
+		local hcolor, hlvl = COLOR_GRAY, 0
+		for rlvlr, rcolor in pairs(GAMEMODE.RemortColors) do
+			if rlvlmod >= rlvlr and rlvlr >= hlvl then
+				hlvl = rlvlr
+				hcolor = rcolor
+			end
+		end	
+*/
+		local color = COLOR_WHITE --hcolor or COLOR_WHITE
 		local text = "Lvl "..level..append
 		local text2 = string.CommaSeparate(xp).." / "..string.CommaSeparate(GAMEMODE:XPForLevel(level + 1)).." XP"
 		local size = string.len(text) + string.len(text2)
 		local font = size > 44 and "ZSXPBarSmall" or "ZSXPBar"
-		draw_SimpleText(text, font, x, h / 2 + y, COLOR_WHITE, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw_SimpleText(text2, font, x + barw, h / 2 + y, COLOR_WHITE, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		draw_SimpleText(text, font, x, h / 2 + y, hcolor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw_SimpleText(text2, font, x + barw, h / 2 + y, hcolor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	end
 end
 

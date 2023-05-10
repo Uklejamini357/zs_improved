@@ -60,10 +60,11 @@ function meta:HealPlayer(pl, amount, pointmul, nobymsg, poisononly)
 	return healed
 end
 
+/*	-- Not used anymore
 local healthpropscalar = {
 	["models/props_c17/door01_left.mdl"] = 1.1
 }
-
+*/
 function meta:GetDefaultBarricadeHealth()
 	local mass = 2
 	if self._OriginalMass then
@@ -76,7 +77,7 @@ function meta:GetDefaultBarricadeHealth()
 	end
 
 	local mdl = string.lower(self:GetModel())
-	local scalar = healthpropscalar[mdl] or 1
+	local scalar = GAMEMODE.BarricadePropHealthMultipliers[mdl] or 1
 
 	return math.Clamp((mass * GAMEMODE.BarricadeHealthMassFactor + self:GetVolume() * GAMEMODE.BarricadeHealthVolumeFactor) * scalar, GAMEMODE.BarricadeHealthMin, GAMEMODE.BarricadeHealthMax)
 end

@@ -256,7 +256,10 @@ function meta:ProcessDamage(dmginfo)
 	end
 
 	if dmginfo:GetDamage() > 0 and not self:HasGodMode() then
-		self.NextRegenTrinket = CurTime() + 12
+		self.NextRegenTrinket = CurTime() + 10
+		if self:IsSkillActive(SKILL_REGENERATOR) and self:IsSkillActive(SKILL_OVERREGENERATOR) then
+			self.NextRegenerate = CurTime() + 30
+		end
 
 		self.ShouldFlinch = true
 	end

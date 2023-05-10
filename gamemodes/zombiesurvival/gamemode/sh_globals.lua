@@ -164,10 +164,19 @@ ZE_KNOCKBACKSCALE = 0.45
 MASK_HOVER = bit.bor(CONTENTS_SOLID, CONTENTS_WATER, CONTENTS_SLIME, CONTENTS_GRATE, CONTENTS_WINDOW, CONTENTS_HITBOX)
 
 GM.BarricadeHealthMin = 75 --50
-GM.BarricadeHealthMax = 1300 * 0.85 --1100 * 0.85
+GM.BarricadeHealthMax = 1300 * 0.85 --1100 * 0.85	-- Note: Unaffected by health prop mul skill modifier
 GM.BarricadeHealthMassFactor = 3.625 * 0.85 --3.5 * 0.85
 GM.BarricadeHealthVolumeFactor = 4.125 * 0.85 --4 * 0.85
 GM.BarricadeRepairCapacity = 1.35 --1.25
+
+-- Allow Semiboss zombies?
+GM.SemiBossZombies = true
+
+-- Amount of players needed for the semiboss to spawn.
+GM.SemiBossZombiePlayersRequired = 3
+
+-- Amount (in seconds) for the boss to spawn in before wave starts
+GM.SemiBossZombieSpawnBeforeWaveStart = 1
 
 -- Amount of players needed for the boss to spawn. (Comment: player bots count too)
 GM.BossZombiePlayersRequired = 8
@@ -180,6 +189,7 @@ GM.SuperBossZombies = true
 
 -- Amount of players needed for the super boss to spawn
 GM.SuperBossZombiePlayersRequired = 22
+
 
 GM.HumanGibs = {
 	Model("models/gibs/HGIBS.mdl"),
@@ -202,7 +212,7 @@ GM.PropHealthMultipliers = {
 
 -- Does not ignore max barricade health.
 GM.BarricadePropHealthMultipliers = {
-	["models/props_c17/door01_left.mdl"] = 1,
+	["models/props_c17/door01_left.mdl"] = 1.1,
 }
 
 GM.CleanupFilter = {

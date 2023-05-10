@@ -2,12 +2,12 @@ GM.Name		=	"Zombie Survival Redux"
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.3.0a"
+GM.Version	=	"1.3.1"
 
 -- No, adding a gun doesn't make your name worth being here.
 GM.Credits = {
 	{"William \"JetBoom\" Moodhe", "williammoodhe@gmail.com (www.noxiousnet.com)", "Original ZS Creator"},
-	{"Uklejamini", "", "ZS Improved Creator"},
+	{"Uklejamini", "", "ZS Redux Creator"},
 	{"11k", "tjd113@gmail.com", "Zombie view models"},
 	{"Eisiger", "k2deseve@gmail.com", "Zombie kill icons"},
 	{"Austin \"Little Nemo\" Killey", "austin_odyssey@yahoo.com", "Ambient music"},
@@ -834,7 +834,7 @@ function GM:IsSpecialPerson(pl, image)
 		tooltip = "JetBoom\nCreator of Zombie Survival!"
 	elseif pl:SteamID() == "STEAM_0:1:157024537" then
 		img = "icon16/star.png"
-		tooltip = "Creator of ZS Improved"
+		tooltip = "Creator of ZS Redux"
 	elseif pl:SteamID() == "BOT" then
 		img = "noxiousnet/arsenalcrate.png"
 		tooltip = "I AM A BOT\nI WILL KILL YOU"

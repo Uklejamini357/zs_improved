@@ -15,6 +15,8 @@ function MakepStats()
 	end
 */
 
+	local screenscale = BetterScreenScale()
+
 	skillsonly = MySelf:Team() == TEAM_UNDEAD or skillsonly
 
 	PlayMenuOpenSound()
@@ -125,7 +127,7 @@ function MakepStats()
 				end
 			end)
 
-			d:SetFont("DefaultFont")
+			d:SetFont("ZSHUDFontTiniest")
 			list:AddItem(d)
 		end
 

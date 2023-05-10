@@ -817,6 +817,10 @@ function GM:_Think()
 			pl:ResetBones()
 		end
 	end
+
+	if self.ShowTips then
+
+	end
 end
 
 function GM:ShouldPlayBeats(teamid, fear)
@@ -1473,6 +1477,7 @@ function GM:CreateScalingFonts()
 	surface.CreateLegacyFont("csd", screenscale * 72, 100, true, false, "zsdeathnoticecspa", false, false)
 	surface.CreateLegacyFont("HL2MP", screenscale * 72, 100, true, false, "zsdeathnoticepa", false, false)
 
+	surface.CreateLegacyFont(fontfamily, screenscale * (10 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiniest", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (12 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTinier", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (16 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiny", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (20 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmallest", fontshadow, fontoutline)
@@ -1480,6 +1485,7 @@ function GM:CreateScalingFonts()
 	surface.CreateLegacyFont(fontfamily, screenscale * (28 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmall", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (42 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFont", fontshadow, fontoutline)
 	surface.CreateLegacyFont(fontfamily, screenscale * (72 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontBig", fontshadow, fontoutline)
+	surface.CreateLegacyFont(fontfamily, screenscale * (10 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTiniestBlur", false, false, 8)
 	surface.CreateLegacyFont(fontfamily, screenscale * (12 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTinierBlur", false, false, 8)
 	surface.CreateLegacyFont(fontfamily, screenscale * (16 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontTinyBlur", false, false, 8)
 	surface.CreateLegacyFont(fontfamily, screenscale * (22 + fontsizeadd), fontweight, fontaa, false, "ZSHUDFontSmallerBlur", false, false, 8)

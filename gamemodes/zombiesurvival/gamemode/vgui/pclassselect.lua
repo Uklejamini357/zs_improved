@@ -58,9 +58,9 @@ function PANEL:Init()
 	end
 */
 	self.ClassTypeButton = EasyButton(nil, translate.Get("zclasses_normal"), 8, 4)
+	self.ClassTypeButton:SetToolTip(translate.Get("zclasses_normal_d"))
 	self.ClassTypeButton:SetFont("ZSHUDFontSmaller")
 	self.ClassTypeButton:SetSize(140, 28)
-	self.ClassTypeButton:SetToolTip("Normal - Normal zombie classes that can be chosen at any time if they are unlocked and during wave")
 --	self.ClassTypeButton:SizeToContents()
 	self.ClassTypeButton.DoClick = function(self)
 		if classselectmode == ZCLASSSELECT_NORMAL then return end
@@ -72,6 +72,7 @@ function PANEL:Init()
 	end
 
 	self.MiniBossClassTypeButton = EasyButton(nil, translate.Get("zclasses_minibosses"), 8, 4)
+	self.MiniBossClassTypeButton:SetToolTip(translate.Get("zclasses_minibosses_d"))
 	self.MiniBossClassTypeButton:SetFont("ZSHUDFontSmaller")
 	self.MiniBossClassTypeButton:SetSize(140, 28)
 --	self.MiniBossClassTypeButton:SizeToContents()
@@ -85,6 +86,7 @@ function PANEL:Init()
 	end
 
 	self.SemiBossClassTypeButton = EasyButton(nil, translate.Get("zclasses_semibosses"), 8, 4)
+	self.SemiBossClassTypeButton:SetToolTip(translate.Get("zclasses_semibosses_d"))
 	self.SemiBossClassTypeButton:SetFont("ZSHUDFontSmaller")
 	self.SemiBossClassTypeButton:SetSize(140, 28)
 --	self.SemiBossClassTypeButton:SizeToContents()
@@ -98,9 +100,9 @@ function PANEL:Init()
 	end
 
 	self.BossClassTypeButton = EasyButton(nil, translate.Get("zclasses_bosses"), 8, 4)
+	self.BossClassTypeButton:SetToolTip(translate.Get("zclasses_bosses_d"))
 	self.BossClassTypeButton:SetFont("ZSHUDFontSmaller")
 	self.BossClassTypeButton:SetSize(140, 28)
-	self.BossClassTypeButton:SetToolTip("Bosses - Boss zombies that only appear before each wave start (Health varies on player count)")
 	--	self.BossClassTypeButton:SizeToContents()
 	self.BossClassTypeButton.DoClick = function(self)
 		if classselectmode == ZCLASSSELECT_BOSS then return end
@@ -112,9 +114,9 @@ function PANEL:Init()
 	end
 	
 	self.SuperBossClassTypeButton = EasyButton(nil, translate.Get("zclasses_superbosses"), 8, 4)
+	self.SuperBossClassTypeButton:SetToolTip(translate.Get("zclasses_superbosses_d"))
 	self.SuperBossClassTypeButton:SetFont("ZSHUDFontSmaller")
 	self.SuperBossClassTypeButton:SetSize(140, 28)
-	self.SuperBossClassTypeButton:SetToolTip("Superbosses - Very powerful zombies that appear just before final wave")
 --	self.SuperBossClassTypeButton:SizeToContents()
 	self.SuperBossClassTypeButton.DoClick = function(self)
 		if classselectmode == ZCLASSSELECT_SUPERBOSS then return end
