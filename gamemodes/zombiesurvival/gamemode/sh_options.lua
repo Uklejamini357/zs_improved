@@ -915,7 +915,7 @@ GM.PointSaving = 0
 -- HIGHLY suggested that this is on if you enable point saving. Always false if objective map, zombie escape, classic mode, or wave number is changed by the map.
 GM.LockItemTiers = false
 
--- Should only 
+-- Unfinished
 GM.LockItemsWaveUnlockOnly = false
 
 -- Don't save more than this amount of points. 0 for infinite.

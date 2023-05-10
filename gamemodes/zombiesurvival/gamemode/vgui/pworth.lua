@@ -339,7 +339,7 @@ function MakepWorth()
 		cartnamelabel:SetPos(x, cartpan:GetTall() * 0.35 - cartnamelabel:GetTall() * 0.5)
 
 		local cartworthlabel = EasyLabel(cartpan, Format("Worth needed: %d", worthreq), "ZSHUDFontTiny")
-		cartworthlabel:SetPos(x, 30)
+		cartworthlabel:SetPos(x, 30 * screenscale)
 		cartworthlabel:SetTextColor(worthreq > GetStartingWorth() and Color(235,35,35) or worthreq >= GetStartingWorth() and Color(235,235,65) or Color(235,115,95))
 
 --		cartworthlabel:SetTooltip(Format("Worth needed: %d", 0))

@@ -200,7 +200,7 @@ CLASS.IconColor = Color(240, 35, 0)
 function CLASS:CreateMove(pl, cmd)
 	local wep = pl:GetActiveWeapon()
 	if wep:IsValid() and wep.m_ViewAngles and ((wep.GetChargeStart and wep:GetChargeStart() ~= 0) or wep.IsCharging) then
-		local maxdiff = FrameTime() * 15
+		local maxdiff = FrameTime() * 20
 		local mindiff = -maxdiff
 		local originalangles = wep.m_ViewAngles
 		local viewangles = cmd:GetViewAngles()

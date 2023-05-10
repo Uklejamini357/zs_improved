@@ -2,7 +2,7 @@ GM.Name		=	"Zombie Survival Redux"
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.3.0?"
+GM.Version	=	"1.3.0a"
 
 -- No, adding a gun doesn't make your name worth being here.
 GM.Credits = {
@@ -954,6 +954,6 @@ function GM:CanRedeem(pl)
 end
 
 function GM:CanSelfRedeem(pl)
-	if self.CanUseSelfRedeem and not pl:IsValid() or self:GetRedeemBrains() <= 0 or self:GetWave() > self.MaxSelfRedeemWave or self:GetWave() >= self:GetNumberOfWaves() or self.NoRedeeming or pl.NoRedeeming or LASTHUMAN or self.RoundEnded or self.ZombieEscape then return false end
+	if not self.CanUseSelfRedeem or not pl:IsValid() or self:GetRedeemBrains() <= 0 or self:GetWave() > self.MaxSelfRedeemWave or self:GetWave() >= self:GetNumberOfWaves() or self.NoRedeeming or pl.NoRedeeming or LASTHUMAN or self.RoundEnded or self.ZombieEscape then return false end
 	return true
 end

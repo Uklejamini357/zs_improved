@@ -137,6 +137,9 @@ function PANEL:SetPlayer(pl, col, misc, misccol, overridename)
 		avatar:SetSize(32, 32)
 		avatar:SetPlayer(pl)
 		avatar:SetTooltip("Click here to view their Steam Community profile.")
+		avatar.DoClick = function(this)
+			this:ShowProfile()
+		end
 		self.m_pAvatar = avatar
 
 		local namelab = EasyLabel(self, name, "ZSHUDFontTiny", col)
