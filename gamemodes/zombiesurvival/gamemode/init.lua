@@ -3142,9 +3142,11 @@ function GM:PropBroken(ent, attacker)
 end
 
 function GM:NestDestroyed(ent, attacker)
+/*
 	if IsValid(ent) and IsValid(attacker) and attacker:IsPlayer() and attacker:Team() == TEAM_UNDEAD then
 		PrintMessage(HUD_PRINTCONSOLE, attacker:LogID().." team killed a nest at "..tostring(ent:GetPos()).." (builder: "..(ent:GetOwner() and ent:GetOwner():IsValid() and ent:GetOwner():IsPlayer() and ent:GetOwner():LogID() or "unknown")..")")
 	end
+*/
 end
 
 function GM:EntityTakeDamage(ent, dmginfo)
