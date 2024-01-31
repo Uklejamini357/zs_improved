@@ -275,7 +275,7 @@ function meta:NearRemantler()
 end
 
 function meta:GetRemantlerPrices()
-	local mul = self.RemantlerPrices
+	local mul = self.RemantlerPrices or 1
 
 	return math.max(0.1, mul)
 end
