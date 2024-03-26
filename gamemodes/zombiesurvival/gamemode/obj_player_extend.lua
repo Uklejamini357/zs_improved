@@ -246,7 +246,7 @@ end
 meta.IsNearArsenalCrate = meta.NearArsenalCrate
 
 function meta:GetArsenalPrices()
-	local mul = self.ArsenalDiscount
+	local mul = self.ArsenalDiscount or 1
 
 	if self:IsSkillActive(SKILL_COMMISIONED_BUYER) then
 		mul = mul + (GAMEMODE:GetWaveActive() and 0.15 or -0.03)
@@ -275,7 +275,7 @@ function meta:NearRemantler()
 end
 
 function meta:GetRemantlerPrices()
-	local mul = self.RemantlerPrices
+	local mul = self.RemantlerPrices or 1
 
 	return math.max(0.1, mul)
 end
