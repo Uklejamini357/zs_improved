@@ -14,7 +14,7 @@ function meta:ProcessDamage(dmginfo)
 	if self.DamageVulnerability and not dmgbypass then
 		dmginfo:ScaleDamage(self.DamageVulnerability)
 	end
-	if self.AllDamageTakenMul then
+	if self.AllDamageTakenMul and not dmgbypass then
 		dmginfo:ScaleDamage(self.AllDamageTakenMul)
 	end
 
@@ -59,7 +59,9 @@ function meta:ProcessDamage(dmginfo)
 				end
 
 				if attacker.MeleeDamageToBloodArmorMul and attacker.MeleeDamageToBloodArmorMul > 0 and attacker:GetBloodArmor() < attacker.MaxBloodArmor then
-					attacker:SetBloodArmor(math.min(attacker.MaxBloodArmor, attacker:GetBloodArmor() + math.min(damage, self:Health()) * attacker.MeleeDamageToBloodArmorMul * attacker.BloodarmorGainMul))
+					attacker.NextBloodArmor = math.min(damage, self:Health()) * attacker.MeleeDamageToBloodArmorMul * attacker.BloodarmorGainMul * 0.2
+					attacker:SetBloodArmor(math.min(attacker.MaxBloodArmor, attacker:GetBloodArmor() + math.floor(attacker.NextBloodArmor)))
+					attacker.NextBloodArmor = attacker.NextBloodArmor - math.floor(attacker.NextBloodArmor)
 				end
 
 				if attacker:IsSkillActive(SKILL_HEAVYSTRIKES) and not self:GetZombieClassTable().Boss and (wep.IsFistWeapon and attacker:IsSkillActive(SKILL_CRITICALKNUCKLE) or wep.MeleeKnockBack > 0) then
@@ -115,7 +117,7 @@ function meta:ProcessDamage(dmginfo)
 		dmginfo:SetDamage(damage)
 	end
 
-	if attacker:IsValid() and attacker:IsPlayer() and inflictor:IsValid() and attacker:Team() == TEAM_UNDEAD then
+	if attacker:IsValidZombie() and inflictor:IsValid() then
 		if inflictor == attacker:GetActiveWeapon() then
 			local damage = dmginfo:GetDamage()
 
@@ -184,11 +186,15 @@ function meta:ProcessDamage(dmginfo)
 					self.IceBurstMessage = nil
 				end
 
+				if self:IsSkillActive(SKILL_JUGGERNAUT) and self:Health() <= self:GetMaxHealth() * (self:HasTrinket("juggernaut_armor") and 0.55 or 0.4) then
+					dmginfo:ScaleDamage(1 - (self:HasTrinket("juggernaut_armor") and 0.45 or 0.3))
+				end
+
 				if not dmgbypass then
 					local meleedmgmul = (self:IsSkillActive(SKILL_LASTSTAND) and self:Health() <= self:GetMaxHealth() * 0.25 and -0.1 or 0)
 					+ (self.IsFragility and 0.04 * math.max(0, GAMEMODE:GetWave()) or 0)
-					-- 4% melee damage taken max since we don't want player to be fully immune from melee
-					meleedmgmul = math.max(0.04, (self.MeleeDamageTakenMul or 1) + meleedmgmul)
+					-- 7.5% melee damage taken max since we don't want player to be fully immune from melee
+					meleedmgmul = math.max(0.075, (self.MeleeDamageTakenMul or 1) + meleedmgmul)
 					dmginfo:ScaleDamage(meleedmgmul)
 				end
 
@@ -1060,6 +1066,7 @@ function meta:Resupply(owner, obj)
 
 	local stockpiling = self:IsSkillActive(SKILL_STOCKPILE)
 	local stowage = self:IsSkillActive(SKILL_STOWAGE)
+	local amt = stockpiling and not stowage and 2 or 1
 
 	if (stowage and (self.StowageCaches or 0) <= 0) or (not stowage and CurTime() < (self.NextResupplyUse or 0)) then
 		self:CenterNotify(COLOR_RED, translate.ClientGet(self, "no_ammo_here"))
@@ -1081,38 +1088,38 @@ function meta:Resupply(owner, obj)
 	end
 
 	local ammotype = self:GetResupplyAmmoType()
-	local amount = GAMEMODE.AmmoCache[ammotype]
+	local amount = GAMEMODE.AmmoCache[ammotype] * amt
 
-	for i = 1, stockpiling and not stowage and 2 or 1 do
-		net.Start("zs_ammopickup")
-		net.WriteUInt(amount, 16)
-		net.WriteString(ammotype)
-		net.Send(self)
-
-		self:GiveAmmo(amount, ammotype)
-
+	net.Start("zs_ammopickup")
+	net.WriteUInt(amount, 16)
+	net.WriteString(ammotype)
+	net.Send(self)
+	
+	self:GiveAmmo(amount, ammotype)
+	
+	for i = 1, amt do
 		if self:IsSkillActive(SKILL_FORAGER) and math.random(4) == 1 and #GAMEMODE.Food > 0 then
 			self:Give(GAMEMODE.Food[math.random(#GAMEMODE.Food)])
 		end
-
-		if self ~= owner and owner:IsValidHuman() then
-			if obj:GetClass() == "prop_resupplybox" then
-				owner.ResupplyBoxUsedByOthers = owner.ResupplyBoxUsedByOthers + 1
-			end
-
-			local points = 0.15
-			local pointgain = points * (owner.PointsGainMul or 1)
-
-			owner:AddPoints(pointgain, nil, nil, true)
-			owner:GainZSXP(points)
-
-			net.Start("zs_commission")
-			net.WriteEntity(obj)
-			net.WriteEntity(self)
-			net.WriteFloat(pointgain)
-			net.Send(owner)
-		end
 	end
+
+	if self ~= owner and owner:IsValidHuman() then
+		if obj:GetClass() == "prop_resupplybox" then
+			owner.ResupplyBoxUsedByOthers = owner.ResupplyBoxUsedByOthers + (1 * amt)
+		end
+
+		local points = 0.15 * (owner.PointsGainMul or 1) * amt
+
+		owner:AddPoints(points, nil, nil, true)
+		owner:GainZSXP(points)
+
+		net.Start("zs_commission")
+		net.WriteEntity(obj)
+		net.WriteEntity(self)
+		net.WriteFloat(points)
+		net.Send(owner)
+	end
+
 
 	return true
 end

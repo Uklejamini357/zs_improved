@@ -2,22 +2,51 @@ include("registry.lua")
 include("skillmodifiers.lua")
 
 -- These are inverse functions of eachother!
-function GM:LevelForXP(xp)
+function GM:LevelForXP(xp, remort)
 	--return math.floor(1 + 1 * math.sqrt(xp))
-	return math.floor(1 + 0.25 * math.sqrt(xp))
+	return math.floor(1 + (0.25 * math.sqrt(xp / self:GetLevelXPReqScalingMul(remort))))
 end
 
-function GM:XPForLevel(level)
+function GM:XPForLevel(level, remort)
 	--return level * level - 2 * level + 1
-	return 16 * level * level - 32 * level + 16
+	return (16 * level * level - 32 * level + 16) * self:GetLevelXPReqScalingMul(remort)
 end
 
-function GM:ProgressForXP(xp)
-	local current_level = self:LevelForXP(xp)
+function GM:GetLevelXPReqScalingMul(remort)
+	local scale = 0
+	remort = remort or 0 -- just in case if it's nil
+
+	if remort >= 30 then
+		scale = scale + (math.Clamp(remort - 30, 0, 20) * 0.01)
+	end
+
+	if remort >= 50 then
+		scale = scale + (math.Clamp(remort - 50, 0, 50) * 0.02)
+	end
+
+	if remort >= 100 then
+		scale = scale + (math.Clamp(remort - 100, 0, 50) * 0.05)
+	end
+
+	if remort >= 150 then
+		local limit_cap = 350
+		local newrl = math.min(remort - 150, limit_cap)
+		scale = scale + ((newrl) * (0.05 + (0.01 * math.floor((newrl) * 0.1) / 2)))
+	end
+
+	if remort >= 500 then
+		scale = scale + 10
+	end
+
+	return 1 + scale
+end
+
+function GM:ProgressForXP(xp, remort)
+	local current_level = self:LevelForXP(xp, remort)
 	if current_level >= self.MaxLevel then return 1 end
 
-	local current_level_xp = self:XPForLevel(current_level)
-	local next_level_xp = self:XPForLevel(current_level + 1)
+	local current_level_xp = self:XPForLevel(current_level, remort)
+	local next_level_xp = self:XPForLevel(current_level + 1, remort)
 
 	return (xp - current_level_xp) / (next_level_xp - current_level_xp)
 end
@@ -25,8 +54,8 @@ end
 GM.MaxLevel = 55
 GM.MaxRemortableLevel = 45
 --GM.MaxRemortable2Level = 85 -- Level required for 2 remorts
-GM.MaxXP = GM:XPForLevel(GM.MaxLevel)
-GM.MaxRemortableXP = GM:XPForLevel(GM.MaxRemortableLevel)
+GM.MaxXP = GM:XPForLevel(GM.MaxLevel, 0)
+GM.MaxRemortableXP = GM:XPForLevel(GM.MaxRemortableLevel, 0)
 --GM.MaxRemortable2XP = GM:XPForLevel(GM.MaxRemortable2Level)
 GM.ExtraSP = 1
 
@@ -250,7 +279,7 @@ function meta:SetSkillActive(skillid, active, nosend)
 end
 
 function meta:GetZSLevel()
-	return math.floor(GAMEMODE:LevelForXP(self:GetZSXP()))
+	return math.floor(GAMEMODE:LevelForXP(self:GetZSXP(), self:GetZSRemortLevel()))
 end
 
 function meta:GetZSRemortLevel()
@@ -267,6 +296,10 @@ end
 
 function meta:GetZSBankXP()
 	return self:GetDTInt(DT_PLAYER_INT_BANKXP)
+end
+
+function meta:GetZSMaxXP()
+	return math.ceil(GAMEMODE.MaxXP * GAMEMODE:GetLevelXPReqScalingMul(self:GetZSRemortLevel()))
 end
 
 function meta:GetZSSPUsed()

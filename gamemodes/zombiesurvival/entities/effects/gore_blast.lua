@@ -13,7 +13,7 @@ function EFFECT:Init(data)
 
 	local emitter = ParticleEmitter(pos)
 
-	for i=1, 15 do
+	for i=1, math.ceil(15 * GAMEMODE.PerfomanceLimitBloodEffects) do
 		local particle = emitter:Add("!sprite_bloodspray"..math.random(8), pos)
 		particle:SetVelocity(norm * 275 + VectorRand() * 100)
 		particle:SetGravity(Vector(0,0,-450))
@@ -28,7 +28,7 @@ function EFFECT:Init(data)
 		particle:SetLighting(true)
 	end
 
-	for i=1, 64 do
+	for i=1, math.ceil(64 * GAMEMODE.PerfomanceLimitBloodEffects) do
 		local particle = emitter:Add("!sprite_bloodspray"..math.random(8), pos)
 		particle:SetVelocity(VectorRand():GetNormalized() * 600)
 		particle:SetDieTime(math.Rand(0.18, 0.24))
@@ -45,7 +45,7 @@ function EFFECT:Init(data)
 		particle:SetCollideCallback(CollideCallback)
 	end
 
-	for i=1, 3 do
+	for i=1, math.ceil(3 * GAMEMODE.PerfomanceLimitBloodEffects) do
 		local particle = emitter:Add("!sprite_bloodspray"..math.random(8), pos)
 		particle:SetVelocity(norm * 34)
 		particle:SetDieTime(math.Rand(0.3, 0.35))

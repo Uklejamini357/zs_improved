@@ -58,6 +58,13 @@ function MakepOptions()
 	list:AddItem(check)
 
 	check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText("(H) Always display health target")
+	check:SetToolTip("Always displays health target, even if they're full health")
+	check:SetConVar("zs_alwaysdisplayhealthtarget")
+	check:SizeToContents()
+	list:AddItem(check)
+
+	check = vgui.Create("DCheckBoxLabel", Window)
 	check:SetText("Automatic suicide when changing classes")
 	check:SetConVar("zs_suicideonchange")
 	check:SizeToContents()

@@ -45,6 +45,7 @@ AddCSLuaFile("cl_voicesets.lua")
 AddCSLuaFile("skillweb/sh_skillweb.lua")
 AddCSLuaFile("skillweb/cl_skillweb.lua")
 AddCSLuaFile("skillweb/registry.lua")
+AddCSLuaFile("skillweb/skillmodifiers.lua")
 
 AddCSLuaFile("obj_vector_extend.lua")
 AddCSLuaFile("obj_entity_extend.lua")
@@ -1367,7 +1368,7 @@ function GM:SortZombieSpawnDistances(allplayers)
 end
 
 function GM:ShouldRestartRound()
-	if GetGlobalBool("gamemode_code_ruined") then return true end
+	if GetGlobalBool("gamemode_code_ruined") then return false end
 	if self.TimeLimit == -1 or self.RoundLimit == -1 then return true end
 
 	local roundlimit = self.RoundLimit
@@ -3177,12 +3178,28 @@ function GM:EntityTakeDamage(ent, dmginfo)
 		return
 	end
 
-	if attacker:IsValidLivingHuman() and attacker.AllDamageDealtMul and not directdmg then
-		dmginfo:ScaleDamage(attacker.AllDamageDealtMul)
+	if attacker:IsValidHuman() and not directdmg then
+		local dmgmul = attacker.AllDamageDealtMul or 1
+
+		if attacker:IsSkillActive(SKILL_ENDLESS) then
+			dmgmul = dmgmul + (self:GetWave() * 0.01)
+		end
+
+		dmginfo:ScaleDamage(dmgmul)
 	end
 
 	if attacker:IsValidZombie() and not directdmg then
-		dmginfo:ScaleDamage(self.ZombieDamageDealtMultiplier)
+		if attacker:GetZombieClassTable().Name == "Ancient Nightmare" and ent:IsValidHuman() and ent:IsSkillActive(SKILL_ANCIENT_SKILL) then
+			dmginfo:ScaleDamage(0.9)
+		end
+
+		if ent:IsValidHuman() then
+			dmginfo:ScaleDamage(1 + GAMEMODE:GetDifficulty() * 0.005)
+		else
+			dmginfo:ScaleDamage(1 + GAMEMODE:GetDifficulty() * 0.0025)
+		end
+
+		dmginfo:ScaleDamage(self.ZombieDamageDealtMultiplier or 1)
 	end
 
 	-- Props about to be broken props take 3x damage from anything except zombies
@@ -3595,7 +3612,7 @@ function GM:DamageFloater(attacker, victim, dmgpos, dmg, definiteply)
 	if dmgpos == vector_origin then dmgpos = victim:NearestPoint(attacker:EyePos()) end
 
 	net.Start((definiteply or victim:IsPlayer() or victim:IsNPC()) and "zs_dmg" or "zs_dmg_prop")
-	net.WriteFloat(math.Round(dmg, 1), 16)
+	net.WriteFloat(math.Round(dmg, 1))
 	net.WriteVector(dmgpos)
 	net.Send(attacker)
 end
@@ -4117,12 +4134,17 @@ function GM:HumanKilledZombie(pl, attacker, inflictor, dmginfo, headshot, suicid
 	attacker:GiveAchievementProgress("zombie_killer_4", 1)
 
 	local add_diff
-	if pl:GetZombieClassTable().Boss then
+	if pl:GetZombieClassTable().SuperBoss then
+		add_diff = 0.5
+	elseif pl:GetZombieClassTable().Boss then
 		attacker:GiveAchievementProgress("boss_slayer_1", 1)
 		attacker:GiveAchievementProgress("boss_slayer_2", 1)
 
 		add_diff = 0.25
-
+	elseif pl:GetZombieClassTable().SemiBoss then
+		add_diff = 0.1
+	elseif pl:GetZombieClassTable().MiniBoss then
+		add_diff = 0.075
 	else
 		add_diff = 0.05
 	end	

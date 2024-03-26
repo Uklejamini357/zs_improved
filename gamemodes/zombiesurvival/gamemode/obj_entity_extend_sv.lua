@@ -795,12 +795,12 @@ function meta:ProcessNPCDamage(dmginfo)
 	if attacker.PBAttacker and attacker.PBAttacker:IsValid() then
 		attacker = attacker.PBAttacker
 	end
-
+/*	-- Not this time, i suppose
 	local corrosion = self.Corrosion and self.Corrosion + 2 > CurTime()
 	if self ~= attacker and not corrosion and not dmgbypass then
 		dmginfo:SetDamage(dmginfo:GetDamage() * GAMEMODE:GetZombieDamageScale(dmginfo:GetDamagePosition(), self))
 	end
-
+*/
 	if attacker:IsValidLivingHuman() and inflictor:IsValid() and inflictor == attacker:GetActiveWeapon() then
 		local damage = dmginfo:GetDamage()
 		local wep = attacker:GetActiveWeapon()
@@ -808,7 +808,9 @@ function meta:ProcessNPCDamage(dmginfo)
 
 		if wep.IsMelee then
 			if attacker.MeleeDamageToBloodArmorMul and attacker.MeleeDamageToBloodArmorMul > 0 and attacker:GetBloodArmor() < attacker.MaxBloodArmor then
-				attacker:SetBloodArmor(math.min(attacker.MaxBloodArmor, attacker:GetBloodArmor() + math.min(damage, self:Health()) * attacker.MeleeDamageToBloodArmorMul * attacker.BloodarmorGainMul * 0.2))
+				attacker.NextBloodArmor = math.min(damage, self:Health()) * attacker.MeleeDamageToBloodArmorMul * attacker.BloodarmorGainMul * 0.2
+				attacker:SetBloodArmor(math.min(attacker.MaxBloodArmor, attacker:GetBloodArmor() + math.floor(attacker.NextBloodArmor)))
+				attacker.NextBloodArmor = attacker.NextBloodArmor - math.floor(attacker.NextBloodArmor)
 			end
 
 			if attacker:IsSkillActive(SKILL_HEAVYSTRIKES) and (wep.IsFistWeapon and attacker:IsSkillActive(SKILL_CRITICALKNUCKLE) or wep.MeleeKnockBack > 0) then

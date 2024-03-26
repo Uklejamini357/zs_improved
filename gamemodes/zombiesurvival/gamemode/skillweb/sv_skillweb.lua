@@ -100,7 +100,7 @@ net.Receive("zs_bankxp", function(len, pl)
 		return
 	end
 
-	xp = math.min(xp, pl:GetZSBankXP(), GAMEMODE.MaxXP - pl:GetZSXP())
+	xp = math.min(xp, pl:GetZSBankXP(), pl:GetZSMaxXP() - pl:GetZSXP())
 	if xp <= 0 then return end
 
 	pl:AddZSBankXP(-xp)
@@ -177,7 +177,7 @@ end
 
 -- Usually not called
 function meta:SetZSLevel(level)
-	self:SetZSXP(GAMEMODE:XPForLevel(level))
+	self:SetZSXP(GAMEMODE:XPForLevel(level, self:GetZSRemortLevel()))
 end
 
 function meta:SetZSRemortLevel(level)
@@ -186,7 +186,7 @@ end
 
 function meta:SetZSXP(xp)
 	-- no one is gonna plan to make infinite max XP but whatever
-	self:SetDTInt(DT_PLAYER_INT_XP, math.Clamp(xp, 0, math.min(2147483647, GAMEMODE.MaxXP)))
+	self:SetDTInt(DT_PLAYER_INT_XP, math.Clamp(xp, 0, math.min(2147483647, self:GetZSMaxXP())))
 end
 
 function meta:SetZSBankXP(xp)
@@ -214,7 +214,7 @@ function meta:GainZSXP(xp, ignoreendround, ignoremul)
 
 /*
 	self.XPRemainder = self.XPRemainder + (xp * (ignoremul and self.XPGainMul or 1))
-	if allowbankxp and self:GetZSXP() >= GAMEMODE.MaxXP then
+	if allowbankxp and self:GetZSXP() >= self:GetZSMaxXP() then
 		local bankxpneed = 20
 		if self.XPRemainder >= bankxpneed then
 			local givexp = math.floor(self.XPRemainder / bankxpneed)
@@ -227,7 +227,7 @@ function meta:GainZSXP(xp, ignoreendround, ignoremul)
 	end
 */
 	xp = self.XPRemainder + (xp * (ignoremul and self.XPGainMul or 1))
-	if allowbankxp and self:GetZSXP() >= GAMEMODE.MaxXP then
+	if allowbankxp and self:GetZSXP() >= self:GetZSMaxXP() then
 		local bankxpneed = 20
 		if xp >= bankxpneed then
 			local givexp = math.floor(xp / bankxpneed)

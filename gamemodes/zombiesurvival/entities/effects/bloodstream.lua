@@ -56,9 +56,10 @@ function EFFECT:Init(data)
 
 	local dir = data:GetNormal()
 	local force = data:GetScale()
+	local magnitude = data:GetMagnitude()
 
 	local emitter = ParticleEmitter(pos)
-	for i=1, data:GetMagnitude() do
+	for i=1, math.ceil(magnitude * GAMEMODE.PerfomanceLimitBloodEffects) do
 		local heading = (VectorRand():GetNormalized() * 3 + dir) / 4
 		local particle = emitter:Add("!sprite_bloodspray"..math.random(8), pos + heading)
 		particle:SetVelocity(force * math.Rand(0.8, 1) * heading)

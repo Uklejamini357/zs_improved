@@ -60,7 +60,7 @@ GM.WeaponStatBarVals = {
 
 	{"ConeMin", "Min Spread", 0, 5, true},
 	{"ConeMax", "Max Spread", 1.5, 7, true},
-	{"WalkSpeed", "Move Speed", 200, 250, false}
+	{"WalkSpeed", "Move Speed", SPEED_SLOWEST1, SPEED_FASTEST1, false} -- 200, 250
 }
 
 GM.LifeStatsLifeTime = 5
@@ -207,6 +207,16 @@ end)
 GM.AlwaysQuickBuy = CreateClientConVar("zs_alwaysquickbuy", "0", true, false):GetBool()
 cvars.AddChangeCallback("zs_alwaysquickbuy", function(cvar, oldvalue, newvalue)
 	GAMEMODE.AlwaysQuickBuy = tonumber(newvalue) == 1
+end)
+
+GM.AlwaysDisplayHealthTarget = CreateClientConVar("zs_alwaysdisplayhealthtarget", "0", true, false):GetInt()
+cvars.AddChangeCallback("zs_alwaysdisplayhealthtarget", function(cvar, oldvalue, newvalue)
+	GAMEMODE.AlwaysDisplayHealthTarget = tonumber(newvalue) or 0
+end)
+
+GM.PerfomanceLimitBloodEffects = CreateClientConVar("zs_perfomance_bloodamount", "1", true, false):GetFloat()
+cvars.AddChangeCallback("zs_perfomance_bloodamount", function(cvar, oldvalue, newvalue)
+	GAMEMODE.PerfomanceLimitBloodEffects = math.Clamp(tonumber(newvalue) or 0, 0.01, 2)
 end)
 
 GM.NoIronsights = CreateClientConVar("zs_noironsights", "0", true, false):GetBool()

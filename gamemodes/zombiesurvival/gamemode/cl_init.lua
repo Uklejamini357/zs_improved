@@ -210,8 +210,9 @@ function GM:ClickedPlayerButton(pl, button)
 	surface.PlaySound("buttons/button15.wav")
 
 	local menu = DermaMenu(true, self)
-	menu:AddOption(Format("Name: %s", pl:GetName()), function() end)
+	menu:AddOption(Format("Name: %s", pl:GetName()), function() SetClipboardText(pl:GetName()) chat.AddText("Player Name copied to clipboard!") end)
 	if not pl:IsBot() then
+		menu:AddOption(Format("Steam ID: %s", pl:SteamID()), function() SetClipboardText(pl:SteamID()) chat.AddText("Player Steam ID copied to clipboard!") end)
 		menu:AddOption("View Player Steam Profile", function() pl:ShowProfile() end)
 	end
 	if pl:Team() == TEAM_HUMAN then
@@ -222,7 +223,7 @@ function GM:ClickedPlayerButton(pl, button)
 			menu:AddOption(Format("Zombie tokens: %s", pl:GetZombieTokens()), function() end)
 		end
 	end
-	menu:AddOption(Format("XP: %s / %s (Max: %s)", pl:GetZSXP(), self:XPForLevel(pl:GetZSLevel() + 1), self.MaxXP), function() end)
+	menu:AddOption(Format("XP: %s / %s (Max: %s)", pl:GetZSXP(), self:XPForLevel(pl:GetZSLevel() + 1, pl:GetZSRemortLevel()), pl:GetZSMaxXP()), function() end)
 	menu:AddOption(Format("Level: %s", pl:GetZSLevel()), function() end)
 	menu:AddOption(Format("Remort: %s", pl:GetZSRemortLevel()), function() end)
 	menu:Open()
@@ -462,10 +463,9 @@ function GM:OnReloaded()
 end
 
 -- The whole point of this is so we don't need to check if the local player is valid 1000 times a second.
--- Empty functions get filled when the local player is found.
+-- Empty functions get filled when the local player is found. (ok)
 function GM:Think() end
 GM.HUDWeaponPickedUp = GM.Think
-GM.Think = GM._Think
 GM.HUDShouldDraw = GM.Think
 GM.CachedFearPower = GM.Think
 GM.CalcView = GM.Think
@@ -480,6 +480,7 @@ GM.PostPlayerDraw = GM.Think
 GM.InputMouseApply = GM.Think
 GM.GUIMousePressed = GM.Think
 GM.HUDWeaponPickedUp = GM.Think
+GM.Think = GM._Think
 function GM:LocalPlayerFound()
 	self.Think = self._Think
 	self.HUDShouldDraw = self._HUDShouldDraw
@@ -1752,7 +1753,7 @@ end
 
 function GM:PostDrawHUD()
 	cam.Start2D()
-	draw.DrawText(Format(self:IsEndlessMode() and "v. %s (Endless Mode)" or "v. %s", self.Version), "TargetIDSmall", 5, 5, Color(230,230,230,55))
+	draw.DrawText(Format("v. %s", self.Version), "TargetIDSmall", 5, 5, Color(230,230,230,35))
 	cam.End2D()
 end
 

@@ -209,13 +209,14 @@ local REMORT_SKILL = {
 Lose all skills, experience, skill points, and levels.\
 Start at level 1 once again, but with an extra SP.\
 Can remort multiple times for multiple extra skill points.\
-To remort, you need level %d.\
+Reaching certain remorts can give additional extra SP.\
+To remort, you need to be level %d.\
 (1 remort = 1 extra skill point)", GM.MaxRemortableLevel)}
 /*
 local TREE_SKILLS = {
 	[TREE_HEALTHTREE] = {
 		Name = "Survival",
-		Description = "Improve your vitality.",
+		Description = "",
 	},
 
 	[TREE_SPEEDTREE] = {
@@ -230,7 +231,7 @@ local TREE_SKILLS = {
 
 	[TREE_MELEETREE] = {
 		Name = "Melee",
-		Description = "Hit harder with melee.",
+		Description = "",
 	},
 
 	[TREE_BUILDINGTREE] = {
@@ -240,12 +241,12 @@ local TREE_SKILLS = {
 
 	[TREE_SUPPORTTREE] = {
 		Name = "Support",
-		Description = "Heal more effectively.",
+		Description = "",
 	},
 
 	[TREE_TORMENTTREE] = {
 		Name = "Torment",
-		Description = "Gain more experience for debuffs.",
+		Description = "",
 	},
 
 	[TREE_REMORTTREE] = {
@@ -281,19 +282,6 @@ local offsets = {
 	[TREE_REMORTTREE] = {2,0.5}
 }
 
-/*
-local node_models = {
-	[TREE_HEALTHTREE] = "models/Items/ammocrate_ar2.mdl",
-	[TREE_SPEEDTREE] = "models/props_junk/Shoe001a.mdl",
-	[TREE_GUNTREE] = "models/weapons/w_smg1.mdl",
-	[TREE_MELEETREE] = "models/props/cs_militia/axe.mdl",
-	[TREE_BUILDINGTREE] = "models/weapons/w_hammer.mdl",
-	[TREE_SUPPORTTREE] = "models/weapons/w_medkit.mdl",
-	[TREE_TORMENTTREE] = "models/weapons/w_medkit.mdl",
-	[TREE_REMORTTREE] = "models/weapons/w_medkit.mdl",
-
-}
-*/
 local function ActivateSkill(self, skillid)
 	local name = GAMEMODE.Skills[skillid].Name
 	net.Start("zs_skill_is_desired")
@@ -423,7 +411,7 @@ function PANEL:Init()
 	skillname:Dock(TOP)
 
 	local desc = {}
-	for i=1, 7 do
+	for i=1, 9 do
 		local skilldesc = vgui.Create("DLabel", top)
 		skilldesc:SetFont("ZSHUDFontSmaller") --"ZSHUDFontSmall"
 		skilldesc:SetTextColor(COLOR_GRAY)
@@ -732,6 +720,23 @@ function PANEL:Init()
 	local panel_
 	local bankxptext
 	local bankxpbutton
+	local levelreqmultext
+	local levelreqmul = GAMEMODE:GetLevelXPReqScalingMul(MySelf:GetZSRemortLevel())
+
+	if levelreqmul ~= 1 then
+		levelreqmultext = vgui.Create("DLabel", self)
+		levelreqmultext:SetTextColor(COLOR_GRAY)
+		levelreqmultext:SetFont("ZSHUDFontSmaller")
+		levelreqmultext:SetText(Format("Level Requirement mul: %sx", levelreqmul))
+		levelreqmultext:SizeToContents()
+		levelreqmultext:SetKeyboardInputEnabled(false)
+		levelreqmultext:SetMouseInputEnabled(false)
+		levelreqmultext.Think = function(this)
+			local txt = Format("Level Requirement mul: %sx", levelreqmul)
+			if this:GetText() == txt then return end
+			this:SetText(txt)
+		end
+	end
 	
 	if MySelf:GetZSBankXP() > 0 then
 		bankxptext = vgui.Create("DLabel", self)
@@ -741,8 +746,10 @@ function PANEL:Init()
 		bankxptext:SizeToContents()
 		bankxptext:SetKeyboardInputEnabled(false)
 		bankxptext:SetMouseInputEnabled(false)
-		bankxptext.Think = function()
-			bankxptext:SetText(Format("XP in bank: %d", MySelf:GetZSBankXP()))
+		bankxptext.Think = function(this)
+			local txt = Format("XP in bank: %d", MySelf:GetZSBankXP())
+			if this:GetText() == txt then return end
+			this:SetText(txt)
 		end
 
 		bankxpbutton = vgui.Create("DButton", self)
@@ -754,7 +761,7 @@ function PANEL:Init()
 		bankxpbutton:AlignTop()
 		bankxpbutton:CenterHorizontal()
 		bankxpbutton.DoClick = function(me)
-			if MySelf:GetZSXP() >= GAMEMODE.MaxXP then
+			if MySelf:GetZSXP() >= MySelf:GetZSMaxXP() then
 				self:DisplayMessage("You are at max level! Remort, if you want to withdraw more XP!", COLOR_RED)
 				surface.PlaySound("buttons/button8.wav")
 				return
@@ -786,7 +793,7 @@ function PANEL:Init()
 			value:SetMin(1)
 			value:SetMax(MySelf:GetZSBankXP())
 			value.Think = function()
-				value:SetMax(math.min(GAMEMODE.MaxXP - MySelf:GetZSXP(), MySelf:GetZSBankXP()))
+				value:SetMax(math.min(MySelf:GetZSMaxXP() - MySelf:GetZSXP(), MySelf:GetZSBankXP()))
 				value:SetValue(math.min(value:GetValue(), value:GetMax()))
 			end
 
@@ -840,6 +847,9 @@ function PANEL:Init()
 	self.MessageBox = messagebox
 	self.MessageText = messagetext
 	self.WarningText = warningtext
+	if levelreqmultext then
+		self.LevelReqMulText = levelreqmultext
+	end
 	if bankxptext then
 		self.BankXPText = bankxptext
 	end
@@ -1078,13 +1088,18 @@ function PANEL:PerformLayout()
 	self.WarningText:AlignBottom(32)
 	self.WarningText:AlignRight(32)
 
+	if self.LevelReqMulText and self.LevelReqMulText:IsValid() then
+		self.LevelReqMulText:AlignTop(32)
+		self.LevelReqMulText:AlignLeft(32)
+	end
+
 	if self.BankXPText and self.BankXPText:IsValid() then
-		self.BankXPText:AlignTop(32)
+		self.BankXPText:AlignTop(64)
 		self.BankXPText:AlignLeft(32)
 	end
 
 	if self.BankXPButton and self.BankXPButton:IsValid() then
-		self.BankXPButton:AlignTop(64)
+		self.BankXPButton:AlignTop(96)
 		self.BankXPButton:AlignLeft(32)
 	end
 end
@@ -1635,9 +1650,9 @@ function PANEL:Paint(w, h)
 			self.SkillName:SetText(skill.Name)
 			self.SkillName:SizeToContents()
 
-			desc = string.Explode("\n", skill.Description)
+			desc = string.Explode("\n", skill.OverrideDescr and skill.OverrideDescr() or skill.Description)
 			local txt, colid
-			for i=1, 7 do
+			for i=1, 9 do
 				txt = desc[i] or " "
 				if txt:sub(1, 1) == "^" then
 					colid = tonumber(txt:sub(2, 2)) or 0
@@ -1828,8 +1843,10 @@ vgui.Register("ZSSkillWeb", PANEL, "Panel")
 function GM:DrawXPBar(x, y, w, h, xpw, barwm, hm, level)
 	local barw = xpw * barwm
 	local xp = MySelf:GetZSXP()
-	local progress = GAMEMODE:ProgressForXP(xp)
 	local rlevel = MySelf:GetZSRemortLevel()
+	local progress = GAMEMODE:ProgressForXP(xp, rlevel)
+	local levelreqmul = GAMEMODE:GetLevelXPReqScalingMul(rlevel)
+	local ismaxlevel = level == GAMEMODE.MaxLevel
 	local append = ""
 	if rlevel > 0 then
 		append = " // R.Lvl "..rlevel
@@ -1843,10 +1860,10 @@ function GM:DrawXPBar(x, y, w, h, xpw, barwm, hm, level)
 	surface.SetDrawColor(0, 170, 0, 160)
 	surface.DrawRect(x, y + 2, barw * progress, 2)
 
-	if level == GAMEMODE.MaxLevel then
-		draw_SimpleText("Lvl "..level.." (MAX)"..append, "ZSXPBar", xpw / 2, h / 2 + y, COLOR_GREEN, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	else
-		if progress > 0 then
+--	if ismaxlevel then
+--		draw_SimpleText("Lvl "..level.." (MAX)"..append, "ZSXPBar", xpw / 2, h / 2 + y, COLOR_GREEN, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+--	else
+		if progress > 0 and not ismaxlevel then
 			local lx = x + barw * progress - 1
 			surface.SetDrawColor(255, 255, 255, 20 + math.abs(math.sin(RealTime() * 2)) * 170)
 			surface.DrawLine(lx, y - 2, lx, y + 7)
@@ -1866,14 +1883,15 @@ function GM:DrawXPBar(x, y, w, h, xpw, barwm, hm, level)
 			end
 		end	
 */
-		local color = COLOR_WHITE --hcolor or COLOR_WHITE
-		local text = "Lvl "..level..append
-		local text2 = string.CommaSeparate(xp).." / "..string.CommaSeparate(GAMEMODE:XPForLevel(level + 1)).." XP"
+
+		local color = ismaxlevel and COLOR_GREEN or COLOR_WHITE --hcolor or COLOR_WHITE
+		local text = "Lvl "..level..(ismaxlevel and " (MAX)" or "")..append..(levelreqmul ~= 1 and " (x"..levelreqmul..")" or "")
+		local text2 = string.CommaSeparate(xp).." / "..string.CommaSeparate(math.ceil(GAMEMODE:XPForLevel(level + 1, rlevel))).." XP"
 		local size = string.len(text) + string.len(text2)
 		local font = size > 44 and "ZSXPBarSmall" or "ZSXPBar"
-		draw_SimpleText(text, font, x, h / 2 + y, hcolor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw_SimpleText(text2, font, x + barw, h / 2 + y, hcolor, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-	end
+		draw_SimpleText(text, font, x, h / 2 + y, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw_SimpleText(text2, font, x + barw, h / 2 + y, color, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+--	end
 end
 
 PANEL = {}

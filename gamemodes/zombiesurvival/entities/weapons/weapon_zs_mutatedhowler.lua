@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.PrintName = "Mad Howler"
+SWEP.PrintName = "Mutated Howler"
 
 SWEP.Base = "weapon_zs_zombie"
 
@@ -15,11 +15,12 @@ SWEP.MeleeForceScale = 1.45
 SWEP.MeleeSize = 4.5
 SWEP.Primary.Delay = 1.35
 SWEP.MeleeDamage = 39
-SWEP.AlertDelay = 3.2
+SWEP.MeleeDamageVsProps = 42
+SWEP.AlertDelay = 3.4
 
 SWEP.SwingAnimSpeed = 0.58
 
-SWEP.HowlDelay = 10
+SWEP.HowlDelay = 18
 
 SWEP.BattlecryInterval = 0
 
@@ -32,7 +33,7 @@ local function Battlecry(pos)
 		local effectdata = EffectData()
 		effectdata:SetOrigin(pos)
 		effectdata:SetNormal(Vector(0,0,1))
-		effectdata:SetScale(1)
+		effectdata:SetScale(1.4)
 		util.Effect("zombie_battlecry", effectdata, true)
 	end
 end
@@ -48,7 +49,7 @@ function SWEP:Think()
 			if SERVER then
 				for _, ent in pairs(ents.FindInSphere(center, 120)) do
 					if ent:IsValidLivingZombie() and WorldVisible(ent:WorldSpaceCenter(), center)then
-						ent:GiveStatus("zombie_battlecry", 1)
+						ent:GiveStatus("zombie_battlecry", 1.4)
 					end
 				end
 			end
@@ -76,6 +77,7 @@ function SWEP:SecondaryAttack()
 		for _, ent in pairs(ents.FindInSphere(center, 225)) do
 			if ent:IsValidLivingHuman() and WorldVisible(ent:WorldSpaceCenter(), center) then
 				ent:GiveStatus("frightened", 10)
+				ent:GiveStatus("weak", 6)
 			end
 		end
 	end

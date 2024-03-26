@@ -29,7 +29,7 @@ function GM:DrawTargetID(ent, fade)
 	y = y + draw.GetFontHeight("ZSHUDFontSmaller") + 3
 
 	local healthfraction = math_max(ent:Health() / (ent:Team() == TEAM_UNDEAD and ent:GetMaxZombieHealth(true) or ent:GetMaxHealth()), 0)
-	if healthfraction ~= 1 then
+	if healthfraction ~= 1 or self.AlwaysDisplayHealthTarget then
 		util.ColorCopy(0.75 <= healthfraction and COLOR_HEALTHY or 0.5 <= healthfraction and COLOR_SCRATCHED or 0.25 <= healthfraction and COLOR_HURT or COLOR_CRITICAL, colTemp)
 
 		local hptxt = self.HealthTargetDisplay == 2 and Format("%d/%d HP", ent:Health(), ent:Team() == TEAM_UNDEAD and ent:GetMaxZombieHealth(true) or ent:GetMaxHealth()) or self.HealthTargetDisplay == 1 and math_ceil(ent:Health()).." HP" or math_ceil(healthfraction * 100).."%"

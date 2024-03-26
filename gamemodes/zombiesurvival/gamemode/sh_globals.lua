@@ -35,6 +35,7 @@ HM_SCARECROW = 20
 HM_NESTDESTROYER = 21
 HM_NESTMASTER = 22
 HM_MOSTPOINTSGAINED = 23
+HM_MOSTBOSSESKILLED = 24
 
 DT_PLAYER_INT_REMORTLEVEL = 5
 DT_PLAYER_INT_XP = 6
@@ -264,6 +265,7 @@ GM.AmmoNames["zapper_arc"] = "Arc Zappers"
 GM.AmmoNames["remantler"] = "Remantlers"
 GM.AmmoNames["turret_buckshot"] = "Blast Turrets"
 GM.AmmoNames["turret_assault"] = "Assault Turrets"
+GM.AmmoNames["turret_minigun"] = "Minigun Turrets"
 GM.AmmoNames["scrap"] = "Scrap"
 
 GM.AmmoTranslations = {}
@@ -302,6 +304,7 @@ GM.AmmoModels["zapper"] = "models/props_c17/utilityconnecter006c.mdl"
 GM.AmmoModels["zapper_arc"] = "models/props_c17/utilityconnecter006c.mdl"
 GM.AmmoModels["turret_buckshot"] = "models/Combine_turrets/Floor_turret.mdl"
 GM.AmmoModels["turret_assault"] = "models/Combine_turrets/Floor_turret.mdl"
+GM.AmmoModels["turret_minigun"] = "models/Combine_turrets/Floor_turret.mdl"
 GM.AmmoModels["remantler"] = "models/props_lab/powerbox01a.mdl"
 GM.AmmoModels["scrap"] = "models/props_junk/vent001_chunk5.mdl"
 GM.AmmoModels["sniperround"] = "models/props_debris/wood_board02a.mdl"

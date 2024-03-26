@@ -107,7 +107,7 @@ GM.Mutations = {}
 
 function GM:AddMutation(signature, name, desc, mutcategory, worth, callback, bots, rebuyable, maxpurchases)
 	local tab = {
-		Signature = signature,
+		Signature = "mt_"..signature,
 		Name = name,
 		Description = desc,
 		MutCategory = mutcategory,
@@ -161,6 +161,7 @@ GM.AmmoCache["chemical"]					= 20
 GM.AmmoCache["flashbomb"]					= 1
 GM.AmmoCache["turret_buckshot"]				= 1
 GM.AmmoCache["turret_assault"]				= 1
+GM.AmmoCache["turret_minigun"]				= 1
 GM.AmmoCache["scrap"]						= 3
 
 GM.AmmoResupply = table.ToAssoc({
@@ -313,8 +314,8 @@ GM:AddStartingItem("biocleanser",		ITEMCAT_TRINKETS,		20,				"trinket_biocleanse
 GM:AddStartingItem("ammovestii",		ITEMCAT_TRINKETS,		20,				"trinket_ammovestii").SubCategory =				ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddStartingItem("reactiveflasher",	ITEMCAT_TRINKETS,		25,				"trinket_reactiveflasher").SubCategory =		ITEMSUBCAT_TRINKETS_SPECIAL
 GM:AddStartingItem("magnet",			ITEMCAT_TRINKETS,		25,				"trinket_magnet").SubCategory =					ITEMSUBCAT_TRINKETS_SPECIAL
-GM:AddStartingItem("arsenalpack",		ITEMCAT_TRINKETS,		50,				"trinket_arsenalpack").SubCategory =			ITEMSUBCAT_TRINKETS_SUPPORT
 GM:AddStartingItem("resupplypack",		ITEMCAT_TRINKETS,		50,				"trinket_resupplypack").SubCategory =			ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddStartingItem("arsenalpack",		ITEMCAT_TRINKETS,		75,				"trinket_arsenalpack").SubCategory =			ITEMSUBCAT_TRINKETS_SUPPORT
 
 GM:AddStartingItem("stone",				ITEMCAT_OTHER,			10,				"weapon_zs_stone")
 GM:AddStartingItem("grenade",			ITEMCAT_OTHER,			30,				"weapon_zs_grenade")
@@ -607,15 +608,20 @@ GM:AddPointShopItem("refinedsub",		ITEMCAT_TRINKETS,		50,				"trinket_refinedsub
 GM:AddPointShopItem("targetingvisiii",	ITEMCAT_TRINKETS,		50,				"trinket_targetingvisoriii").SubCategory =				ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddPointShopItem("eodvest",			ITEMCAT_TRINKETS,		50,				"trinket_eodvest").SubCategory =						ITEMSUBCAT_TRINKETS_DEFENSIVE
 GM:AddPointShopItem("composite",		ITEMCAT_TRINKETS,		50,				"trinket_composite").SubCategory =						ITEMSUBCAT_TRINKETS_DEFENSIVE
-GM:AddPointShopItem("arsenalpack",		ITEMCAT_TRINKETS,		50,				"trinket_arsenalpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
 GM:AddPointShopItem("resupplypack",		ITEMCAT_TRINKETS,		50,				"trinket_resupplypack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
 GM:AddPointShopItem("promanifest",		ITEMCAT_TRINKETS,		50,				"trinket_promanifest").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
 GM:AddPointShopItem("opsmatrix",		ITEMCAT_TRINKETS,		50,				"trinket_opsmatrix").SubCategory =						ITEMSUBCAT_TRINKETS_SUPPORT
 -- Tier 5
+item = GM:AddPointShopItem("juggernaut_armor",	ITEMCAT_TRINKETS,		70,				"trinket_juggernaut_armor")
+item.SubCategory = ITEMSUBCAT_TRINKETS_DEFENSIVE
+item.SkillRequirement = SKILL_JUGGERNAUT
 GM:AddPointShopItem("supasm",			ITEMCAT_TRINKETS,		70,				"trinket_supasm").SubCategory =							ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddPointShopItem("pulseimpedance",	ITEMCAT_TRINKETS,		70,				"trinket_pulseimpedance").SubCategory =					ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("arsenalpack",		ITEMCAT_TRINKETS,		70,				"trinket_arsenalpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+--GM:AddPointShopItem("remantlerpack",	ITEMCAT_TRINKETS,		70,				"trinket_remantlerpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT -- Added soon!
 -- Tier 6
 GM:AddPointShopItem("dmgbooster",		ITEMCAT_TRINKETS,		100,			"trinket_dmgbooster").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
+GM:AddPointShopItem("cadebooster",		ITEMCAT_TRINKETS,		100,			"trinket_cadebooster").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
 
 GM:AddPointShopItem("flashbomb",		ITEMCAT_OTHER,			25,				"weapon_zs_flashbomb")
 GM:AddPointShopItem("molotov",			ITEMCAT_OTHER,			30,				"weapon_zs_molotov")
@@ -640,39 +646,46 @@ GM:AddPointShopItem("nanitecloud",		ITEMCAT_OTHER,			40,				"weapon_zs_naniteclo
 item.SkillRequirement = SKILL_U_NANITECLOUD
 
 -- ZS Mutations
-GM:AddMutation("m_zombie_health", "Zombie Health Upgrade", "Increases health by 6.5%.", CATEGORY_MUTATIONS, 100, function(pl)
+GM:AddMutation("zombie_health", "Zombie Health Upgrade", "Increases health by 6.5%.", CATEGORY_MUTATIONS, 100, function(pl)
 	pl.MutationModifiers["zombie_health"] = pl.MutationModifiers["zombie_health"] + 0.065
 	return true
 end, true, 50, 4)
 
-GM:AddMutation("m_zombie_barricadedamage1", "Barricade Damage Upgrade I", "Increases damage to barricades by 4%", CATEGORY_MUTATIONS, 200, function(pl)
+GM:AddMutation("endless_zombie_health", "Zombie Health Upgrade (Endless)", "Increases health by 5%.\nDoes not work when it is not endless mode!", CATEGORY_MUTATIONS, 300, function(pl)
+	if not GAMEMODE.EndlessMode then
+		GAMEMODE:ConCommandErrorMessage(pl, "It's not endless mode!")
+		return false
+	end
+	pl.MutationModifiers["zombie_health"] = pl.MutationModifiers["zombie_health"] + 0.05
+	return true
+end, true, 75, math.huge)
+
+GM:AddMutation("zombie_barricadedamage1", "Barricade Damage Upgrade I", "Increases damage to barricades by 4%", CATEGORY_MUTATIONS, 200, function(pl)
 	pl.MutationModifiers["barricade_damage"] = pl.MutationModifiers["barricade_damage"] + 0.04
 	return true
-end, true, false, 1)
+end, true, 0, 1)
 
-GM:AddMutation("m_zombie_barricadedamage2", "Barricade Damage Upgrade II", "Increases damage to barricades by 6%", CATEGORY_MUTATIONS, 325, function(pl)
+GM:AddMutation("zombie_barricadedamage2", "Barricade Damage Upgrade II", "Increases damage to barricades by 6%", CATEGORY_MUTATIONS, 325, function(pl)
 	pl.MutationModifiers["barricade_damage"] = pl.MutationModifiers["barricade_damage"] + 0.06
 	return true
-end, true, false, 1)
+end, true, 0, 1)
 
-
-GM:AddMutation("m_zombie_bloodarmordamage1", "Blood Armor Destroyer I", "Increases damage vs blood armor by 6%", CATEGORY_MUTATIONS, 275, function(pl)
+GM:AddMutation("zombie_bloodarmordamage1", "Blood Armor Destroyer I", "Increases damage vs blood armor by 6%", CATEGORY_MUTATIONS, 275, function(pl)
 	pl.MutationModifiers["bloodarmor_damage"] = pl.MutationModifiers["bloodarmor_damage"] + 0.06
 	return true
-end, true, false, 1)
+end, true, 0, 1)
 
-
-GM:AddMutation("m_zombie_bloodarmordamage2", "Blood Armor Destroyer II", "Increases damage vs blood armor by 9%", CATEGORY_MUTATIONS, 450, function(pl)
+GM:AddMutation("zombie_bloodarmordamage2", "Blood Armor Destroyer II", "Increases damage vs blood armor by 9%", CATEGORY_MUTATIONS, 450, function(pl)
 	pl.MutationModifiers["bloodarmor_damage"] = pl.MutationModifiers["bloodarmor_damage"] + 0.09
 	return true
-end, true, false, 1)
+end, true, 0, 1)
 
-GM:AddMutation("m_token_converter", "Token Converter", "Convert Zombie tokens to 15XP.", CATEGORY_MISCMUTATIONS, 150, function(pl)
+GM:AddMutation("token_converter", "Token Converter", "Convert Zombie tokens to 15XP.", CATEGORY_MISCMUTATIONS, 150, function(pl)
 	pl:AddZSXP(15)
 	return true
 end, false, 65, 5)
 
-GM:AddMutation("m_spawn_as_a_miniboss", "Miniboss Zombie", "Spawn as a miniboss zombie.", CATEGORY_MISCMUTATIONS, 135, function(pl)
+GM:AddMutation("spawn_as_a_miniboss", "Miniboss Zombie", "Spawn as a miniboss zombie.", CATEGORY_MISCMUTATIONS, 135, function(pl)
 	if pl:GetZombieClassTable().MiniBoss and pl:Alive() then
 		GAMEMODE:ConCommandErrorMessage(pl, "You are already a miniboss zombie!")
 		return false
