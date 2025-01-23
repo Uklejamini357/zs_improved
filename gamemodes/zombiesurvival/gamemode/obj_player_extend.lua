@@ -762,7 +762,7 @@ end
 function meta:MeleeTrace(distance, size, start, dir, hit_team_members, override_team, override_mask)
 	start = start or self:GetShootPos()
 	dir = dir or self:GetAimVector()
-	hit_team_members = hit_team_members or GAMEMODE.RoundEnded
+	hit_team_members = hit_team_members or GAMEMODE.RoundEnded or GAMEMODE:GetFriendlyFireEnabled()
 
 	local tr
 
@@ -864,7 +864,7 @@ end
 function meta:PenetratingMeleeTrace(distance, size, start, dir, hit_team_members)
 	start = start or self:GetShootPos()
 	dir = dir or self:GetAimVector()
-	hit_team_members = hit_team_members or GAMEMODE.RoundEnded
+	hit_team_members = hit_team_members or GAMEMODE.RoundEnded or GAMEMODE:GetFriendlyFireEnabled()
 
 	local tr, ent
 

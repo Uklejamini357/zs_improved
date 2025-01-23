@@ -8,6 +8,7 @@ CLASS.Help = "controls_eradicator"
 CLASS.BetterVersion = "Eradicator III"
 
 CLASS.Wave = 8 / GM.NumberOfWaves
+CLASS.EndlessOnly = true
 
 CLASS.Health = 435
 CLASS.DynamicHealth = 7

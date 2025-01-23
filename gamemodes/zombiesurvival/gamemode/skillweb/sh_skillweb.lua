@@ -51,8 +51,8 @@ function GM:ProgressForXP(xp, remort)
 	return (xp - current_level_xp) / (next_level_xp - current_level_xp)
 end
 
-GM.MaxLevel = 55
-GM.MaxRemortableLevel = 45
+GM.MaxLevel = 50
+GM.MaxRemortableLevel = 50
 --GM.MaxRemortable2Level = 85 -- Level required for 2 remorts
 GM.MaxXP = GM:XPForLevel(GM.MaxLevel, 0)
 GM.MaxRemortableXP = GM:XPForLevel(GM.MaxRemortableLevel, 0)
@@ -81,6 +81,16 @@ function GM:SkillCanUnlock(pl, skillid, skilllist)
 	if skill then
 		if (skill.RemortReq or 0) > math.max(0, pl:GetZSRemortLevel()) or (skill.RemortMaxReq or math.huge) < math.max(0, pl:GetZSRemortLevel()) then
 			return false
+		end
+
+		if skill.UnlockedSkillsRequirements then
+			if istable(skill.UnlockedSkillsRequirements) then
+				for _,id in pairs(skill.UnlockedSkillsRequirements) do
+					if not pl:IsSkillUnlocked(id) then return false end
+				end
+			else
+				if not pl:IsSkillUnlocked(skill.UnlockedSkillsRequirements) then return false end
+			end
 		end
 
 		if not self:SkillCanUse(pl, skillid, skillslist) then
@@ -176,7 +186,8 @@ function meta:ApplySkills(override)
 	if not override then
 		for skillid in pairs(desired_assoc) do
 			if not self:IsSkillUnlocked(skillid) or allskills[skillid] and allskills[skillid].Disabled or
-			GAMEMODE.ZombieEscape and not allskills[skillid].CanUseInZE or GAMEMODE.ClassicMode and not allskills[skillid].CanUseInClassicMode then
+			GAMEMODE.ZombieEscape and not allskills[skillid].CanUseInZE or GAMEMODE.ClassicMode and not allskills[skillid].CanUseInClassicMode or
+			not GAMEMODE.EndlessMode and allskills[skillid].EndlessOnly then
 				desired_assoc[skillid] = nil
 			end
 		end

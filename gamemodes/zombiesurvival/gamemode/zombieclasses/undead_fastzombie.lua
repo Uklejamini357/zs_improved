@@ -10,6 +10,7 @@ CLASS.Model = Model("models/player/zombie_fast.mdl")
 CLASS.Wave = 13 / GM.NumberOfWaves
 CLASS.Infliction = 0.93
 CLASS.Revives = true
+CLASS.EndlessOnly = true
 
 CLASS.Health = 525
 CLASS.DynamicHealth = 5
@@ -216,7 +217,20 @@ if SERVER then
 	end
 end
 
-if SERVER then return end
+if SERVER then
+	
+	function CLASS:ProcessDamage(pl, dmginfo)
+		local damage = dmginfo:GetDamage()
+
+		local attacker, inflictor = dmginfo:GetAttacker(), dmginfo:GetInflictor()
+
+		if GAMEMODE:GetWave() >= 13 then
+			dmginfo:ScaleDamage(0.8)
+		end
+	end
+
+	return
+end
 
 CLASS.Icon = "zombiesurvival/killicons/fastzombie"
 CLASS.IconColor = Color(85, 245, 25)

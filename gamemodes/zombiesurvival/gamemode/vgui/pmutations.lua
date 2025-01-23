@@ -29,7 +29,6 @@ function MakepMutationShop()
 	pMutation = frame
 	frame:SetSize(wid, hei)
 	frame:SetDeleteOnClose(false)
---	frame:SetDraggable(true)
 	frame:SetKeyboardInputEnabled(false)
 	frame:SetTitle("")
 	frame.Paint = function()
@@ -248,5 +247,7 @@ function PANEL:DoClick(silent, force)
 		menu:Open()
 	end
 end
+
+PANEL.DoDoubleClick = PANEL.DoClick
 
 vgui.Register("ZSMutationButton", PANEL, "DButton")

@@ -12,6 +12,7 @@ function GM:IsClassUnlocked(classname)
 	end
 
 	if classtab.Locked then return false end
+	if not self.EndlessMode and classtab.EndlessOnly then return false end
 
 	return classtab.Unlocked
 	or classtab.Wave and self:GetWave() >= classtab.Wave

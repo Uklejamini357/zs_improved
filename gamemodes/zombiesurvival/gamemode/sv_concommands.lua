@@ -44,6 +44,11 @@ concommand.Add("zs_pointsshopbuy", function(sender, command, arguments)
 		return
 	end
 
+	if not GAMEMODE.EndlessMode and itemtab.EndlessModeOnly then
+		GAMEMODE:ConCommandErrorMessage(sender, "This item cannot be purchased in non-Endless mode!")
+		return
+	end
+
 	if itemtab.SkillRequirement and not sender:IsSkillActive(itemtab.SkillRequirement) then
 		GAMEMODE:ConCommandErrorMessage(sender, translate.ClientFormat(sender, "x_requires_a_skill_you_dont_have", itemtab.Name))
 		return
@@ -62,6 +67,10 @@ concommand.Add("zs_pointsshopbuy", function(sender, command, arguments)
 
 	if not GAMEMODE:HasItemStocks(id) then
 		GAMEMODE:ConCommandErrorMessage(sender, translate.ClientGet(sender, "out_of_stock"))
+		return
+	end
+
+	if itemtab.CanBuy and not itemtab.CanBuy(sender) then
 		return
 	end
 
@@ -724,6 +733,25 @@ concommand.Add("zs_admin_enablearsenal", function(pl, cmd, args)
 
 	GAMEMODE:SetArsenalRequiredToBuyItems(value)
 	print(Format("\"Arsenal Crate required to Purchase Items\" value set to %s (Command received by %s)", value, Format("%s [%s]", pl:Name(), pl:SteamID())) )
+end, nil, text)
+
+local text = "Usage: Restart round. Use value \"1\" to restart the round with players progress saved."
+
+concommand.Add("zs_admin_forcerestartround", function(pl, cmd, args)
+	if not IsPlayerValidSuperAdmin(pl) then return end
+	local value
+	if not args[1] then
+		pl:PrintMessage(HUD_PRINTCONSOLE, text)
+	else
+		if args[1] == "1" then
+			gamemode.Call("SaveAllVaults")
+		end
+	end
+
+	gamemode.Call("PreRestartRound")
+	gamemode.Call("RestartRound")
+
+	print(Format("Forced a new round restart %s(Command received by %s)", args[1] == "1" and "(Vaults saved) " or "", Format("%s [%s]", pl:Name(), pl:SteamID())) )
 end, nil, text)
 
 concommand.Add("zs_admin_luarun", function(pl, cmd, args, str)

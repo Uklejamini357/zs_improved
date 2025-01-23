@@ -6,6 +6,7 @@ CLASS.Help = "controls_"
 CLASS.Hidden = true
 CLASS.Disabled = true
 CLASS.Wave = 420 / GM.NumberOfWaves
+CLASS.EndlessOnly = true
 
 CLASS.KnockbackScale = 0
 

@@ -24,8 +24,8 @@ function MakepEndBoard(winner)
 
 	local frame = vgui.Create("DFrame")
 	frame:SetWide(wid)
-	frame:SetKeyboardInputEnabled(false)
 	frame:SetDeleteOnClose(false)
+	frame:ShowCloseButton(false)
 	frame:SetCursor("pointer")
 	frame:SetTitle(" ")
 	if not GAMEMODE.ZombieEscape then
@@ -48,7 +48,7 @@ function MakepEndBoard(winner)
 		heading = EasyLabel(frame, GAMEMODE.ZombieEscape and "Zombies won" or "You have lost.", "ZSHUDFontBig", COLOR_RED)
 	else
 		surface.PlaySound("ambient/levels/citadel/strange_talk"..math.random(3, 11)..".wav")
-		heading = EasyLabel(frame, "Stalemate", "ZSHUDFont", COLOR_GRAY)
+		heading = EasyLabel(frame, "Draw.", "ZSHUDFont", COLOR_GRAY)
 	end
 	heading:SetPos(wid * 0.5 - heading:GetWide() * 0.5, y)
 	y = y + heading:GetTall() + 16
@@ -90,7 +90,13 @@ function MakepEndBoard(winner)
 	frame:Center()
 
 	if not GAMEMODE.ZombieEscape then
-		frame:MakePopup()
+		timer.Simple(4.5, function()
+			if frame:IsValid() then
+				frame:ShowCloseButton(true)
+				frame:MakePopup()
+				frame:SetKeyboardInputEnabled(false)
+			end
+		end)
 	end
 
 	return frame

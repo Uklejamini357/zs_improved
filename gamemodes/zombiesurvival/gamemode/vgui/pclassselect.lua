@@ -179,6 +179,7 @@ function PANEL:Init()
 			else
 				ok = not classtab.SuperBoss and not classtab.Boss and not classtab.SemiBoss and not classtab.MiniBoss and
 					(not classtab.Hidden or classtab.CanUse and classtab:CanUse(MySelf)) and
+					(classtab.EndlessOnly and GAMEMODE:IsEndlessMode() or not classtab.EndlessOnly) and
 					(not GAMEMODE.ObjectiveMap or classtab.Unlocked)
 			end
 
@@ -490,13 +491,17 @@ function PANEL:CreateDescLabels()
 		table.insert(lines, translate.Format("unlocked_on_wave_x", zclass.Wave))
 	end
 	if zclass.Infliction and zclass.Infliction > 0 then
-		table.insert(lines, translate.Format("unlocked_on_x_infliction", (zclass.Infliction or 0) * 100))
+		table.insert(lines, {translate.Format("unlocked_on_x_infliction", (zclass.Infliction or 0) * 100), COLOR_DARKRED})
+	end
+
+	if zclass.EndlessOnly then
+		table.insert(lines, {"Endless Mode only class!", COLOR_DARKRED})
 	end
 
 	if zclass.BetterVersion then
 		local betterzclass = GAMEMODE.ZombieClasses[zclass.BetterVersion]
-		if betterzclass then
-			table.insert(lines, translate.Format("evolves_in_to_x_on_wave_y", betterzclass.Name, betterzclass.Wave))
+		if betterzclass and (betterzclass.EndlessOnly and GAMEMODE:IsEndlessMode() or not betterzclass.EndlessOnly) then
+			table.insert(lines, {translate.Format("evolves_in_to_x_on_wave_y", betterzclass.Name, betterzclass.Wave), COLOR_RORANGE})
 		end
 	end
 
@@ -509,8 +514,11 @@ function PANEL:CreateDescLabels()
 	end
 
 	table.insert(lines, " ")
-	local hp = (zclass.Health or 0) + ((zclass.DynamicHealth or 0) * math.max(0, GAMEMODE:GetWave() - 1))
-	table.Add(lines, string.Explode("\n", translate.Format("zclass_health", hp, zclass.Health or 0, zclass.DynamicHealth or 0)))
+	local hp = zclass.Health or 0
+	local dynhp = (zclass.DynamicHealth or 0) *
+	(GAMEMODE.ObjectiveMap and 0 or GAMEMODE:IsEndlessMode() and math.max(0, GAMEMODE:GetWave() - 1) or math.Clamp(GAMEMODE:GetWave() - 1, 0, GAMEMODE:GetNumberOfWaves()))
+	
+	table.Add(lines, string.Explode("\n", translate.Format("zclass_health", hp + dynhp, hp, dynhp)))
 	table.Add(lines, string.Explode("\n", translate.Format("zclass_speed", zclass.Speed or 0)))
 	table.insert(lines, " ")
 	local wep = weapons.Get(zclass.SWEP)
@@ -541,12 +549,11 @@ function PANEL:CreateDescLabels()
 		local label = vgui.Create("DLabel", self)
 		local notwaveone = zclass.Wave and zclass.Wave > 0
 
-		label:SetText(line)
-		if i == (notwaveone and zclass.Infliction and zclass.Infliction > 0 and 3 or notwaveone and 2 or 1) and zclass.BetterVersion then
-			label:SetColor(COLOR_RORANGE)
-		end
-		if i == (notwaveone and 2 or 1) and zclass.Infliction and zclass.Infliction > 0 then
-			label:SetColor(COLOR_DARKRED)
+		if istable(line) then
+			label:SetText(line[1])
+			label:SetColor(line[2])
+		else
+			label:SetText(line)
 		end
 		label:SetFont(i == 1 and notwaveone and "ZSBodyTextFontBig" or "ZSBodyTextFont")
 		label:SizeToContents()

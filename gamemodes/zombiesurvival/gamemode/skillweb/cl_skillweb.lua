@@ -6,6 +6,8 @@ local render_ModelMaterialOverride = render.ModelMaterialOverride
 local render_SetColorModulation = render.SetColorModulation
 local render_SuppressEngineLighting = render.SuppressEngineLighting
 
+local UseNewSkillTrees = false
+
 net.Receive("zs_skills_notify", function(length)
 	if GAMEMODE.SkillWeb then
 		GAMEMODE.SkillWeb:DisplayMessage(net.ReadString(), net.ReadColor() or COLOR_WHITE)
@@ -212,7 +214,7 @@ Can remort multiple times for multiple extra skill points.\
 Reaching certain remorts can give additional extra SP.\
 To remort, you need to be level %d.\
 (1 remort = 1 extra skill point)", GM.MaxRemortableLevel)}
-/*
+
 local TREE_SKILLS = {
 	[TREE_HEALTHTREE] = {
 		Name = "Survival",
@@ -253,8 +255,13 @@ local TREE_SKILLS = {
 		Name = "Special",
 		Description = "",
 	},
+
+	[TREE_ENDLESSTREE] = {
+		Name = "Endless",
+		Description = "Become even stronger than before\nThose skills are only available in endless mode",
+	},
 }
-*/
+
 local PANEL = {}
 
 AccessorFunc( PANEL, "vCamPos",			"CamPos" )
@@ -279,7 +286,8 @@ local offsets = {
 	[TREE_BUILDINGTREE] = {-16, 10},
 	[TREE_SUPPORTTREE] = {-15, -9},
 	[TREE_TORMENTTREE] = {31,1},
-	[TREE_REMORTTREE] = {2,0.5}
+	[TREE_REMORTTREE] = {2,0.5},
+	[TREE_ENDLESSTREE] = {0,35},
 }
 
 local function ActivateSkill(self, skillid)
@@ -331,35 +339,45 @@ function PANEL:Init()
 
 	self.SkillNodes = {}
 
-/* -- New
-	for i=0,8 do
-		self.SkillNodes[i] = {}
+	if UseNewSkillTrees then
+		for i=0,9 do
+			self.SkillNodes[i] = {}
+		end
 	end
-*/
+
 	for id, skill in pairs(allskills) do
 		if not skill.Trinket then
 			node = ClientsideModel("models/dav0r/hoverball.mdl", RENDER_GROUP_OPAQUE_ENTITY)
 			if IsValid(node) then
 				node:SetNoDraw(true)
-				-- Old
-				node:SetPos(Vector(0, (skill.x + offsets[skill.Tree][1]) * 20, (skill.y + offsets[skill.Tree][2]) * 20))
-				-- New
---				node:SetPos(Vector(0, skill.x * 20, skill.y * 20))
+				if UseNewSkillTrees then
+					-- New
+					node:SetPos(Vector(0, skill.x * 20, skill.y * 20))
+				else
+					-- Old
+					node:SetPos(Vector(0, (skill.x + offsets[skill.Tree][1]) * 20, (skill.y + offsets[skill.Tree][2]) * 20))
+				end
 				if skill.Disabled then
 					node:SetModelScale(0.46, 0)
 				else
-					-- Old
-					node:SetModelScale(0.66, 0)
-					-- New
---					node:SetModelScale(0.57 * (skill.ModelScale or 1), 0)
+					if UseNewSkillTrees then
+						-- New
+						node:SetModelScale(0.57 * (skill.ModelScale or 1), 0)
+					else
+						-- Old
+						node:SetModelScale(0.66, 0)
+					end
 				end
 
 				node.Skill = skill
 				node.SkillID = id
-				-- Old
-				self.SkillNodes[id] = node
-				-- New
---				self.SkillNodes[skill.Tree][id] = node
+				if UseNewSkillTrees then
+					-- New
+					self.SkillNodes[skill.Tree][id] = node
+				else
+					-- Old
+					self.SkillNodes[id] = node
+				end
 			end
 		end
 	end
@@ -369,36 +387,45 @@ function PANEL:Init()
 	if IsValid(node) then
 		node:SetNoDraw(true)
 		node:SetPos(Vector(0, 0, 10))
-		-- Old
-		node:SetModelScale(1.5, 0)
-		-- New
---		node:SetModelScale(2.5, 0)
+		if UseNewSkillTrees then
+			-- New
+			node:SetModelScale(2.5, 0)
+		else
+			-- Old
+			node:SetModelScale(1.5, 0)
+		end
 
 		node.Skill = REMORT_SKILL
 		node.SkillID = -1
-		-- Old
-		self.SkillNodes[-1] = node
-		-- New
---		self.SkillNodes[0][-1] = node
-	end
-
-/* -- New
-	for tree, treenode in pairs(TREE_SKILLS) do
-		node = ClientsideModel("models/Gibs/HGIBS.mdl", RENDER_GROUP_OPAQUE_ENTITY)
-		
-		if IsValid(node) then
-			local rads = ((30 / #TREE_SKILLS) * math.pi) * ((tree - 1) / 15)
-			
-			node:SetNoDraw(true)
-			node:SetPos(Vector(0, math.sin(rads) * 70, math.cos(rads) * 70 + 10))
-			node:SetAngles(Angle(0, 0, -rads * 180/math.pi))
-			node:SetModelScale(5, 0)
-			node.Skill = treenode
-			node.SkillID = -tree - 1
-			self.SkillNodes[0][node.SkillID] = node
+		if UseNewSkillTrees then
+			-- New
+			self.SkillNodes[0][-1] = node
+		else
+			-- Old
+			self.SkillNodes[-1] = node
 		end
 	end
-*/
+
+	if UseNewSkillTrees then
+		for tree, treenode in pairs(TREE_SKILLS) do
+			node = ClientsideModel("models/Gibs/HGIBS.mdl", RENDER_GROUP_OPAQUE_ENTITY)
+
+			if IsValid(node) then
+				-- local rads = tree > 6 and (2*math.pi)*((tree-7)/(#TREE_SKILLS - 6)) or (2*math.pi)*((tree-1)/6)
+				local rads = tree > 8 and ((30 / (#TREE_SKILLS - 8)) * math.pi) * ((tree - 1) / 15) or ((30 / 8) * math.pi) * ((tree - 1) / 15)
+
+				local addpos = tree > 8 and 200 or 70
+
+				node:SetNoDraw(true)
+				node:SetPos(Vector(0, math.sin(rads) * addpos, math.cos(rads) * addpos + 10))
+				node:SetAngles(Angle(0, 0, -rads * 180/math.pi))
+				node:SetModelScale(5, 0)
+				node.Skill = treenode
+				node.SkillID = -tree - 1
+				self.SkillNodes[0][node.SkillID] = node
+			end
+		end
+	end
 
 	local top = vgui.Create("Panel", self)
 	top:SetSize(ScrW(), 256)
@@ -594,47 +621,49 @@ function PANEL:Init()
 	topright:SetSize(160 * screenscale, 64 * screenscale)
 	topright:DockPadding(10, 10, 10, 10)
 
-	-- Old
-	local quit = vgui.Create("DButton", topright)
-	quit:SetText("Quit")
-	quit:SetFont("ZSHUDFont")
-	quit:Dock(FILL)
-	quit.DoClick = function()
-		self:Remove()
-	end
-
-/*	-- New
-	local quit = vgui.Create("DButton", topright)
-	quit:SetText("Close")
-	quit:SetFont("ZSHUDFont")
-	quit:Dock(FILL)
-	quit.DoClick = function()
-		if self.DesiredTree == 0 then
-			self:Remove()
-		else
-			self.DesiredTree = 0
-			self.DesiredZoom = 2500
-			self.ShadeVelocity = 255 * FrameTime() * 10
-			
-			timer.Simple(0.1, function()
-				if not IsValid(self) then return end
-
-				quit:SetText("Close")
-				self.DesiredZoom = 5000
+	local quit
+	if UseNewSkillTrees then
+		-- New
+		quit = vgui.Create("DButton", topright)
+		quit:SetText("Close")
+		quit:SetFont("ZSHUDFont")
+		quit:Dock(FILL)
+		quit.DoClick = function()
+			if self.DesiredTree == 0 then
+				self:Remove()
+			else
 				self.DesiredTree = 0
-				self.ShadeVelocity = 255 * FrameTime() * -10
+				self.DesiredZoom = 2500
+				self.ShadeVelocity = 255 * FrameTime() * 10
 				
-				local campos = self:GetCamPos()
-				campos.y = 0
-				campos.z = 0
-				self:SetCamPos(campos)
-			end)
-
-			self.ContextMenu:SetVisible(false)
-			MySelf:EmitSound("buttons/button24.wav", 60, 180)
+				timer.Simple(0.1, function()
+					if not IsValid(self) then return end
+	
+					quit:SetText("Close")
+					self.DesiredZoom = 5000
+					self.DesiredTree = 0
+					self.ShadeVelocity = 255 * FrameTime() * -10
+					
+					local campos = self:GetCamPos()
+					campos.y = 0
+					campos.z = 0
+					self:SetCamPos(campos)
+				end)
+	
+				self.ContextMenu:SetVisible(false)
+				MySelf:EmitSound("buttons/button24.wav", 60, 180)
+			end
+		end
+	else
+		-- Old
+		quit = vgui.Create("DButton", topright)
+		quit:SetText("Quit")
+		quit:SetFont("ZSHUDFont")
+		quit:Dock(FILL)
+		quit.DoClick = function()
+			self:Remove()
 		end
 	end
-*/
 
 	local bottom = vgui.Create("DEXRoundedPanel", self)
 	bottom:SetSize(600 * screenscale, math.Clamp(84 * screenscale, 70, 125))
@@ -917,11 +946,11 @@ function PANEL:DisplayMessage(msg, col)
 end
 
 PANEL.NextWarningThink = 0
-/*
+
 PANEL.NextProgressThink = 0
 PANEL.Progress = {}
 PANEL.TreeCount = {}
-*/
+
 function PANEL:Think()
 	local time = RealTime()
 
@@ -954,38 +983,39 @@ function PANEL:Think()
 			self.WarningText:SetVisible(display_warning)
 		end
 	
-/* -- New
-	if time > self.NextProgressThink then
-		self.NextProgressThink = time + 1
-		self.Progress = {}
-		self.TreeCount = {}
-			
-		for skill, skillinf in pairs(GAMEMODE.Skills) do
-			if not skillinf.Tree then 
-				continue
-			end
-				
-			local tree = skillinf.Tree
-			self.TreeCount[tree] = (self.TreeCount[tree] or 0) + 1
-		end
-			
-		local active = MySelf:GetUnlockedSkills()
-			
-		for tree, _ in pairs(TREE_SKILLS) do
-			for i, j in pairs(active) do
-				local skillinf = GAMEMODE.Skills[j]
-					
-				if not skillinf or not skillinf.Tree then
+	-- New
+	if UseNewSkillTrees then
+		if time > self.NextProgressThink then
+			self.NextProgressThink = time + 1
+			self.Progress = {}
+			self.TreeCount = {}
+
+			for skill, skillinf in pairs(GAMEMODE.Skills) do
+				if not skillinf.Tree then 
 					continue
 				end
-					
-				if skillinf.Tree == tree then
-					self.Progress[tree] = (self.Progress[tree] or 0) + 1
+
+				local tree = skillinf.Tree
+				self.TreeCount[tree] = (self.TreeCount[tree] or 0) + 1
+			end
+
+			local active = MySelf:GetUnlockedSkills()
+
+			for tree, _ in pairs(TREE_SKILLS) do
+				for i, j in pairs(active) do
+					local skillinf = GAMEMODE.Skills[j]
+
+					if not skillinf or not skillinf.Tree then
+						continue
+					end
+
+					if skillinf.Tree == tree then
+						self.Progress[tree] = (self.Progress[tree] or 0) + 1
+					end
 				end
 			end
 		end
 	end
-*/
 
 end
 
@@ -993,35 +1023,36 @@ function PANEL:GenerateParticles()
 	local particles = {}
 	local particle
 
-/*	-- New
-	for i=1, 140 do
-		local dist = math.Rand(-5000, -32)
-		local size_m = 1
-			
-		if dist <= -3000 then
-			size_m = -(dist/3000)
-		end
-			
-		particle = {}
-		particle[1] = Vector(dist, math.Rand(-710, 710), math.Rand(-710, 710))
-		particle[2] = math.Rand(0, 360)
-		particle[3] = math.Rand(-5, 5)
-		particle[4] = math.Rand(180, 190) * size_m
-		particle[5] = math.Rand(30, 90)
-		particles[i] = particle
-	end
-*/		
+	if UseNewSkillTrees then
+		for i=1, 140 do
+			local dist = math.Rand(-5000, -32)
+			local size_m = 1
 
-	-- Old
-	for i=1, 230 do
-		-- struct: Position, Roll, Roll rate, Size, Alpha
-		particle = {}
-		particle[1] = Vector(math.Rand(-1724, -32), math.Rand(-1210, 1210), math.Rand(-1210, 1210))
-		particle[2] = math.Rand(0, 360)
-		particle[3] = math.Rand(-5, 5)
-		particle[4] = math.Rand(180, 240)
-		particle[5] = math.Rand(30, 90)
-		particles[i] = particle
+			if dist <= -3000 then
+				size_m = -(dist/3000)
+			end
+
+			particle = {}
+			particle[1] = Vector(dist, math.Rand(-710, 710), math.Rand(-710, 710))
+			particle[2] = math.Rand(0, 360)
+			particle[3] = math.Rand(-5, 5)
+			particle[4] = math.Rand(180, 190) * size_m
+			particle[5] = math.Rand(30, 90)
+			particles[i] = particle
+		end
+	else
+
+		-- Old
+		for i=1, 230 do
+			-- struct: Position, Roll, Roll rate, Size, Alpha
+			particle = {}
+			particle[1] = Vector(math.Rand(-1724, -32), math.Rand(-1210, 1210), math.Rand(-1210, 1210))
+			particle[2] = math.Rand(0, 360)
+			particle[3] = math.Rand(-5, 5)
+			particle[4] = math.Rand(180, 240)
+			particle[5] = math.Rand(30, 90)
+			particles[i] = particle
+		end
 	end
 
 
@@ -1139,20 +1170,22 @@ function PANEL:DoEdgeScroll(deltatime)
 
 	if camera_velocity.y ~= 0 or camera_velocity.z ~= 0 then
 		campos = campos + deltatime * edge * 12 * camera_velocity
-		-- Old
-		campos.y = math.Clamp(campos.y, -662, 662)
-		campos.z = math.Clamp(campos.z, -662, 662)
+		if UseNewSkillTrees then
+			-- New
+			campos.y = math.Clamp(campos.y, -312, 312)
+			campos.z = math.Clamp(campos.z, -312, 312)
+		else
+			-- Old
+			campos.y = math.Clamp(campos.y, -662, 662)
+			campos.z = math.Clamp(campos.z, -662, 862)
+		end
 
-/*		-- New
-		campos.y = math.Clamp(campos.y, -312, 312)
-		campos.z = math.Clamp(campos.z, -312, 312)
-*/
 		self:SetCamPos(campos)
 		self.vLookatPos:Set(campos)
 		self.vLookatPos.x = 0
 	end
 end
-/*
+
 local particlecolors = {
 	[TREE_HEALTHTREE] = Color(210, 150, 105, 90),
 	[TREE_MELEETREE] = Color(180, 111, 111, 90),
@@ -1162,8 +1195,9 @@ local particlecolors = {
 	[TREE_SUPPORTTREE] = Color(130, 200, 135, 90),
 	[TREE_TORMENTTREE] = Color(175, 175, 175, 90),
 	[TREE_REMORTTREE] = Color(115, 115, 115, 90),
+	[TREE_ENDLESSTREE] = Color(115, 115, 115, 90),
 }
-*/
+
 
 local nodecolors = {
 	[TREE_HEALTHTREE] = {1.75, 3, 5},
@@ -1173,7 +1207,8 @@ local nodecolors = {
 	[TREE_MELEETREE] = {1.5, 7, 7},
 	[TREE_GUNTREE] = {5, 2, 2},
 	[TREE_TORMENTTREE] = {2, 2, 2},
-	[TREE_REMORTTREE] = {3.5, 3.5, 3.5}
+	[TREE_REMORTTREE] = {3.5, 3.5, 3.5},
+	[TREE_ENDLESSTREE] = {3.5, 3.5, 3.5}
 }
 
 -- This one is really hard to manage if you don't know what it does (it's there if you want to have custom skill colors if they can be unlocked, are unlocked, or are active)
@@ -1185,7 +1220,8 @@ local nc_canunlock = {
 	[TREE_MELEETREE] = {1, 1, 1},
 	[TREE_GUNTREE] = {1, 1, 1},
 	[TREE_TORMENTTREE] = {1, 1, 1},
-	[TREE_REMORTTREE] = {1, 1, 1}
+	[TREE_REMORTTREE] = {1, 1, 1},
+	[TREE_ENDLESSTREE] = {1, 1, 1}
 }
 
 local nc_unlocked = {
@@ -1196,7 +1232,8 @@ local nc_unlocked = {
 	[TREE_MELEETREE] = {1, 1, 1},
 	[TREE_GUNTREE] = {1, 1, 1},
 	[TREE_TORMENTTREE] = {1, 1, 1},
-	[TREE_REMORTTREE] = {1, 1, 1}
+	[TREE_REMORTTREE] = {1, 1, 1},
+	[TREE_ENDLESSTREE] = {1, 1, 1}
 }
 
 local nc_active = {
@@ -1207,7 +1244,8 @@ local nc_active = {
 	[TREE_MELEETREE] = {1, 1, 1},
 	[TREE_GUNTREE] = {1, 1, 1},
 	[TREE_TORMENTTREE] = {1, 1, 1},
-	[TREE_REMORTTREE] = {1, 1, 1}
+	[TREE_REMORTTREE] = {1, 1, 1},
+	[TREE_ENDLESSTREE] = {1, 1, 1}
 }
 
 local matBeam = Material("effects/laser1")
@@ -1219,6 +1257,11 @@ local colBeam = Color(0, 0, 0)
 local colBeam2 = Color(255, 255, 255)
 local colSmoke = Color(140, 160, 185, 160)
 local colGlow = Color(0, 0, 0)
+
+local function CheckHidden(skill, hiddentruly)
+	return skill and (not hiddentruly and (isfunction(skill.Hidden) and skill.Hidden(MySelf) or not isfunction(skill.Hidden) and skill.Hidden) or
+	skill.HideTruly and (isfunction(skill.Hidden) and skill.Hidden(MySelf) or not isfunction(skill.Hidden) and skill.Hidden))
+end
 
 function PANEL:Paint(w, h)
 	local realtime = RealTime()
@@ -1260,24 +1303,25 @@ function PANEL:Paint(w, h)
 	render.SetLightingOrigin( vector_origin )
 	render.ResetModelLighting( self.colAmbientLight.r / 255, self.colAmbientLight.g / 255, self.colAmbientLight.b / 255 )
 
-	-- Old
-	for i=0, 6 do
-		col = self.DirectionalLight[ i ]
-		if col then
-			render.SetModelLighting( i, col.r / 255, col.g / 255, col.b / 255 )
+	if UseNewSkillTrees then
+		-- New
+		for i=0, 55 do
+			col = self.DirectionalLight[ i ]
+				
+			if col then
+				render.SetModelLighting( i, col.r / 255, col.g / 255, col.b / 255 )
+			end
+		end
+	else
+		-- Old
+		for i=0, 6 do
+			col = self.DirectionalLight[ i ]
+			if col then
+				render.SetModelLighting( i, col.r / 255, col.g / 255, col.b / 255 )
+			end
 		end
 	end
 
-
-/*	-- New
-	for i=0, 55 do
-		col = self.DirectionalLight[ i ]
-			
-		if col then
-			render.SetModelLighting( i, col.r / 255, col.g / 255, col.b / 255 )
-		end
-	end
-*/
 	local particles = self.Particles
 	render.SetMaterial(matSmoke)
 
@@ -1290,12 +1334,15 @@ function PANEL:Paint(w, h)
 --		render.DrawQuadEasy(particle[1], to_camera, particle[4], particle[4] * 1, particlecolors[self.DesiredTree] or colSmoke, particle[2])
 	end
 
-	-- Old
-	local skillnodes = self.SkillNodes
-	-- New
-/*
-	local skillnodes = self.SkillNodes[self.DesiredTree]
-*/
+	local skillnodes
+	if UseNewSkillTrees then
+		-- New
+		skillnodes = self.SkillNodes[self.DesiredTree]
+	else
+		-- Old
+		skillnodes = self.SkillNodes
+	end
+
 	local campost = self.vCamPos
 	local camheightadj = (campost.x ^ 2) * 1.0035 -- Don't render nodes outside our view.
 
@@ -1317,7 +1364,7 @@ function PANEL:Paint(w, h)
 			if skill.Connections then
 				for connectid, _ in pairs(skill.Connections) do
 					connectskill = GAMEMODE.Skills[connectid]
-					if id < connectid and (not connectskillskill or connectskill and not connectskill.Disabled) then -- Nodes are double linked so only draw one half-edge
+					if id < connectid and (not connectskillskill or connectskill and not connectskill.Disabled) and not (CheckHidden(connectskill) or CheckHidden(skill)) then -- Nodes are double linked so only draw one half-edge
 						othernode = skillnodes[connectid]
 						if IsValid(othernode) then
 							othernodepos = othernode:GetPos()
@@ -1381,10 +1428,14 @@ function PANEL:Paint(w, h)
 	local oldskill = hoveredskill
 	hoveredskill = nil
 
-	-- Old
-	local angle = (realtime * 180) % 360
-	-- New
---	local angle = (realtime * 90) % 360
+	local angle
+	if UseNewSkillTrees then
+		-- New
+		angle = (realtime * 90) % 360
+	else
+		-- Old
+		angle = (realtime * 180) % 360
+	end
 
 	for id, node in pairs(skillnodes) do
 		if IsValid(node) then
@@ -1398,15 +1449,19 @@ function PANEL:Paint(w, h)
 			selected = not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= 36 -- 6^2
 
 -- Old
-			local sel_radius = 36 * (skill.ModelScale or 1)
-			selected = not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= sel_radius
-			local scale = 0.09
-			-- New
-/*
-			local sel_radius = skillid <= -2 and 300 or skillid == -1 and 90 or 36 * (skill.ModelScale or 1)
-			selected = not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= sel_radius
-			local scale = skillid <= -2 and 0.08 or 0.09
-*/
+			local sel_radius
+			local scale
+			if UseNewSkillTrees then
+				-- New
+				sel_radius = skillid <= -2 and 300 or skillid == -1 and 90 or 36 * (skill.ModelScale or 1)
+				selected = not CheckHidden(skill, true) and not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= sel_radius
+				scale = skillid <= -2 and 0.08 or 0.09
+			else
+				sel_radius = 36 * (skill.ModelScale or 1)
+				selected = not CheckHidden(skill, true) and not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= sel_radius
+				scale = 0.09
+			end
+	
 			cam.Start3D2D(node:GetPos() - to_camera * 8, Angle(0, 90, 90), scale)
 
 			surface.DisableClipping(true)
@@ -1455,47 +1510,57 @@ function PANEL:Paint(w, h)
 					sat / divs[3] / 1.25)
 				notunlockable = true
 			end
-/* -- New
-			if skillid <= -2 then
-				render_ModelMaterialOverride()
-				render_SetBlend(0.95)
-				node:SetModelScale(3.7)
-				node:DrawModel()
-				node:SetModelScale(3.8)
-			end
-*/
-			render_ModelMaterialOverride(matWhite)
--- Old
-			render_SetBlend(0.95)
--- New
---			render_SetBlend(skillid <= 2 and 0.2 or 0.95)
 
-			node:DrawModel()
+			-- New
+			if UseNewSkillTrees then
+				if skillid <= -2 then
+					render_ModelMaterialOverride()
+					render_SetBlend(0.95)
+					node:SetModelScale(3.7)
+					node:DrawModel()
+					node:SetModelScale(3.8)
+				end
+			end
+
+			render_ModelMaterialOverride(matWhite)
+			if UseNewSkillTrees then
+				-- New
+				render_SetBlend(skillid <= 2 and 0.2 or 0.95)
+			else
+				-- Old
+				render_SetBlend(0.95)
+			end
+
+			if not CheckHidden(skill) then
+				node:DrawModel()
+			end
 
 			render_SetBlend(1)
 			render_ModelMaterialOverride()
 
 			render_SetColorModulation(1, 1, 1)
 
-			if self.vCamPos.x < (self.DesiredTree == 0 and 11500 or 9500) then
+			if self.vCamPos.x < (self.DesiredTree == 0 and 11500 or 9500) and not CheckHidden(skill) then
 				local colo = skill.Disabled and COLOR_DARKGRAY or skill.Rainbow and HSVToColor(RealTime() * 160 % 360, 0.5, 1) or selected and color_white or notunlockable and COLOR_MIDGRAY or COLOR_GRAY
 				local colo2 = COLOR_GRAY
 
 				local greencolor = Color(71,231,119)
 				local redcolor = Color(238,37,37)
 
-	-- Old
-				draw_SimpleText(skill.Name, skillid <= -1 and "ZS3D2DFont2" or "ZS3D2DFont2Small", 0, 0, colo, TEXT_ALIGN_CENTER) -- "ZS3D2DFont2Big" "ZS3D2DFont2"
+				if UseNewSkillTrees then
+					-- New
+					local skill_text_y = skillid <= -2 and 120 or 0
 
-/*	-- New
-				local skill_text_y = skillid <= -2 and 120 or 0
-
-				draw_SimpleText(skill.Name, skillid <= -2 and "ZS3D2DFont2Big" or skillid <= -1 and "ZS3D2DFont2" or "ZS3D2DFont2Small", 0, skill_text_y, colo, TEXT_ALIGN_CENTER) -- "ZS3D2DFont2Big" "ZS3D2DFont2"
-
-				if skillid <= -2 and self.TreeCount[-skillid - 1] then
-					draw_SimpleText((self.Progress[-skillid - 1] or 0).."/"..self.TreeCount[-skillid - 1], "ZS3D2DFont2Big", 0, skill_text_y + 130, colo, TEXT_ALIGN_CENTER)
+					draw_SimpleText(skill.Name, skillid <= -2 and "ZS3D2DFont2Big" or skillid <= -1 and "ZS3D2DFont2" or "ZS3D2DFont2Small", 0, skill_text_y, colo, TEXT_ALIGN_CENTER) -- "ZS3D2DFont2Big" "ZS3D2DFont2"
+	
+					if skillid <= -2 and self.TreeCount[-skillid - 1] then
+						draw_SimpleText((self.Progress[-skillid - 1] or 0).."/"..self.TreeCount[-skillid - 1], "ZS3D2DFont2Big", 0, skill_text_y + 130, colo, TEXT_ALIGN_CENTER)
+					end
+				else
+					-- Old
+					draw_SimpleText(skill.Name, skillid <= -1 and "ZS3D2DFont2" or "ZS3D2DFont2Small", 0, 0, colo, TEXT_ALIGN_CENTER) -- "ZS3D2DFont2Big" "ZS3D2DFont2"
 				end
-*/
+
 				if self.vCamPos.x < 7000 then
 					local font = "ZSHUDFontSmall" --"ZSHUDFont"
 					local y_pos = 42 --58
@@ -1526,16 +1591,37 @@ function PANEL:Paint(w, h)
 						y_pos = y_pos + y_pos_add
 					end
 
-					local colo = skill.Hidden and Color(0,0,0,0) or skill.Disabled and COLOR_DARKGRAY or selected and color_white or notunlockable and COLOR_MIDGRAY or COLOR_GRAY
+					local colo = CheckHidden(skill) and Color(0,0,0,0) or skill.Disabled and COLOR_DARKGRAY or selected and color_white or notunlockable and COLOR_MIDGRAY or COLOR_GRAY
 
 					if hoveredskill == skillid then
-						if /*GAMEMODE.ZombieEscape and*/ skill.CanUseInZE then
+						if skill.EndlessOnly then
+							draw_SimpleText(translate.Get("endless_mode_only"), font, 0, y_pos, colo2, TEXT_ALIGN_CENTER)
+							y_pos = y_pos + y_pos_add
+						end
+
+						if skill.CanUseInZE then
 							draw_SimpleText(translate.Get("can_use_in_escape_mode"), font, 0, y_pos, colo2, TEXT_ALIGN_CENTER)
 							y_pos = y_pos + y_pos_add
 						end
 
-						if /*GAMEMODE.ClassicMode and*/ skill.CanUseInClassicMode then
+						if skill.CanUseInClassicMode then
 							draw_SimpleText(translate.Get("can_use_in_classic_mode"), font, 0, y_pos, colo2, TEXT_ALIGN_CENTER)
+							y_pos = y_pos + y_pos_add
+						end
+
+						if skill.UnlockedSkillsRequirements then
+							if istable(skill.UnlockedSkillsRequirements) then
+								draw_SimpleText("Required skills:", font, 0, y_pos, colo2, TEXT_ALIGN_CENTER)
+								y_pos = y_pos + y_pos_add
+								for _,id in pairs(skill.UnlockedSkillsRequirements) do
+									draw_SimpleText(GAMEMODE.Skills[id].Name, font, 0, y_pos, MySelf:IsSkillUnlocked(id) and greencolor or redcolor, TEXT_ALIGN_CENTER)
+									y_pos = y_pos + y_pos_add
+								end
+							else
+								draw_SimpleText("Required skill unlock: "..GAMEMODE.Skills[id].Name, font, 0, y_pos, MySelf:IsSkillUnlocked(skill.UnlockedSkillsRequirements) and greencolor or redcolor, TEXT_ALIGN_CENTER)
+								y_pos = y_pos + y_pos_add
+							end
+
 							y_pos = y_pos + y_pos_add
 						end
 					end
@@ -1578,26 +1664,25 @@ function PANEL:Paint(w, h)
 			cam.End3D2D()
 
 			render.SetMaterial(matGlow)
-	-- Old
-			if skillid == -1 then
-				if can_remort then
-					render.DrawQuadEasy(nodepos, to_camera, 32, 32, color_white, angle)
+			if UseNewSkillTrees and skillid <= -1 or !UseNewSkillTrees and skillid == -1 then
+				if UseNewSkillTrees then
+					-- New
+					local size
+					if skillid == -1 and can_remort then
+						size = 32
+						render.DrawQuadEasy(nodepos, to_camera, size, size, color_white, angle)
+					elseif skillid <= -2 then
+						size = 65
+						render.DrawQuadEasy(nodepos, to_camera, size/2, size/2, Color(166, 166, 166), angle)
+						render.DrawQuadEasy(nodepos, to_camera, size, size, particlecolors[-skillid - 1] or color_white, angle)
+					end
+				else
+				-- Old
+					if can_remort then
+						render.DrawQuadEasy(nodepos, to_camera, 32, 32, color_white, angle)
+					end
 				end
 
-
-/* -- New
-			if skillid <= -1 then
-
-				local size
-				if skillid == -1 and can_remort then
-					size = 32
-					render.DrawQuadEasy(nodepos, to_camera, size, size, color_white, angle)
-				elseif skillid <= -2 then
-					size = 65
-					render.DrawQuadEasy(nodepos, to_camera, size/2, size/2, Color(166, 166, 166), angle)
-					render.DrawQuadEasy(nodepos, to_camera, size, size, particlecolors[-skillid - 1] or color_white, angle)
-				end
-*/
 			elseif not skill.Disabled then
 				colGlow.r = sat * 255
 				colGlow.g = sat * 255
@@ -1625,13 +1710,15 @@ function PANEL:Paint(w, h)
 					colGlow.b = colGlow.b / divs2[3]
 				end
 				size = selected and 40 or 27
-				render.DrawQuadEasy(nodepos, to_camera, size, size, colGlow, angle)
+				if not CheckHidden(skill) then
+					render.DrawQuadEasy(nodepos, to_camera, size, size, colGlow, angle)
+				end
 				angle = angle + 45
 			end
 		end
 	end
 
-	if intersectpos then
+	if intersectpos and not CheckHidden(skill) then
 		intersectpos = intersectpos + Vector(16, 0, 0)
 		render.SetMaterial(matGlow)
 		render.DrawQuadEasy(intersectpos, to_camera, 12, 12, color_white, realtime * 90)
@@ -1675,11 +1762,13 @@ function PANEL:Paint(w, h)
 	end
 
 	self.LastPaint = realtime
-/* -- New
-	self.ShadeAlpha = math.Clamp(self.ShadeAlpha + self.ShadeVelocity, 0, 255)
-	surface.SetDrawColor(0, 0, 0, self.ShadeAlpha)
-	surface.DrawRect(0, 0, w, h)
-*/
+
+	if UseNewSkillTrees then
+		self.ShadeAlpha = math.Clamp(self.ShadeAlpha + self.ShadeVelocity, 0, 255)
+		surface.SetDrawColor(0, 0, 0, self.ShadeAlpha)
+		surface.DrawRect(0, 0, w, h)
+	end
+
 	local fgalpha = 255 - lifetime * 100
 	if fgalpha > 0 then
 		surface.SetDrawColor(0, 0, 0, fgalpha)
@@ -1723,8 +1812,7 @@ function PANEL:OnMousePressed(mc)
 				surface.PlaySound("buttons/button8.wav")
 
 				return
-/*	-- New
-			elseif hoveredskill <= -1 then
+			elseif UseNewSkillTrees and hoveredskill <= -1 then
 				local destree = -hoveredskill - 1
 				self.DesiredZoom = 2500
 				self.ShadeVelocity = 255 * FrameTime() * 15
@@ -1744,7 +1832,6 @@ function PANEL:OnMousePressed(mc)
 				MySelf:EmitSound("buttons/button24.wav", 60, 200)
 					
 				return
-*/
 
 			elseif MySelf:IsSkillDesired(hoveredskill) then
 				if GAMEMODE.Skills[hoveredskill].AlwaysActive then
@@ -1783,8 +1870,7 @@ function PANEL:OnMousePressed(mc)
 		else
 			contextmenu:SetVisible(false)
 		end
-/*	-- New
-	elseif mc == MOUSE_RIGHT and not hoveredskill then
+	elseif UseNewSkillTrees and mc == MOUSE_RIGHT and not hoveredskill then
 		if self.DesiredTree == 0 then
 			self:Remove()
 		else
@@ -1808,7 +1894,6 @@ function PANEL:OnMousePressed(mc)
 			self.ContextMenu:SetVisible(false)
 			MySelf:EmitSound("buttons/button24.wav", 60, 180)
 		end
-*/
 	end
 end
 
@@ -1817,22 +1902,24 @@ function PANEL:OnMouseWheeled(delta)
 end
 
 function PANEL:OnRemove()
-	-- Old
-	for _, node in pairs(self.SkillNodes) do
-		if IsValid(node) then
-			node:Remove()
+	if UseNewSkillTrees then
+		-- New
+		for _, nodetrees in pairs(self.SkillNodes) do
+			for _, node in pairs(nodetrees) do
+				if IsValid(node) then
+					node:Remove()
+				end
+			end
 		end
-	end
-
-/* -- New
-	for _, nodetrees in pairs(self.SkillNodes) do
-		for _, node in pairs(nodetrees) do
+	else
+	-- Old
+		for _, node in pairs(self.SkillNodes) do
 			if IsValid(node) then
 				node:Remove()
 			end
 		end
 	end
-*/
+
 	local snd = self.AmbientSound
 	snd:FadeOut(1.5)
 	timer.Simple(1.5, function() if snd then snd:Stop() end end)

@@ -209,7 +209,7 @@ GM.FogBlue = 30
 function GM:ClickedPlayerButton(pl, button)
 	surface.PlaySound("buttons/button15.wav")
 
-	local menu = DermaMenu(true, self)
+	local menu = DermaMenu(true)
 	menu:AddOption(Format("Name: %s", pl:GetName()), function() SetClipboardText(pl:GetName()) chat.AddText("Player Name copied to clipboard!") end)
 	if not pl:IsBot() then
 		menu:AddOption(Format("Steam ID: %s", pl:SteamID()), function() SetClipboardText(pl:SteamID()) chat.AddText("Player Steam ID copied to clipboard!") end)
@@ -272,18 +272,6 @@ function GM:TryHumanPickup(pl, entity)
 end
 
 function GM:AddExtraOptions(list, window)
-end
-
-function GM:SpawnMenuEnabled()
-	return false
-end
-
-function GM:SpawnMenuOpen()
-	return false
-end
-
-function GM:ContextMenuOpen()
-	return false
 end
 
 function GM:_HUDWeaponPickedUp(wep)
@@ -1723,7 +1711,7 @@ function GM:LastHumanMessage()
 end
 
 function GM:PlayerShouldTakeDamage(pl, attacker)
-	return pl == attacker or not attacker:IsPlayer() or P_Team(pl) ~= P_Team(attacker) or pl.AllowTeamDamage or attacker.AllowTeamDamage
+	return pl == attacker or not attacker:IsPlayer() or P_Team(pl) ~= P_Team(attacker) or pl.AllowTeamDamage or attacker.AllowTeamDamage or self:GetFriendlyFireEnabled()
 end
 
 function GM:SetWave(wave)
@@ -1752,9 +1740,9 @@ function GM:_HUDPaintBackground()
 end
 
 function GM:PostDrawHUD()
-	cam.Start2D()
-	draw.DrawText(Format("v. %s", self.Version), "TargetIDSmall", 5, 5, Color(230,230,230,35))
-	cam.End2D()
+	-- cam.Start2D()
+	-- draw.DrawText(Format("v. %s", self.Version), "TargetIDSmall", 5, 5, Color(230,230,230,35))
+	-- cam.End2D()
 end
 
 local function GiveWeapon()
@@ -2332,7 +2320,7 @@ function GM:EndRound(winner, nextmap)
 	end
 
 	if snd then
-		timer.Simple(self.ZombieEscape and 0.05 or 0.45, function()
+		timer.Simple(self.ZombieEscape and 0.05 or 0.25, function()
 			if not self.PlayWinMusic and winner == TEAM_HUMAN and snd == GetGlobalString("winmusic", dvar) or
 			not self.PlayLoseMusic and winner == TEAM_UNDEAD and snd == GetGlobalString("losemusic", dvar) or
 			not self.PlayDrawMusic and (winner ~= TEAM_UNDEAD and winner ~= TEAM_HUMAN) then return end
@@ -2341,7 +2329,7 @@ function GM:EndRound(winner, nextmap)
 		end)
 	end
 
-	timer.Simple(self.ZombieEscape and 0 or 1, function()
+	timer.Simple(self.ZombieEscape and 0 or 0.5, function()
 		if not (pEndBoard and pEndBoard:IsValid()) then
 			MakepEndBoard(winner)
 		end

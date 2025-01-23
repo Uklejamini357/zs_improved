@@ -118,7 +118,6 @@ function ENT:Use(activator, caller)
 		activator:GiveAmmo(amount, "scrap")
 
 		self.NextUse[uid] = CurTime() + 0.05
-		return
 	end
 
 	if (heldtbl.AllowQualityWeapons or heldtbl.PermitDismantle) then

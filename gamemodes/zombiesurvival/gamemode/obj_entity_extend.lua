@@ -92,7 +92,7 @@ function meta:FireBulletsLua(src, dir, spread, num, damage, attacker, force_mul,
 		bullet_trace.filter = filter
 	else
 		bullet_trace.filter = BaseBulletFilter
-		if not hit_own_team and attacker_player then
+		if not hit_own_team and attacker_player and not GAMEMODE:GetFriendlyFireEnabled() then
 			temp_ignore_team = P_Team(attacker)
 		else
 			temp_ignore_team = nil
@@ -555,7 +555,11 @@ function meta:PoisonDamage(damage, attacker, inflictor, hitpos, noreduction, ins
 	dmginfo:SetDamage(damage)
 	dmginfo:SetAttacker(attacker)
 	dmginfo:SetInflictor(inflictor)
+	local oldvel = self:GetVelocity() -- Poison damage can knockback the player and it shouldn't do that
 	self:TakeDamageInfo(dmginfo)
+
+	local newvel = self:GetVelocity()
+	self:SetVelocity((oldvel - newvel)*0.85) -- Knockback reduced by 85%
 end
 
 -- Fix sequence duration being able to be nil

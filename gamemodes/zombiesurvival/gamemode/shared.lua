@@ -1,13 +1,97 @@
-GM.Name		=	"Zombie Survival Redux"
+GM.Name		=	"ZS Improved" -- wtf was it Redux or Improved?
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.3.2 (Alpha)"
+GM.Version	=	"1.4"
+
+local zs_enablesandbox = CreateConVar("zs_enablesandbox", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable Sandbox Mode. You know what it does, adds sandbox spawnmenu for admins only etc. Restart might be required when changing this value!")
+
+if zs_enablesandbox:GetBool() then
+	DeriveGamemode("sandbox")
+
+	if CLIENT then
+		function GM:SpawnMenuEnabled()
+			return true
+		end
+		
+		function GM:SpawnMenuOpen()
+			return true
+		end
+		hook.Add("SpawnMenuOpen", "ZS.SpawnMenuOpen", function()
+			if not zs_enablesandbox:GetBool() or not (MySelf:IsAdmin() or MySelf:IsSuperAdmin()) then return false end
+		end)
+		
+		
+		function GM:ContextMenuOpen()
+			return true
+		end
+		hook.Add("ContextMenuOpen", "ZS.ContextMenuOpen", function()
+			if not zs_enablesandbox:GetBool() or not (MySelf:IsAdmin() or MySelf:IsSuperAdmin()) then return false end
+		end)
+	elseif SERVER then
+		hook.Add("PlayerSpawnedProp", "ZS.PlayerSpawnedProp", function(pl, mdl, ent)
+			GAMEMODE:SetupProp(ent)
+		end)
+	end		
+
+	hook.Add( "CanProperty", "ZS.CanProperty", function(ply, property, ent)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "CanArmDupe", "ZS.CanArmDupe", function(ply)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "CanDrive", "ZS.CanDrive", function(ply, ent)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "CanTool", "ZS.CanTool", function(ply, tr, toolname, tool, button)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerSpawnEffect", "ZS.PlayerSpawnEffect", function(ply, model)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerSpawnNPC", "ZS.PlayerSpawnNPC", function(ply, npc_type, weapon)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerSpawnObject", "ZS.PlayerSpawnObject", function(ply, model, skin)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerSpawnProp", "ZS.PlayerSpawnProp", function(ply, model)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerSpawnRagdoll", "ZS.PlayerSpawnRagdoll", function(ply, model)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerSpawnSENT", "ZS.PlayerSpawnSENT", function(ply, class)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerSpawnSWEP", "ZS.PlayerSpawnSWEP", function(ply, weapon, swep)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerSpawnVehicle", "ZS.PlayerSpawnVehicle", function(ply, model, name, table)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+
+	hook.Add( "PlayerGiveSWEP", "ZS.PlayerGiveSWEP", function(ply, weapon, spawninfo)
+		if not zs_enablesandbox:GetBool() or not (ply:IsAdmin() or ply:IsSuperAdmin()) then return false end
+	end)
+end
+
 
 -- No, adding a gun doesn't make your name worth being here.
 GM.Credits = {
 	{"William \"JetBoom\" Moodhe", "williammoodhe@gmail.com (www.noxiousnet.com)", "Original ZS Creator"},
---	{"Uklejamini", "Current version: "..tostring(GM.Version), "ZS Redux Creator"}, -- nah i don't wanna include myself i feel a bit insecure about it
+--	{"Uklejamini", "Current version: "..tostring(GM.Version), "ZS Improved Creator"}, -- nah i don't wanna include myself
 	{"11k", "tjd113@gmail.com", "Zombie view models"},
 	{"Eisiger", "k2deseve@gmail.com", "Zombie kill icons"},
 	{"Austin \"Little Nemo\" Killey", "austin_odyssey@yahoo.com", "Ambient music"},
@@ -814,7 +898,9 @@ end
 function GM:PlayerNoClip(pl, on)
 	if pl:IsAdmin() and (on or pl:Alive()) then
 		if SERVER then
-			PrintMessage(HUD_PRINTCONSOLE, translate.Format(on and "x_turned_on_noclip" or "x_turned_off_noclip", pl:Name()))
+			for _,ply in pairs(player.GetAll()) do
+				ply:PrintMessage(HUD_PRINTCONSOLE, translate.ClientFormat(ply, on and "x_turned_on_noclip" or "x_turned_off_noclip", pl:Name()))
+			end
 		end
 
 		if SERVER then
@@ -835,9 +921,9 @@ function GM:IsSpecialPerson(pl, image)
 		tooltip = "JetBoom\nCreator of Zombie Survival!"
 	elseif pl:SteamID() == "STEAM_0:1:157024537" then
 		img = "icon16/star.png"
-		tooltip = "Creator of ZS Redux"
+		tooltip = "Creator of ZS Improved"
 	elseif pl:SteamID() == "BOT" then
-		img = "noxiousnet/arsenalcrate.png"
+		img = "icon16/bug.png"
 		tooltip = "I AM A BOT\nI WILL KILL YOU"
 	elseif pl:IsSuperAdmin() then
 		img = "VGUI/servers/icon_robotron"
@@ -957,4 +1043,12 @@ end
 function GM:CanSelfRedeem(pl)
 	if not self.CanUseSelfRedeem or not pl:IsValid() or self:GetRedeemBrains() <= 0 or self:GetWave() > self.MaxSelfRedeemWave or self:GetWave() >= self:GetNumberOfWaves() or self.NoRedeeming or pl.NoRedeeming or LASTHUMAN or self.RoundEnded or self.ZombieEscape then return false end
 	return true
+end
+
+function GM:SetFriendlyFireEnabled(var)
+	SetGlobalBool("FORCED_FRIENDLY_FIRE", var)
+end
+
+function GM:GetFriendlyFireEnabled()
+	return GetGlobalBool("FORCED_FRIENDLY_FIRE", false)
 end

@@ -78,8 +78,9 @@ function meta:GetDefaultBarricadeHealth()
 
 	local mdl = string.lower(self:GetModel())
 	local scalar = GAMEMODE.BarricadePropHealthMultipliers[mdl] or 1
+	local prophealthmodifier = GAMEMODE.GlobalHumanMultipliers.PropHealthMulti or 1
 
-	return math.Clamp((mass * GAMEMODE.BarricadeHealthMassFactor + self:GetVolume() * GAMEMODE.BarricadeHealthVolumeFactor) * scalar, GAMEMODE.BarricadeHealthMin, GAMEMODE.BarricadeHealthMax)
+	return math.Clamp((mass * GAMEMODE.BarricadeHealthMassFactor + self:GetVolume() * GAMEMODE.BarricadeHealthVolumeFactor) * scalar, GAMEMODE.BarricadeHealthMin, GAMEMODE.BarricadeHealthMax) * prophealthmodifier
 end
 
 function meta:HitFence(data, phys)

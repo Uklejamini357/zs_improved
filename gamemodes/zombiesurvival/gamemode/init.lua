@@ -243,6 +243,10 @@ function GM:AddResources()
 		resource.AddFile("materials/zombiesurvival/killicons/"..filename)
 	end
 
+	for _, filename in pairs(file.Find("materials/zombiesurvival/icons/*.png", "GAME")) do
+		resource.AddFile("materials/zombiesurvival/icons/"..filename)
+	end
+
 	resource.AddFile("materials/zombiesurvival/filmgrain/filmgrain.vmt")
 	resource.AddFile("materials/zombiesurvival/filmgrain/filmgrain.vtf")
 
@@ -491,6 +495,7 @@ function GM:Initialize()
 	game.ConsoleCommand("sv_gravity 600\n")
 
 	self.EndlessModeVoters = {}
+	self.GlobalHumanMultipliers = table.Copy(self.GlobalHumanMultiplierTypes)
 
 	print(self.Name.." version "..self.Version)
 end
@@ -774,54 +779,58 @@ function GM:InitPostEntity()
 	end
 end
 
-function GM:SetupProps()
-	for _, ent in pairs(ents.FindByClass("prop_physics*")) do
-		local mdl = ent:GetModel()
-		if mdl then
-			mdl = string.lower(mdl)
-			if mdl == "models/props_c17/furniturestove001a.mdl" then
-				local phys = ent:GetPhysicsObject()
-				if phys:IsValid() then
-					phys:SetMass(500)
-				end
-			end
-			if table.HasValue(self.BannedProps, mdl) then
-				ent:Remove()
-			elseif weaponmodelstoweapon[mdl] then
-				local wep = ents.Create("prop_weapon")
-				if wep:IsValid() then
-					wep:SetPos(ent:GetPos())
-					wep:SetAngles(ent:GetAngles())
-					wep:SetWeaponType(weaponmodelstoweapon[mdl])
-					wep:SetShouldRemoveAmmo(false)
-					wep:Spawn()
-
-					ent:Remove()
-				end
-			elseif ent:GetName() == "" and self.WorldConversions[mdl] then
-				local wep = ents.Create("prop_invitem")
-				if wep:IsValid() then
-					wep:SetPos(ent:GetPos())
-					wep:SetAngles(ent:GetAngles())
-					wep:SetInventoryItemType(self.WorldConversions[mdl].Result)
-					wep:Spawn()
-
-					ent:Remove()
-				end
-			elseif ent:GetMaxHealth() == 1 and ent:Health() == 0 and ent:GetKeyValues().damagefilter ~= "invul" and ent:GetName() == "" then
-				local health = math.min(2500, math.ceil((ent:OBBMins():Length() + ent:OBBMaxs():Length()) * 10))
-				local hmul = self.PropHealthMultipliers[mdl]
-				if hmul then
-					health = health * hmul
-				end
-
-				ent.PropHealth = health
-				ent.TotalHealth = health
-			else
-				ent:SetHealth(math.ceil(ent:Health() * 3))
-				ent:SetMaxHealth(ent:Health())
+function GM:SetupProp(ent)
+	local mdl = ent:GetModel()
+	if mdl then
+		mdl = string.lower(mdl)
+		if mdl == "models/props_c17/furniturestove001a.mdl" then
+			local phys = ent:GetPhysicsObject()
+			if phys:IsValid() then
+				phys:SetMass(500)
 			end
 		end
+		if table.HasValue(self.BannedProps, mdl) then
+			ent:Remove()
+		elseif weaponmodelstoweapon[mdl] then
+			local wep = ents.Create("prop_weapon")
+			if wep:IsValid() then
+				wep:SetPos(ent:GetPos())
+				wep:SetAngles(ent:GetAngles())
+				wep:SetWeaponType(weaponmodelstoweapon[mdl])
+				wep:SetShouldRemoveAmmo(false)
+				wep:Spawn()
+
+				ent:Remove()
+			end
+		elseif ent:GetName() == "" and self.WorldConversions[mdl] then
+			local wep = ents.Create("prop_invitem")
+			if wep:IsValid() then
+				wep:SetPos(ent:GetPos())
+				wep:SetAngles(ent:GetAngles())
+				wep:SetInventoryItemType(self.WorldConversions[mdl].Result)
+				wep:Spawn()
+
+				ent:Remove()
+			end
+		elseif ent:GetMaxHealth() == 1 and ent:Health() == 0 and ent:GetKeyValues().damagefilter ~= "invul" and ent:GetName() == "" then
+			local health = math.min(2500, math.ceil((ent:OBBMins():Length() + ent:OBBMaxs():Length()) * 10))
+			local hmul = self.PropHealthMultipliers[mdl]
+			if hmul then
+				health = health * hmul
+			end
+
+			ent.PropHealth = health
+			ent.TotalHealth = health
+		else
+			ent:SetHealth(math.ceil(ent:Health() * 3))
+			ent:SetMaxHealth(ent:Health())
+		end
+	end
+end
+
+function GM:SetupProps()
+	for _, ent in pairs(ents.FindByClass("prop_physics*")) do
+		self:SetupProp(ent)
 	end
 end
 
@@ -1595,6 +1604,7 @@ function GM:Think()
 				if pl:IsBot() then
 					for _,mut in pairs(self.Mutations) do
 						if mut.Bots and gamemode.Call("BuyZombieMutation", pl, mut.Signature) then
+							print(pl:Nick().." bought ".. mut.Signature.."!")
 							break
 						end
 					end
@@ -1801,7 +1811,7 @@ function GM:CalculateInfliction(victim, attacker)
 
 	if not self:IsClassicMode() and not self.ZombieEscape and not self:IsBabyMode() and not self.PantsMode then
 		for k, v in ipairs(self.ZombieClasses) do
-			if v.Infliction and infliction >= v.Infliction and not self:IsClassUnlocked(v.Name) then
+			if (self.EndlessMode or not v.EndlessOnly) and v.Infliction and infliction >= v.Infliction and not self:IsClassUnlocked(v.Name) then
 				v.Unlocked = true
 
 				for _, ent in pairs(ents.FindByClass("logic_classunlock")) do
@@ -2041,6 +2051,10 @@ function GM:LoadNextMap()
 end
 
 function GM:PreRestartRound()
+	if timer.Exists("zs_endround_pre_restart_round_timer") then
+		timer.Remove("zs_endround_pre_restart_round_timer")
+	end
+
 	for _, pl in pairs(player.GetAll()) do
 		pl:StripWeapons()
 		pl:Spectate(OBS_MODE_ROAMING)
@@ -2079,6 +2093,7 @@ function GM:RestartLua()
 	self.LastBossZombieSpawned = nil
 	self.LastSuperBossZombieSpawned = nil
 	self.UseSigils = nil
+	self.GlobalHumanMultipliers = table.Copy(self.GlobalHumanMultiplierTypes)
 	--self:SetAllSigilsDestroyed(false)
 
 	-- logic_pickups
@@ -2135,6 +2150,13 @@ local function CheckBroken()
 end
 
 function GM:DoRestartGame()
+	if timer.Exists("zs_endround_restart_round_timer") then
+		timer.Remove("zs_endround_restart_round_timer")
+	end
+	if timer.Exists("zs_endround_load_next_map_timer") then
+		timer.Remove("zs_endround_load_next_map_timer")
+	end
+
 	self.RoundEnded = nil
 
 	for _, ent in pairs(ents.FindByClass("prop_weapon")) do
@@ -2226,9 +2248,11 @@ function GM:EndlessModeCheck()
 	if self.AllowEndlessModeVoting and not self.ObjectiveMap and not self.ZombieEscape then
 		if self.NextRoundIsEndless and not self.EndlessMode then
 			GetConVar("zs_endlessmode"):SetBool(true)
+			self.EndlessMode = true
 			self.NextRoundIsEndless = false
 		elseif not self.NextRoundIsEndless and self.EndlessMode then
 			GetConVar("zs_endlessmode"):SetBool(false)
+			self.EndlessMode = false
 		end
 	end
 end
@@ -2382,10 +2406,12 @@ function GM:EndRound(winner)
 	util.RemoveAll("prop_weapon")
 	util.RemoveAll("prop_invitem")
 
-	timer.Simple(self.ZombieEscape and 0 or 1, function() gamemode.Call("DoHonorableMentions") end)
+	timer.Simple(self.ZombieEscape and 0 or 0.5, function() gamemode.Call("DoHonorableMentions") end)
 
 	if winner == TEAM_HUMAN then
 		self.LastHumanPosition = nil
+
+		self:SetDifficulty(self:GetDifficulty() + 0.05)
 
 		for _, pl in pairs(player.GetAll()) do
 			if pl:Team() == TEAM_HUMAN then
@@ -2400,6 +2426,8 @@ function GM:EndRound(winner)
 		hook.Add("PlayerShouldTakeDamage", "EndRoundShouldTakeDamage", EndRoundPlayerShouldTakeDamage)
 	elseif winner == TEAM_UNDEAD then
 		hook.Add("PlayerShouldTakeDamage", "EndRoundShouldTakeDamage", EndRoundPlayerCanSuicide)
+
+		self:SetDifficulty(self:GetDifficulty() * 0.2)
 
 		for _, pl in pairs(team.GetPlayers(TEAM_UNDEAD)) do
 			if not self.ZombieEscape and self.EndlessMode then
@@ -3185,6 +3213,10 @@ function GM:EntityTakeDamage(ent, dmginfo)
 			dmgmul = dmgmul + (self:GetWave() * 0.01)
 		end
 
+		if self.GlobalHumanMultipliers.Damage then
+			dmgmul = dmgmul * self.GlobalHumanMultipliers.Damage
+		end
+
 		dmginfo:ScaleDamage(dmgmul)
 	end
 
@@ -3884,7 +3916,7 @@ function GM:PlayerShouldTakeDamage(pl, attacker)
 		attacker = attacker.PBAttacker
 	end
 
-	if attacker:IsPlayer() and attacker ~= pl and not attacker.AllowTeamDamage and not pl.AllowTeamDamage and attacker:Team() == pl:Team() then return false end
+	if attacker:IsPlayer() and attacker ~= pl and not attacker.AllowTeamDamage and not pl.AllowTeamDamage and not self:GetFriendlyFireEnabled() and attacker:Team() == pl:Team() then return false end
 
 	return true
 end
@@ -4219,20 +4251,22 @@ function GM:ZombieKilledHuman(pl, attacker, inflictor, dmginfo, headshot, suicid
 	end
 	pl.ZombieSpawnDeathDistance = math.ceil(math.sqrt(dist))
 
-	attacker:AddBrains(1)
-	attacker:AddLifeBrainsEaten(1)
-	attacker:GainZSXP(xp)
-	attacker:AddZombieTokens(10 + (pl:GetMaxHealth() / 16))
-	attacker:GiveAchievementProgress("zmainer", 1)
-	attacker:GiveAchievementProgress("truezmainer", 1)
-	attacker:CenterNotify(COLOR_PINK, Format("Gained %s zombie tokens from killing %s", math.Round(tokensgain, 2), pl:GetName()))
+	if attacker:Team() == TEAM_UNDEAD then
+		attacker:AddBrains(1)
+		attacker:AddLifeBrainsEaten(1)
+		attacker:GainZSXP(xp)
+		attacker:AddZombieTokens(10 + (pl:GetMaxHealth() / 16))
+		attacker:GiveAchievementProgress("zmainer", 1)
+		attacker:GiveAchievementProgress("truezmainer", 1)
+		attacker:CenterNotify(COLOR_PINK, Format("Gained %s zombie tokens from killing %s", math.Round(tokensgain, 2), pl:GetName()))
+	end
 
 	local classtab = attacker:GetZombieClassTable()
 	if classtab and classtab.Name then
 		GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_ZOMBIECLASS, classtab.Name, "BrainsEaten", 1)
 	end
 
-	if not pl.Gibbed and not suicide then
+	if not pl.Gibbed and not suicide and attacker:Team() == TEAM_UNDEAD then
 		local status = pl:GiveStatus("revive_slump_human")
 		if status then
 			status:SetReviveTime(CurTime() + 4)
@@ -4637,7 +4671,9 @@ function GM:PlayerSpawn(pl)
 		local lowundead = team.NumPlayers(TEAM_UNDEAD) * 2 < team.NumPlayers(TEAM_HUMAN)
 		local healthmulti = (self.ObjectiveMap or self.ZombieEscape) and (zeobjlowundead and 1.25 or 1) or lowundead and 1.2 or 1
 
-		dynhp = classtab.Health + (math.max(0, self:GetWave() - 1) * tonumber(classtab.DynamicHealth or 0)) * self.ZombieHealthMultiplier
+		dynhp = classtab.Health + ((self.ObjectiveMap and 0 or self.EndlessMode and math.max(0, self:GetWave() - 1) or math.Clamp(self:GetWave() - 1, 0, self:GetNumberOfWaves())) *
+		tonumber(classtab.DynamicHealth or 0)) * self.ZombieHealthMultiplier
+
 		if classtab.SuperBoss then
 			dynhp = dynhp + (#player.GetAll() * 35)
 		elseif classtab.Boss then
@@ -4932,7 +4968,7 @@ function GM:WaveStateChanged(newstate)
 			gamemode.Call("SetWaveEnd", -1)
 			SetGlobalInt("numwaves", -1)
 		else
-			gamemode.Call("SetWaveEnd", self:GetWaveStart() + math.min(self.ClassicMode and self.WaveLengthMaxClassic or self.WaveLengthMax, self:GetWaveOneLength() + (self:GetWave() - 1) * (self.ClassicMode and self.TimeAddedPerWaveClassic or self.TimeAddedPerWave)))
+			gamemode.Call("SetWaveEnd", self:GetWaveStart() + math.min(self:GetWaveOneLength() + (self:GetWave() - 1) * (self.ClassicMode and self.TimeAddedPerWaveClassic or self.TimeAddedPerWave)))
 		end
 
 		net.Start("zs_wavestart")
@@ -5194,7 +5230,7 @@ net.Receive("zs_changeclass", function(len, sender)
 	local suicide = net.ReadBool()
 	local classtab = GAMEMODE.ZombieClasses[classname]
 --	local nestspawn
-	if not classtab or classtab.Disabled or classtab.Hidden and not (classtab.CanUse and classtab:CanUse(sender)) or classtab.MiniBoss or classtab.SemiBoss or classtab.Boss or classtab.SuperBoss then return end
+	if not classtab or classtab.Disabled or not GAMEMODE.EndlessMode and classtab.EndlessOnly or classtab.Hidden and not (classtab.CanUse and classtab:CanUse(sender)) or classtab.MiniBoss or classtab.SemiBoss or classtab.Boss or classtab.SuperBoss then return end
 
 	if not gamemode.Call("IsClassUnlocked", classname) then
 		sender:CenterNotify(COLOR_RED, translate.ClientFormat(sender, "class_not_unlocked_will_be_unlocked_x", classtab.Wave))

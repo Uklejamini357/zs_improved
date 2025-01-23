@@ -6,6 +6,7 @@ CLASS.Help = "controls_lacerator_charging_deadly"
 CLASS.Model = Model("models/player/zombie_lacerator2.mdl")
 
 CLASS.Wave = 8 / GM.NumberOfWaves
+CLASS.EndlessOnly = true
 
 CLASS.Health = 390
 CLASS.DynamicHealth = 6

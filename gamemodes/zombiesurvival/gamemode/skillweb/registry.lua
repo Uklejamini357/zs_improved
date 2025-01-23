@@ -84,6 +84,7 @@ TREE_MELEETREE = 5
 TREE_GUNTREE = 6
 TREE_TORMENTTREE = 7
 TREE_REMORTTREE = 8
+TREE_ENDLESSTREE = 9
 
 -- Dummy skill used for "connecting" to their trees.
 SKILL_NONE = 0
@@ -322,6 +323,37 @@ SKILL_KNOWLEDGE1 = 216
 SKILL_KNOWLEDGE2 = 217
 SKILL_KNOWLEDGE3 = 218
 SKILL_KNOWLEDGE4 = 219
+SKILL_U_BULLETSTORMMG = 220
+SKILL_ENDLESS_WORTH1 = 221
+SKILL_ENDLESS_WORTH2 = 222
+SKILL_ENDLESS_WORTH3 = 223
+SKILL_ENDLESS_WORTH4 = 224
+SKILL_ENDLESS_WORTH5 = 225
+SKILL_ENDLESS_WORTH6 = 226
+SKILL_ENDLESS_WORTH7 = 227
+SKILL_ENDLESS_WORTH8 = 228
+SKILL_ENDLESS_WORTH9 = 229
+SKILL_ENDLESS_WORTH10 = 230
+SKILL_ENDLESS_SPEED1 = 231
+SKILL_ENDLESS_SPEED2 = 232
+SKILL_ENDLESS_SPEED3 = 233
+SKILL_ENDLESS_SPEED4 = 234
+SKILL_ENDLESS_SPEED5 = 235
+SKILL_ENDLESS_SPEED6 = 236
+SKILL_ENDLESS_SPEED7 = 237
+SKILL_ENDLESS_SPEED8 = 238
+SKILL_ENDLESS_SPEED9 = 239
+SKILL_ENDLESS_SPEED10 = 240
+SKILL_ENDLESS_HEALTH1 = 241
+SKILL_ENDLESS_HEALTH2 = 242
+SKILL_ENDLESS_HEALTH3 = 243
+SKILL_ENDLESS_HEALTH4 = 244
+SKILL_ENDLESS_HEALTH5 = 245
+SKILL_ENDLESS_HEALTH6 = 246
+SKILL_ENDLESS_HEALTH7 = 247
+SKILL_ENDLESS_HEALTH8 = 248
+SKILL_ENDLESS_HEALTH9 = 249
+SKILL_ENDLESS_HEALTH10 = 250
 
 SKILLMOD_HEALTH = 1
 SKILLMOD_BLOODARMOR = 2
@@ -502,7 +534,7 @@ s = GM:AddSkill(SKILL_GLUTTON, "Glutton", GOOD.."Gain up to 30 blood armor when 
 3, -2, {SKILL_GOURMET, SKILL_BLOODARMOR}, TREE_HEALTHTREE)
 GM:AddSkillModifier(SKILL_GLUTTON, SKILLMOD_HEALTH, -5)
 
-s = GM:AddSkill(SKILL_PREPAREDNESS, "Preparedness", GOOD.."Your starting item can be a random food item\n"..BAD.."Has 50% chance to not work when \"Preparedness\" skill is active",
+s = GM:AddSkill(SKILL_PREPAREDNESS, "Preparedness", GOOD.."Your starting item can be a random food item\n"..BAD.."May override other starting item skills",
 4, -6, {SKILL_NONE}, TREE_HEALTHTREE)
 
 s = GM:AddSkill(SKILL_GOURMET, "Gourmet", GOOD.."+100% recovery from food\n"..BAD.."+200% time to eat food",
@@ -947,11 +979,11 @@ s = GM:AddSkill(SKILL_TECHNICIAN, "Field Technician", GOOD.."+3% zapper and repa
 GM:AddSkillModifier(SKILL_TECHNICIAN, SKILLMOD_FIELD_RANGE_MUL, 0.03)
 GM:AddSkillModifier(SKILL_TECHNICIAN, SKILLMOD_FIELD_DELAY_MUL, -0.03)
 
-s = GM:AddSkill(SKILL_PULSEEXPERT, "Pulse expert", GOOD.."+10% pulse slowdown\n"..GOOD.."+5% reload speed for Pulse weapons\n"..BAD.."+25% zapper and repair field delay",
+s = GM:AddSkill(SKILL_PULSEEXPERT, "Pulse expert", GOOD.."+15% pulse slowdown\n"..GOOD.."+8% reload speed for Pulse weapons\n"..BAD.."+20% zapper and repair field delay",
 2, 4, {}, TREE_BUILDINGTREE)
-GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_PULSE_WEAPON_SLOW_MUL, 0.1)
-GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_RELOADSPEED_PULSE_MUL, 0.05)
-GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_FIELD_DELAY_MUL, 0.25)
+GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_PULSE_WEAPON_SLOW_MUL, 0.15)
+GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_RELOADSPEED_PULSE_MUL, 0.08)
+GM:AddSkillModifier(SKILL_PULSEEXPERT, SKILLMOD_FIELD_DELAY_MUL, 0.2)
 
 s = GM:AddSkill(SKILL_U_ROLLERMINE, "Unlock: Rollermine", GOOD.."Unlocks purchasing Rollermines\nRolls along the ground, shocking zombies and dealing damage",
 3, -5, {}, TREE_BUILDINGTREE)
@@ -1029,9 +1061,9 @@ s = GM:AddSkill(SKILL_INSTRUMENTS, "Instruments", GOOD.."+5% turret range",
 -10, -3, {}, TREE_BUILDINGTREE)
 GM:AddSkillModifier(SKILL_INSTRUMENTS, SKILLMOD_TURRET_RANGE_MUL, 0.05)
 
-s = GM:AddSkill(SKILL_STOWAGE, "Stowage", GOOD.."Resupply usages build up when you're not there\n"..BAD.."+10% resupply delay\n"..BAD.."+0.02x resupply delay per resupply usage remaining",
+s = GM:AddSkill(SKILL_STOWAGE, "Stowage", GOOD.."Resupply usages build up when you're not there\n"..BAD.."+6% resupply delay\n"..BAD.."+0.02x resupply delay per resupply usage remaining",
 4, -3, {}, TREE_BUILDINGTREE)
-GM:AddSkillModifier(SKILL_STOWAGE, SKILLMOD_RESUPPLY_DELAY_MUL, 0.1)
+GM:AddSkillModifier(SKILL_STOWAGE, SKILLMOD_RESUPPLY_DELAY_MUL, 0.06)
 GM:AddSkillFunction(SKILL_STOWAGE, function(pl, active)
 	pl.Stowage = active
 end)
@@ -1111,7 +1143,7 @@ GM:AddSkillModifier(SKILL_FOCUS3, SKILLMOD_AIM_SHAKE_MUL, -0.0125)
 GM:AddSkillModifier(SKILL_FOCUS3, SKILLMOD_RELOADSPEED_MUL, -0.05)
 
 s = GM:AddSkill(SKILL_QUICKRELOAD, "Quick Reload", GOOD.."+10% weapon reload speed\n"..BAD.."-25% weapon draw speed",
--5, 1, {SKILL_SLEIGHTOFHAND, SKILL_U_DOOMSTICK, SKILL_QUICKFIRE}, TREE_GUNTREE)
+-5, 1, {SKILL_SLEIGHTOFHAND, SKILL_QUICKFIRE}, TREE_GUNTREE)
 s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_QUICKRELOAD, SKILLMOD_RELOADSPEED_MUL, 0.10)
 GM:AddSkillModifier(SKILL_QUICKRELOAD, SKILLMOD_DEPLOYSPEED_MUL, -0.25)
@@ -1123,7 +1155,11 @@ GM:AddSkillModifier(SKILL_QUICKFIRE, SKILLMOD_RELOADSPEED_MUL, -0.25)
 GM:AddSkillModifier(SKILL_QUICKFIRE, SKILLMOD_WEAPON_FIREDELAY_MUL, -0.05)
 
 s = GM:AddSkill(SKILL_U_DOOMSTICK, "Unlock: Doom Stick", GOOD.."Unlocks purchasing the Doom Stick\nTier 6 weapon\nMore powerful than Boom Stick",
--6.5, 1.5, {}, TREE_GUNTREE)
+-1.5, -6.5, {SKILL_SOFTDET}, TREE_GUNTREE)
+
+s = GM:AddSkill(SKILL_U_BULLETSTORMMG, "Unlock: Bullet Storm Machine Gun", GOOD.."Unlocks purchasing the Bullet Storm Machine Gun\nTier 6 weapon\nThis weapon is the most expensive but also very powerful\nStorm Firing Mode unavailable",
+1.5, -6.5, {SKILL_SOFTDET}, TREE_GUNTREE)
+s.RequiredSP = 2
 
 s = GM:AddSkill(SKILL_SLEIGHTOFHAND, "Sleight of Hand", GOOD.."+10% weapon reload speed\n"..BAD.."+20% weapon aim spread",
 -5, -1, {}, TREE_GUNTREE)
@@ -1183,7 +1219,7 @@ s = GM:AddSkill(SKILL_PITCHER, "Pitcher", GOOD.."+10% object throwing strength",
 6, 2, {}, TREE_GUNTREE)
 GM:AddSkillModifier(SKILL_PITCHER, SKILLMOD_PROP_THROW_STRENGTH_MUL, 0.1)
 
-s = GM:AddSkill(SKILL_EQUIPPED, "Alacrity", GOOD.."Your starting item can be a random special trinket\n"..BAD.."Has 50% chance to not work when \"Preparedness\" skill is active",
+s = GM:AddSkill(SKILL_EQUIPPED, "Alacrity", GOOD.."Your starting item can be a random special trinket\n"..BAD.."May override other starting item skills",
 -6, 2, {}, TREE_GUNTREE)
 
 s = GM:AddSkill(SKILL_WORTHINESS1, "Worthiness I", GOOD.."+5 starting worth\n"..BAD.."-3 starting points",
@@ -1570,32 +1606,35 @@ s = GM:AddSkill(SKILL_COMMISIONED_BUYER, "Commisioned Buyer", GOOD.."-3% arsenal
 -- SSpecial Skill Tree
 
 s = GM:AddSkill(SKILL_SIGILDEFENDER1, "Sigil Defender I", GOOD.."-1% melee damage taken\n"..BAD.."-2.5 movement speed\nMinimal melee damage taken is 7.5%",
--2, 2, {SKILL_NONE, SKILL_SIGILDEFENDER2}, TREE_REMORTTREE)
+-2, -2, {SKILL_NONE, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4}, TREE_REMORTTREE)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER1, SKILLMOD_SPEED, -2.5)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER1, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.01)
 
 s = GM:AddSkill(SKILL_SIGILDEFENDER2, "Sigil Defender II", GOOD.."-1.5% melee damage taken\n"..BAD.."-3.75 movement speed",
--4, 0, {SKILL_SIGILDEFENDER3}, TREE_REMORTTREE)
+-4, 0, {SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4}, TREE_REMORTTREE)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER2, SKILLMOD_SPEED, -3.75)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER2, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.015)
+s.UnlockedSkillsRequirements = SKILL_SIGILDEFENDER1
 
 s = GM:AddSkill(SKILL_SIGILDEFENDER3, "Sigil Defender III", GOOD.."-2% melee damage taken\n"..BAD.."-5 movement speed",
--2, -2, {SKILL_SIGILDEFENDER4}, TREE_REMORTTREE)
+0, 0, {SKILL_SIGILDEFENDER4}, TREE_REMORTTREE)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER3, SKILLMOD_SPEED, -5)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER3, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.02)
+s.UnlockedSkillsRequirements = {SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2}
 
 s = GM:AddSkill(SKILL_SIGILDEFENDER4, "Sigil Defender IV", GOOD.."-3% melee damage taken\n"..BAD.."-7.5 movement speed",
-0, 0, {SKILL_D_FRAGILITY, SKILL_JUGGERNAUT}, TREE_REMORTTREE)
+-2, 2, {SKILL_D_FRAGILITY, SKILL_JUGGERNAUT}, TREE_REMORTTREE)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER4, SKILLMOD_SPEED, -7.5)
 GM:AddSkillModifier(SKILL_SIGILDEFENDER4, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
+s.UnlockedSkillsRequirements = {SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3}
 
 s = GM:AddSkill(SKILL_JUGGERNAUT, "Juggernaut", GOOD.."-30% melee damage taken (multiplicative) when below 40% health\n"..BAD.."-15 movement speed\nUnlocks purchasing Juggernaut Armor trinket\nTrinket upgrades this skill\n-45% melee damage taken (multiplicative) when below 55% health",
-2, 2, {}, TREE_REMORTTREE)
+-4, 4, {}, TREE_REMORTTREE)
 GM:AddSkillModifier(SKILL_JUGGERNAUT, SKILLMOD_SPEED, -15)
 s.RequiredSP = 2
 
 s = GM:AddSkill(SKILL_D_FRAGILITY, "Debuff: Fragility", GOOD.."+15 starting worth\n"..GOOD.."+1% point gain multiplier\n"..BAD.."+4% melee damage taken for every wave",
-2, 0, {SKILL_ANCIENT_SKILL}, TREE_REMORTTREE)
+-2, 4, {SKILL_ANCIENT_SKILL}, TREE_REMORTTREE)
 GM:AddSkillModifier(SKILL_D_FRAGILITY, SKILLMOD_WORTH, 15)
 GM:AddSkillModifier(SKILL_D_FRAGILITY, SKILLMOD_POINT_MULTIPLIER, 0.01)
 GM:AddSkillFunction(SKILL_D_FRAGILITY, function(pl, active)
@@ -1603,11 +1642,11 @@ GM:AddSkillFunction(SKILL_D_FRAGILITY, function(pl, active)
 end)
 
 s = GM:AddSkill(SKILL_ANCIENT_SKILL, "Ancient Skill", "An ancient skill that was secretly hidden until now.\n"..PURPLE.."-10% damage taken from ancient nightmare",
-4, 0, {SKILL_REDEMPTION_UNDEAD, SKILL_POINT_OLD, SKILL_ENDLESS}, TREE_REMORTTREE)
+-2, 6, {SKILL_REDEMPTION_UNDEAD, SKILL_POINT_OLD, SKILL_ENDLESS}, TREE_REMORTTREE)
 s.ColorModifierOverride = {0.3, 1, 0.3}
 
 s = GM:AddSkill(SKILL_POINT_OLD, "Old Pointer", PURPLE.."Gives 2 points every minute\n"..BAD.."Taking damage resets the timer\n"..BAD.."Unable to gain points from wave end",
-6, 2, {}, TREE_REMORTTREE)
+-4, 8, {}, TREE_REMORTTREE)
 s.RequiredSP = 3
 s.RemortReq = 3
 s.ColorModifierOverride = {0.2, 0.35, 0.1}
@@ -1615,24 +1654,301 @@ s.ColorModifierOverrideCanUnlock = {0.2, 0.35, 0.1}
 s.ColorModifierOverrideUnlocked = {0.2, 0.35, 0.1}
 s.ColorModifierOverrideActive = {0.2, 0.35, 0.1}
 
-s = GM:AddSkill(SKILL_ENDLESS, "Endless", PURPLE.."-3% melee damage taken\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
-7, 0, {}, TREE_REMORTTREE)
-s.RequiredSP = 35
-s.RemortReq = 20
-s.Rainbow = true
-s.ColorModifierOverride = {0.05, 0.15, 0.07}
-s.ColorModifierOverrideCanUnlock = {0.05, 0.15, 0.07}
-s.ColorModifierOverrideUnlocked = {0.05, 0.15, 0.07}
-s.ColorModifierOverrideActive = {0.05, 0.15, 0.07}
-GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
-GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, 0.04)
-
 s = GM:AddSkill(SKILL_REDEMPTION_UNDEAD, "Redemption of the Undead", VERYGOOD.."Killing a zombie has a 1 of 10 chance to redeem them\nAbility no longer works if redeem was successful\nWorks only once per round and does not work for bot zombies and initial volunteers\n"..VERYBAD.."-17.5% damage dealt",
-6, -2, {}, TREE_REMORTTREE)
+0, 8, {}, TREE_REMORTTREE)
 s.RequiredSP = 10
 s.RemortReq = 8
+s.EndlessOnly = true
 s.ColorModifierOverride = {128, 0.5, 0.2}
 s.ColorModifierOverrideCanUnlock = {128, 0.5, 0.2}
 s.ColorModifierOverrideUnlocked = {128, 0.5, 0.2}
 s.ColorModifierOverrideActive = {128, 0.5, 0.2}
 GM:AddSkillModifier(SKILL_REDEMPTION_UNDEAD, SKILLMOD_DAMAGE_DEALT_MUL, -0.175)
+
+s = GM:AddSkill(SKILL_ENDLESS, "The Endless.", PURPLE.."Activates the Endless Tree\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
+0, 0, {SKILL_NONE, SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4, SKILL_ENDLESS_WORTH1, SKILL_ENDLESS_SPEED1, SKILL_ENDLESS_HEALTH1}, TREE_ENDLESSTREE)
+s.UnlockedSkillsRequirements = {SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4}
+s.RequiredSP = 10
+s.RemortReq = 10
+s.EndlessOnly = true
+s.Rainbow = true
+s.ColorModifierOverride = {0.05, 0.15, 0.07}
+s.ColorModifierOverrideCanUnlock = {0.05, 0.15, 0.07}
+s.ColorModifierOverrideUnlocked = {0.05, 0.15, 0.07}
+s.ColorModifierOverrideActive = {0.05, 0.15, 0.07}
+s.Hidden = function(pl)
+	return not (GAMEMODE:IsEndlessMode() and pl:GetZSRemortLevel() >= 10 and pl:IsSkillUnlocked(SKILL_SIGILDEFENDER1) and pl:IsSkillUnlocked(SKILL_SIGILDEFENDER2) and pl:IsSkillUnlocked(SKILL_SIGILDEFENDER3) and pl:IsSkillUnlocked(SKILL_SIGILDEFENDER4))
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
+GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, 0.04)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH1, "Worth I", "+5 starting worth",
+-1, 1, {SKILL_ENDLESS_WORTH2}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH1, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH2, "Worth II", "+5 starting worth",
+-2, 2, {SKILL_ENDLESS_WORTH3}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH2, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH3, "Worth III", "+5 starting worth",
+-3, 3, {SKILL_ENDLESS_WORTH4}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH3, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH4, "Worth IV", "+5 starting worth",
+-4, 4, {SKILL_ENDLESS_WORTH5}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH4, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH5, "Worth V", "+5 starting worth",
+-5, 5, {SKILL_ENDLESS_WORTH6}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH5, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH6, "Worth VI", "+5 starting worth",
+-6, 6, {SKILL_ENDLESS_WORTH7}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH6, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH7, "Worth VII", "+5 starting worth",
+-7, 7, {SKILL_ENDLESS_WORTH8}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH7, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH8, "Worth VIII", "+5 starting worth",
+-8, 8, {SKILL_ENDLESS_WORTH9}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH8, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH9, "Worth IX", "+5 starting worth",
+-9, 9, {SKILL_ENDLESS_WORTH10}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH9, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_WORTH10, "Worth X", "+5 starting worth",
+-10, 10, {}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH10, SKILLMOD_WORTH, 5)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED1, "Speed I", "+1.25 movement speed",
+0, 1.5, {SKILL_ENDLESS_SPEED2}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED1, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED2, "Speed II", "+1.25 movement speed",
+0, 3, {SKILL_ENDLESS_SPEED3}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED2, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED3, "Speed III", "+1.25 movement speed",
+0, 4.5, {SKILL_ENDLESS_SPEED4}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED3, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED4, "Speed IV", "+1.25 movement speed",
+0, 6, {SKILL_ENDLESS_SPEED5}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED4, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED5, "Speed V", "+1.25 movement speed",
+0, 7.5, {SKILL_ENDLESS_SPEED6}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED5, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED6, "Speed VI", "+1.25 movement speed",
+0, 9, {SKILL_ENDLESS_SPEED7}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED6, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED7, "Speed VII", "+1.25 movement speed",
+0, 10.5, {SKILL_ENDLESS_SPEED8}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED7, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED8, "Speed VIII", "+1.25 movement speed",
+0, 12, {SKILL_ENDLESS_SPEED9}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED8, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED9, "Speed IX", "+1.25 movement speed",
+0, 13.5, {SKILL_ENDLESS_SPEED10}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED9, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_SPEED10, "Speed X", "+1.25 movement speed",
+0, 15, {}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED10, SKILLMOD_SPEED, 1.25)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH1, "Health I", "+1.5 health",
+1, 1, {SKILL_ENDLESS_HEALTH2}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH1, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH2, "Health II", "+1.5 health",
+2, 2, {SKILL_ENDLESS_HEALTH3}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH2, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH3, "Health III", "+1.5 health",
+3, 3, {SKILL_ENDLESS_HEALTH4}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH3, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH4, "Health IV", "+1.5 health",
+4, 4, {SKILL_ENDLESS_HEALTH5}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH4, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH5, "Health V", "+1.5 health",
+5, 5, {SKILL_ENDLESS_HEALTH6}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH5, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH6, "Health VI", "+1.5 health",
+6, 6, {SKILL_ENDLESS_HEALTH7}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH6, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH7, "Health VII", "+1.5 health",
+7, 7, {SKILL_ENDLESS_HEALTH8}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH7, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH8, "Health VIII", "+1.5 health",
+8, 8, {SKILL_ENDLESS_HEALTH9}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH8, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH9, "Health IX", "+1.5 health",
+9, 9, {SKILL_ENDLESS_HEALTH10}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH9, SKILLMOD_HEALTH, 1.5)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH10, "Health X", "+1.5 health",
+10, 10, {}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.HideTruly = true
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH10, SKILLMOD_HEALTH, 1.5)

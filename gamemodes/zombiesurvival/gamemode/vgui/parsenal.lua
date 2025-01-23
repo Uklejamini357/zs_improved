@@ -249,6 +249,7 @@ local function ItemPanelDoClick(self)
 	local purb = viewer.m_PurchaseB
 	purb.ID = self.ID
 	purb.DoClick = function() RunConsoleCommand("zs_pointsshopbuy", self.ID, self.NoPoints and "scrap") end
+	purb.DoDoubleClick = function() RunConsoleCommand("zs_pointsshopbuy", self.ID, self.NoPoints and "scrap") end
 	purb:SetPos(canammo and viewer:GetWide() / 4 - viewer:GetWide() / 8 - 20 or viewer:GetWide() / 4, viewer:GetTall() - 64 * screenscale)
 	purb:SetVisible(true)
 
@@ -267,6 +268,7 @@ local function ItemPanelDoClick(self)
 	if canammo then
 		purb.AmmoType = GAMEMODE.AmmoToPurchaseNames[sweptable.Primary.Ammo]
 		purb.DoClick = function() RunConsoleCommand("zs_pointsshopbuy", "ps_"..purb.AmmoType) end
+		purb.DoDoubleClick = function() RunConsoleCommand("zs_pointsshopbuy", "ps_"..purb.AmmoType) end
 	end
 	purb:SetPos(viewer:GetWide() * (3/4) - purb:GetWide() / 2, viewer:GetTall() - 64 * screenscale)
 	purb:SetVisible(canammo)
@@ -354,6 +356,7 @@ function GM:AddShopItem(list, i, tab, issub, nopointshop)
 	itempan.Think = ItemPanelThink
 	itempan.Paint = ItemPanelPaint
 	itempan.DoClick = ItemPanelDoClick
+	itempan.DoDoubleClick = ItemPanelDoClick
 	itempan.DoRightClick = function()
 		local points = tab.Price * MySelf:GetArsenalPrices()
 		local menu = DermaMenu(itempan)

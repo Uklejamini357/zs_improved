@@ -6,8 +6,9 @@ CLASS.Description = "description_omega_zombie"
 CLASS.Help = "controls_omega_zombie"
 
 CLASS.Wave = 17 / GM.NumberOfWaves
+CLASS.EndlessOnly = true
 
-CLASS.Health = 425
+CLASS.Health = 625
 CLASS.DynamicHealth = 20
 CLASS.Speed = 195
 

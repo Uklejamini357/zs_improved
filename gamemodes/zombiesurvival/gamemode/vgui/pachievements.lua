@@ -112,9 +112,9 @@ function PANEL:Init()
 end
 
 function PANEL:Paint(w, h)
-    surface.SetDrawColor(self:GetTheme(1))
+    surface.SetDrawColor(Color(0,0,0,195))
     surface.DrawRect(0, 0, w, h)
-    surface.SetDrawColor(self:GetTint())
+    surface.SetDrawColor(Color(0,0,0,225))
     surface.DrawRect(0, 0, w, 24)
     self:ShadowedText(translate.Format("ach_progress", achievements_completed, table.Count(GAMEMODE.Achievements)), "ZSHUDFontSmall", 8, 12, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end

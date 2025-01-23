@@ -674,9 +674,9 @@ LANGUAGE.zclass_points   = "Points: %s (Damage per point: %s)"
 
 -- Even more help?
 
-LANGUAGE.help_cat_zsimproved					= "ZS Redux Version"
+LANGUAGE.help_cat_zsimproved					= "ZS Improved Version"
 LANGUAGE.help_cont_zsimproved						= [[<p>
-ZS Redux adds new features and is quite different than Original Zombie Survival. Go see how they work!
+ZS Improved adds new features and is quite different than Original Zombie Survival. Go see how they work!
 
 <ul>
 <li>Mutation shop. For some zombie tokens, you can buy mutations, granting you additional health, damage to barricades and more!</li>
@@ -704,13 +704,13 @@ LANGUAGE.class_eradicator_iii							        = "Eradicator III"
 LANGUAGE.description_eradicator_iii               = "An even stronger version of Eradicator, becoming even more destructive.\nHas way better durability and increased damage, especially to props."
 LANGUAGE.controls_eradicator_iii					        = "> PRIMARY: Claws\n> SECONDARY: Scream\n> ON FATAL HIT: Revive"
 LANGUAGE.class_infected_citizen		 				        = "Infected Citizen"
-LANGUAGE.description_infected_citizen		          = "These are the zombie variants from the city being mutated due to zombie outbreak.\nIt is also believed to be more resillient and are faster."
+LANGUAGE.description_infected_citizen		          = "These are the zombie variants from the city being mutated due to zombie outbreak.\nIt is also believed to be more resilient and are faster."
 LANGUAGE.controls_infected_citizen				        = "> PRIMARY: Claws\n> SECONDARY: Scream\n> SPRINT: Feign death"
 LANGUAGE.class_mutated_lacerator		 			        = "Mutated Lacerator"
 LANGUAGE.description_mutated_lacerator		        = "Lacerators are identical to Fast Zombies in almost every way.\nDespite their similarities, they are even deadlier and do not share their counterpart's fragility"
 LANGUAGE.controls_mutated_lacerator				        = "> PRIMARY: Claws\n> SECONDARY: Lunge / Climb wall\n> RELOAD: Scream"
 LANGUAGE.class_undead_fast_zombie                 = "Undead Fast Zombie"
-LANGUAGE.description_undead_fast_zombie           = "The Fast Zombie that has been mutated in the past, inflicting only destruction.\nThese will only arrive when humans are struggling to fight against zombies."
+LANGUAGE.description_undead_fast_zombie           = "The Fast Zombie that has been mutated in the past, inflicting only destruction.\nThese will only arrive when humans are struggling to fight against zombies.\nBecomes more resilient if it's wave 13!"
 LANGUAGE.controls_undead_fast_zombie			        = "> PRIMARY: Claws\n> SECONDARY: Lunge / Climb wall\n> RELOAD: Scream\n> ON FATAL HIT IN LEGS: Transform"
 LANGUAGE.class_mutatedhowler                      = "Mutated Howler"
 LANGUAGE.description_mutatedhowler				        = "Protip: Do not underestimate this class.\nIts' howl is extremely powerful."
@@ -778,5 +778,6 @@ LANGUAGE.s_remort_req                     = "Remort required: %d"
 LANGUAGE.s_remort_max                     = "Max remort: %d"
 LANGUAGE.s_need_sp                        = "Need %d SP"
 LANGUAGE.s_give_sp                        = "Gives %d SP"
+LANGUAGE.endless_mode_only                = "Endless Mode only"
 LANGUAGE.can_use_in_classic_mode          = "Can use in classic mode"
 LANGUAGE.can_use_in_escape_mode           = "Can use in Zombie Escape"
