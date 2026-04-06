@@ -17,15 +17,15 @@ function GM:GetLevelXPReqScalingMul(remort)
 	remort = remort or 0 -- just in case if it's nil
 
 	if remort >= 30 then
-		scale = scale + (math.Clamp(remort - 30, 0, 20) * 0.01)
+		scale = scale + (math.min(remort - 30, 20) * 0.01)
 	end
 
 	if remort >= 50 then
-		scale = scale + (math.Clamp(remort - 50, 0, 50) * 0.02)
+		scale = scale + (math.min(remort - 50, 50) * 0.02)
 	end
 
 	if remort >= 100 then
-		scale = scale + (math.Clamp(remort - 100, 0, 50) * 0.05)
+		scale = scale + (math.min(remort - 100, 50) * 0.05)
 	end
 
 	if remort >= 150 then
@@ -35,7 +35,9 @@ function GM:GetLevelXPReqScalingMul(remort)
 	end
 
 	if remort >= 500 then
-		scale = scale + 10
+		scale = scale + 30
+
+		scale = scale + math.max(1, math.Round(((1+remort-500)^1.1)*0.55, 2))
 	end
 
 	return 1 + scale

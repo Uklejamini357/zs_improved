@@ -439,3 +439,11 @@ GM:SetSkillModifierFunction(SKILLMOD_CLIP_SIZE_MUL, function(pl, amount)
 	pl.WeaponClipSizeMul = math.Clamp(amount + 1.0, 0.01, 10.0)
 end)
 
+GM:SetSkillModifierFunction(SKILLMOD_TURRET_DAMAGE_MUL, function(pl, amount)
+	pl.TurretDamageMul = math.Clamp(amount + 1.0, 0, 1000)
+end)
+
+GM:SetSkillModifierFunction(SKILLMOD_ZAPPER_DAMAGE_MUL, function(pl, amount)
+	pl.ZapperDamageMul = math.Clamp(amount + 1.0, 0, 1000)
+end)
+

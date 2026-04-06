@@ -80,7 +80,8 @@ function PANEL:Init()
             -- Texts
             self:ShadowedText(ach.Name, "ZSHUDFontSmallest", 8, 7, self:GetTheme(3), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             self:ShadowedText(ach.Desc, "ZSHUDFontTiny", 8, 28, self:GetTheme(3), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-            self:ShadowedText(translate.Format("ach_difficulty", translate.Get("ach_difficulty_"..(ach.Diff or 1)), ach.Diff or 1), "ZSHUDFontTiny", 8, 46, self:GetTheme(3), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            local diff = ach.Diff or 1
+            self:ShadowedText(translate.Format("ach_difficulty", diff >= 11 and translate.Format("ach_difficulty_11_plus", diff-10) or translate.Get("ach_difficulty_"..(diff)), diff), "ZSHUDFontTiny", 8, 46, self:GetTheme(3), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             self:ShadowedText(translate.Format("ach_xpreward", ach.Reward or 0), "ZSHUDFontTiny", 8, 64, self:GetTheme(3), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 
             -- Bars

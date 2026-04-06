@@ -1,6 +1,6 @@
 -- Weapons right now don't need this system. Only used for components.
 
-CUSTOM_AMMO = {}
+CUSTOM_AMMO = CUSTOM_AMMO or {}
 
 local CUSTOM_AMMO = CUSTOM_AMMO
 local CUSTOM_AMMO_NUM = 128

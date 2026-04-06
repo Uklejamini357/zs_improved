@@ -649,6 +649,8 @@ LANGUAGE.skillmod_n106 = "%s damage dealt"
 LANGUAGE.skillmod_n107 = "%s remantler prices"
 LANGUAGE.skillmod_n108 = "%s health to nailed props"
 LANGUAGE.skillmod_n109 = "%s clipsize of weapons with 8 or more clip size"
+LANGUAGE.skillmod_n110 = "%s turret damage multiplier"
+LANGUAGE.skillmod_n111 = "%s zapper damage multiplier"
 
 -- Class selection
 
@@ -748,7 +750,7 @@ LANGUAGE.controls_miniboss_chem_zombie            = "> ON DEATH: Chemical Explos
 LANGUAGE.ach_difficulty          = "Difficulty: %s (%d)"
 LANGUAGE.ach_xpreward         = "XP Reward on completion: %d"
 LANGUAGE.ach_progress         = "Achievements (%d/%d completed)"
-LANGUAGE.ach_difficulty_1         = "Beginner"
+LANGUAGE.ach_difficulty_1         = "Trivial"
 LANGUAGE.ach_difficulty_2         = "Very Easy"
 LANGUAGE.ach_difficulty_3         = "Easy"
 LANGUAGE.ach_difficulty_4         = "Medium"
@@ -757,7 +759,8 @@ LANGUAGE.ach_difficulty_6         = "Hard"
 LANGUAGE.ach_difficulty_7         = "Challenging"
 LANGUAGE.ach_difficulty_8         = "Very Hard"
 LANGUAGE.ach_difficulty_9         = "Extreme"
-LANGUAGE.ach_difficulty_10         = "Insanely Difficult"
+LANGUAGE.ach_difficulty_10         = "Insane"
+LANGUAGE.ach_difficulty_11_plus         = "Insane+%d"
 
 -- Other
 

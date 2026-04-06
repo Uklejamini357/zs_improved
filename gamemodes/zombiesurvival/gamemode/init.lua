@@ -481,6 +481,10 @@ function GM:Initialize()
 	self:LoadProfiler()
 	self:LoadServerVault()
 
+	if D3bot then
+		self:LoadD3botConfig()
+	end
+
 	self:SetPantsMode(self.PantsMode, true)
 	self:SetClassicMode(self:IsClassicMode(), true)
 	self:SetEndlessMode(self:IsEndlessMode(), true)
@@ -4981,8 +4985,10 @@ function GM:WaveStateChanged(newstate)
 
 			if pl:GetZombieClassTable().Name == "Crow" then
 				pl:SetZombieClass(pl.DeathClass or 1)
+				pl:RefreshDynamicSpawnPoint()
 				pl:UnSpectateAndSpawn()
 			elseif not pl:Alive() and not pl.Revive then
+				pl:RefreshDynamicSpawnPoint()
 				pl:UnSpectateAndSpawn()
 			end
 		end
@@ -5018,8 +5024,9 @@ function GM:WaveStateChanged(newstate)
 				-- 2 minutes is enough to decide people left are stuck or griefing.
 				self:SetEscapeStage(ESCAPESTAGE_DEATH)
 
---				for _, pl in pairs(player.GetAll()) do --in progress. (??? what do you mean)
---				end
+				for _, pl in pairs(team.GetPlayers(TEAM_UNDEAD)) do
+					pl:Spawn()
+				end
 
 				gamemode.Call("SetWaveEnd", CurTime() + 45)
 			elseif self:GetEscapeStage() == ESCAPESTAGE_ESCAPE then
@@ -5383,6 +5390,7 @@ function GM:OnReloaded()
 		self:SetupSpawnPoints()
 		self:AssignItemProperties()
 		self:FixWeaponBase()
+		self:LoadD3botConfig()
 	end)
 
 /*	-- old feature
@@ -5396,4 +5404,10 @@ function GM:OnReloaded()
 
 	SetGlobalBool("gamemode_code_ruined", true)
 	BroadcastLua("chat.AddText(Color(223, 0, 0), \"BRUH DOES THE GAMEMODE FILES RELOADING REALLY HAVE TO RUIN THE GAMEMODE CODE?!?!?!?\")")
+end
+
+function GM:LoadD3botConfig()
+	if D3bot then
+
+	end
 end

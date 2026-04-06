@@ -169,7 +169,7 @@ function ENT:Think()
 
 		if target then
 			self:SetAmmo(curammo - 2)
-			if self:GetAmmo() == 0 then
+			if self:GetAmmo() < 2 then
 				owner:SendDeployableOutOfAmmoMessage(self)
 			end
 
@@ -180,7 +180,7 @@ function ENT:Think()
 			if self.PointsMultiplier then
 				POINTSMULTIPLIER = self.PointsMultiplier
 			end
-			target:TakeSpecialDamage(self.Damage, DMG_SHOCK, owner, self)
+			target:TakeSpecialDamage(self.Damage * (owner.ZapperDamageMul or 1), DMG_SHOCK, owner, self)
 			if self.PointsMultiplier then
 				POINTSMULTIPLIER = nil
 			end

@@ -138,6 +138,20 @@ GM.Achievements = {
         Diff = 8
     },
 
+    ["survivor_4"] = {
+        Name = "Survivor IV",
+        Desc = "Survive 17 waves in endless mode",
+        Reward = 17250,
+        Diff = 9
+    },
+
+    ["survivor_5"] = {
+        Name = "Legendary Survivor",
+        Desc = "Survive 20 waves in endless mode",
+        Reward = 3125,
+        Diff = 10
+    },
+
     ["difficult_survival"] = {
         Name = "Difficult Survival",
         Desc = "Win 5 rounds with 25%+ additional difficulty",

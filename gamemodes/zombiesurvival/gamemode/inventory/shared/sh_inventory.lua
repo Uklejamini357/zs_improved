@@ -318,6 +318,11 @@ GM:AddSkillModifier(trinket, SKILLMOD_PROP_CARRY_CAPACITY_MASS_MUL, 0.1)
 
 GM:AddSkillModifier(GM:AddTrinket("Damage booster", "dmgbooster", false, oveles, oweles, 6, "+3% damage dealt"), SKILLMOD_DAMAGE_DEALT_MUL, 0.03)
 
+trinket = GM:AddTrinket("Weapon barrel enhancer", "weaponbarrelenhancer", false, oveles, oweles, 6, "+3% bullet damage\n-11% weapon aim spread")
+GM:AddSkillModifier(trinket, SKILLMOD_BULLET_DAMAGE_MUL, 0.03)
+GM:AddSkillModifier(trinket, SKILLMOD_AIMSPREAD_MUL, 0.11)
+
+
 -- Defensive Trinkets
 trinket, trinketwep = GM:AddTrinket("Kevlar Underlay", "kevlar", false, develes, deweles, 2, "-11% melee damage taken\n-11% projectile damage taken")
 GM:AddSkillModifier(trinket, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.11)

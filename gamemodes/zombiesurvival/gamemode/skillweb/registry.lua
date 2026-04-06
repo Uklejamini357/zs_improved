@@ -354,6 +354,7 @@ SKILL_ENDLESS_HEALTH7 = 247
 SKILL_ENDLESS_HEALTH8 = 248
 SKILL_ENDLESS_HEALTH9 = 249
 SKILL_ENDLESS_HEALTH10 = 250
+SKILL_ENDLESS_FISTMASTER = 251
 
 SKILLMOD_HEALTH = 1
 SKILLMOD_BLOODARMOR = 2
@@ -464,6 +465,8 @@ SKILLMOD_DAMAGE_DEALT_MUL = 106
 SKILLMOD_REMANTLER_PRICE_MUL = 107
 SKILLMOD_BARRICADE_HEALTH_MUL = 108
 SKILLMOD_CLIP_SIZE_MUL = 109
+SKILLMOD_TURRET_DAMAGE_MUL = 110
+SKILLMOD_ZAPPER_DAMAGE_MUL = 111
 
 -- These are only used to check in Character stats and Skills (beta)
 GM.SkillModifiersNonMulOnly = {
@@ -1333,8 +1336,15 @@ GM:AddSkillModifier(SKILL_CRITICALKNUCKLE, SKILLMOD_UNARMED_DAMAGE_MUL, -0.05)
 GM:AddSkillModifier(SKILL_CRITICALKNUCKLE, SKILLMOD_UNARMED_SWING_DELAY_MUL, 0.25)
 
 s = GM:AddSkill(SKILL_FISTER, "Fister", GOOD.."-2% time before next unarmed strike",
-8, -2, {}, TREE_MELEETREE)
+8, -2, {SKILL_ENDLESS_FISTMASTER}, TREE_MELEETREE)
 GM:AddSkillModifier(SKILL_FISTER, SKILLMOD_UNARMED_SWING_DELAY_MUL, -0.02)
+
+s = GM:AddSkill(SKILL_ENDLESS_FISTMASTER, "Fist master", GOOD.."+15% unarmed strike damage\n"..GOOD.."-5% time before next unarmed strike",
+9.5, -1, {}, TREE_MELEETREE)
+s.EndlessOnly = true
+
+GM:AddSkillModifier(SKILL_ENDLESS_FISTMASTER, SKILLMOD_UNARMED_DAMAGE_MUL, 0.15)
+GM:AddSkillModifier(SKILL_ENDLESS_FISTMASTER, SKILLMOD_UNARMED_SWING_DELAY_MUL, -0.05)
 
 s = GM:AddSkill(SKILL_KNUCKLEMASTER, "Knuckle Master", GOOD.."+65% unarmed strike damage\n"..GOOD.."Movement speed is no longer slower when using unarmed strikes\n"..BAD.."+35% time before next unarmed strike",
 6, -6, {SKILL_NONE, SKILL_COMBOKNUCKLE}, TREE_MELEETREE)
@@ -1447,7 +1457,7 @@ GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, 0.07)
 GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_POINTS, -3)
 GM:AddSkillModifier(SKILL_TORMENT7, SKILLMOD_POINT_MULTIPLIER, -0.03)
 
-s = GM:AddSkill(SKILL_TORMENT8, "Torment VIII", GOOD.."+3.15% XP gain multiplier\n"..BAD.."-10 movement speed\n"..BAD.."+20% sigil teleportation time\n"..BAD.."+50% time to eat food\nSide note: Torment IX skill disabled due to balancing issue",
+s = GM:AddSkill(SKILL_TORMENT8, "Torment VIII", GOOD.."+3.15% XP gain multiplier\n"..BAD.."-10 movement speed\n"..BAD.."+20% sigil teleportation time\n"..BAD.."+50% time to eat food",
 4, 0, {SKILL_TORMENT9, SKILL_COMMISIONED_BUYER}, TREE_TORMENTTREE)
 GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_XP_MULTI, 0.0325)
 GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_SPEED, -10)
@@ -1457,7 +1467,6 @@ GM:AddSkillModifier(SKILL_TORMENT8, SKILLMOD_FOODEATTIME_MUL, 0.5)
 s = GM:AddSkill(SKILL_TORMENT9, "Torment IX", GOOD.."+3.5% XP gain multiplier\n"..BAD.."-20% barricade phasing movement speed",
 6, -2, {SKILL_TORMENT10}, TREE_TORMENTTREE)
 s.RequiredSP = 3
-s.Disabled = true
 GM:AddSkillModifier(SKILL_TORMENT9, SKILLMOD_XP_MULTI, 0.035)
 GM:AddSkillModifier(SKILL_TORMENT9, SKILLMOD_BARRICADE_PHASE_SPEED_MUL, -0.2)
 
@@ -1479,7 +1488,7 @@ GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_XP_MULTI, 0.02)
 GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_REMANTLER_PRICE_MUL, 0.075)
 GM:AddSkillModifier(SKILL_TORMENT11, SKILLMOD_BLEED_DAMAGE_TAKEN_MUL, 0.1)
 
-s = GM:AddSkill(SKILL_TORMENT12, "Torment XII", GOOD.."+2.25% XP gain multiplier\n"..BAD.."-10% melee damage\n"..BAD.."-5% weapon bullet damage\nSide note: Torment XIII is disabled due to current balancing issue",
+s = GM:AddSkill(SKILL_TORMENT12, "Torment XII", GOOD.."+2.25% XP gain multiplier\n"..BAD.."-10% melee damage\n"..BAD.."-5% weapon bullet damage",
 4, 2, {SKILL_TORMENT13}, TREE_TORMENTTREE)
 GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_XP_MULTI, 0.0225)
 GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_MELEE_DAMAGE_MUL, -0.1)
@@ -1487,7 +1496,6 @@ GM:AddSkillModifier(SKILL_TORMENT12, SKILLMOD_BULLET_DAMAGE_MUL, -0.05)
 
 s = GM:AddSkill(SKILL_TORMENT13, "Torment XIII", GOOD.."+2.5% XP gain multiplier\n"..BAD.."+5% all damage taken\n"..BAD.."-15% deployable health\n"..BAD.."+25% projectile damage taken",
 2, 4, {SKILL_TORMENT14}, TREE_TORMENTTREE)
-s.Disabled = true
 GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_XP_MULTI, 0.025)
 GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_DAMAGE_TAKEN_MUL, 0.05)
 GM:AddSkillModifier(SKILL_TORMENT13, SKILLMOD_DEPLOYABLE_HEALTH_MUL, -0.15)
@@ -1665,7 +1673,7 @@ s.ColorModifierOverrideUnlocked = {128, 0.5, 0.2}
 s.ColorModifierOverrideActive = {128, 0.5, 0.2}
 GM:AddSkillModifier(SKILL_REDEMPTION_UNDEAD, SKILLMOD_DAMAGE_DEALT_MUL, -0.175)
 
-s = GM:AddSkill(SKILL_ENDLESS, "The Endless.", PURPLE.."Activates the Endless Tree\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
+s = GM:AddSkill(SKILL_ENDLESS, "The Endless", PURPLE.."Activates the Endless Tree\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
 0, 0, {SKILL_NONE, SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4, SKILL_ENDLESS_WORTH1, SKILL_ENDLESS_SPEED1, SKILL_ENDLESS_HEALTH1}, TREE_ENDLESSTREE)
 s.UnlockedSkillsRequirements = {SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4}
 s.RequiredSP = 10

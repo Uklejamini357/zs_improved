@@ -139,7 +139,7 @@ function ENT:FireTurret(src, dir)
 			self:PlayShootSound()
 
 			TEMPTURRET = self
-			self:FireBulletsLua(src, dir, self.Spread, self.NumShots * (twinvolley and 2 or 1), self.Damage, self:GetObjectOwner(), nil, nil, BulletCallback, nil, nil, nil, nil, self)
+			self:FireBulletsLua(src, dir, self.Spread, self.NumShots * (twinvolley and 2 or 1), self.Damage * (owner.TurretDamageMul or 1), self:GetObjectOwner(), nil, nil, BulletCallback, nil, nil, nil, nil, self)
 		else
 			self:SetNextFire(CurTime() + 2)
 			self:EmitSound("npc/turret_floor/die.wav")
