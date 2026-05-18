@@ -25,7 +25,7 @@ local function GetStartingWorth()
 		local modifiers = gm_modifiers[skillid]
 		if modifiers then
 			for modid, amount in pairs(modifiers) do
-				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + amount
+				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(skill, MySelf, MySelf:GetSkillLevel(skillid)) or amount)
 			end
 		end
 	end

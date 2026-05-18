@@ -2,7 +2,7 @@ GM.Name		=	"ZS Improved" -- wtf was it Redux or Improved?
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.4.1"
+GM.Version	=	"1.5.0" -- skill levels update
 
 local zs_enablesandbox = CreateConVar("zs_enablesandbox", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable Sandbox Mode. You know what it does, adds sandbox spawnmenu for admins only etc. Restart might be required when changing this value!")
 
@@ -969,8 +969,12 @@ function GM:GetWave()
 end
 
 if GM:GetWave() == 0 then
-	GM:SetWaveStart(math.max(GM:GetWaveStart(), GM.WaveZeroLength + 40))
-	GM:SetWaveEnd(math.max(GM:GetWaveEnd(), GM.WaveZeroLength + GM:GetWaveOneLength() + 40))
+	if GM:GetWaveStart() ~= -1 then
+		GM:SetWaveStart(math.max(GM:GetWaveStart(), GM.WaveZeroLength + 40))
+	end
+	if GM:GetWaveEnd() ~= -1 then
+		GM:SetWaveEnd(math.max(GM:GetWaveEnd(), GM.WaveZeroLength + GM:GetWaveOneLength() + 40))
+	end
 end
 
 function GM:GetWaveActive()

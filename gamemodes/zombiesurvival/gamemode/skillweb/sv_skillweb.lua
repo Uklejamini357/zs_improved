@@ -62,6 +62,18 @@ net.Receive("zs_skill_is_unlocked", function(len, pl)
 	end
 end)
 
+net.Receive("zs_skills_level", function(len, pl)
+	local skillid = net.ReadUInt(16)
+	local skill = GAMEMODE.Skills[skillid]
+
+	if skill and skill.MaxLevel and pl:IsSkillUnlocked(skillid) and pl:GetZSSPRemaining() >= (skill.RequiredSP or 1) and pl:GetSkillLevel(skillid) < skill.MaxLevel then
+		pl:SetSkillLevel(skillid, pl:GetSkillLevel(skillid)+1)
+
+		local msg = "Upgraded "..skill.Name.." to Lvl."..pl:GetSkillLevel(skillid)
+		pl:CenterNotify(msg)
+	end
+end)
+
 net.Receive("zs_skills_remort", function(len, pl)
 	if pl:CanSkillsRemort() then
 		pl:SkillsRemort()
@@ -69,8 +81,8 @@ net.Receive("zs_skills_remort", function(len, pl)
 end)
 
 net.Receive("zs_skills_reset", function(len, pl)
-	if pl:GetZSLevel() < 10 then
-		pl:SkillNotify("You must be level 10 to reset your skills.", Color(255,255,255))
+	if pl:GetZSLevel() < 10 and pl:GetZSRemortLevel() < 5 then
+		pl:SkillNotify("You must be level 10 or remort 5 to reset your skills.", Color(255,255,255))
 		return
 	end
 
@@ -271,6 +283,18 @@ function meta:SendSkillUnlocked(skillid, unlocked)
 	net.Send(self)
 end
 
+function meta:SetSkillLevel(skillid, level, nosend)
+	local tbl = self:GetSkillsLevels()
+	tbl[skillid] = level
+
+	if not nosend then
+		net.Start("zs_skills_level")
+		net.WriteUInt(skillid, 16)
+		net.WriteUInt(level, 8)
+		net.Send(self)
+	end
+end
+
 function meta:SetDesiredActiveSkills(skills, nosend)
 	self.DesiredActiveSkills = table.ToKeyValues(skills)
 
@@ -301,6 +325,26 @@ function meta:SetUnlockedSkills(skills, nosend)
 	end
 end
 
+function meta:SetSkillsLevels(skills, nosend)
+	self.SkillsLevels = skills
+	
+	if not nosend then
+		net.Start("zs_skills_levels")
+		net.WriteTable(skills)
+		net.Send(self)
+	end
+end
+
+function meta:SetActiveSkillsLevels(skills, nosend)
+	self.ActiveSkillsLevels = skills
+
+	if not nosend then
+		net.Start("zs_skills_activelvls")
+		net.WriteTable(skills)
+		net.Send(self)
+	end
+end
+
 function meta:SkillsRemort()
 	local give2remorts = false --self:GetZSLevel() >= GAMEMODE.MaxRemortable2Level
 	local rl = self:GetZSRemortLevel() + (give2remorts and 2 or 1)
@@ -311,6 +355,7 @@ function meta:SkillsRemort()
 	self:SetZSXP(xp / 10)
 	self:SetUnlockedSkills({})
 	self:SetDesiredActiveSkills({})
+	self:SetSkillsLevels({})
 	self.NextSkillReset = nil
 	self.XPRemainder = 0
 
@@ -330,7 +375,8 @@ end
 function meta:SkillsReset()
 	self:SetUnlockedSkills({})
 	self:SetDesiredActiveSkills({})
-	self.NextSkillReset = os.time() + (8 * 3600) -- 28400 seconds, 1 hour = 3600 seconds
+	self:SetSkillsLevels({})
+	-- self.NextSkillReset = os.time() + (8 * 3600) -- 28400 seconds, 1 hour = 3600 seconds
 
 	self:CenterNotify(COLOR_CYAN, translate.ClientGet(self, "you_have_reset_all"))
 end

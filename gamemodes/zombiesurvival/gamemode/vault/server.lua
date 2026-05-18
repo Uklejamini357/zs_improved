@@ -65,6 +65,9 @@ function GM:LoadVault(pl)
 				if contents.DesiredActiveSkills then
 					pl:SetDesiredActiveSkills(util.DecompressBitTable(contents.DesiredActiveSkills), true)
 				end
+				if contents.SkillsLevels then
+					pl:SetSkillsLevels(contents.SkillsLevels, true)
+				end
 				if contents.NextSkillReset then
 					pl.NextSkillReset = contents.NextSkillReset
 				end
@@ -97,6 +100,7 @@ function GM:PlayerReadyVault(pl)
 	net.Start("zs_skills_init")
 	self:WriteSkillBits(unlocked)
 	self:WriteSkillBits(desired)
+	net.WriteTable(pl:GetSkillsLevels())
 
 	-- Send this if any key exists.
 	for k in pairs(active) do
@@ -109,7 +113,7 @@ function GM:PlayerReadyVault(pl)
 
 	net.WriteBool(false)
 	net.Send(pl)
-
+	
 	if pl.NextSkillReset then
 		local time = os.time()
 		if time < pl.NextSkillReset then
@@ -131,6 +135,7 @@ function GM:SaveVault(pl)
 		RemortLevel = pl:GetZSRemortLevel(),
 		DesiredActiveSkills = util.CompressBitTable(pl:GetDesiredActiveSkills()),
 		UnlockedSkills = util.CompressBitTable(pl:GetUnlockedSkills()),
+		SkillsLevels = pl:GetSkillsLevels(),
 		Version = pl.SkillVersion or self.SkillTreeVersion,
 		Achievements = pl.Achs or {},
 		BankXP = pl:GetZSBankXP()

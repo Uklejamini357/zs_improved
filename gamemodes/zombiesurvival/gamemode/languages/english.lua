@@ -696,6 +696,15 @@ ZS Improved adds new features and is quite different than Original Zombie Surviv
 </p>
 
 ]]
+LANGUAGE.help_cat_skills					= "Skills"
+LANGUAGE.help_cont_skills						= [[<p>
+<h3>Skills levels</h3>
+
+WTF THIS EXISTS TOO?!?!
+
+</p>
+
+]]
 
 -- Custom zombie classes
 

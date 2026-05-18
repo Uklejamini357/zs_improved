@@ -15,7 +15,10 @@ Content = "help_cont_upgrades"},
 Content = "help_cont_being_a_zombie"},
 
 {Name = "help_cat_zsimproved",
-Content = "help_cont_zsimproved"}
+Content = "help_cont_zsimproved"},
+
+{Name = "help_cat_skills",
+Content = "help_cont_skills"}
 }
 
 function MakepCredits()

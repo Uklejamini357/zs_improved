@@ -59,7 +59,11 @@ end
 
 function GM:AddSkillModifier(skillid, modifier, amount)
 	self.SkillModifiers[skillid] = self.SkillModifiers[skillid] or {}
-	self.SkillModifiers[skillid][modifier] = (self.SkillModifiers[skillid][modifier] or 0) + amount
+	if isfunction(amount) then
+		self.SkillModifiers[skillid][modifier] = amount
+	else
+		self.SkillModifiers[skillid][modifier] = (self.SkillModifiers[skillid][modifier] or 0) + amount
+	end
 end
 
 function GM:AddSkillFunction(skillid, func)
@@ -324,37 +328,10 @@ SKILL_KNOWLEDGE2 = 217
 SKILL_KNOWLEDGE3 = 218
 SKILL_KNOWLEDGE4 = 219
 SKILL_U_BULLETSTORMMG = 220
-SKILL_ENDLESS_WORTH1 = 221
-SKILL_ENDLESS_WORTH2 = 222
-SKILL_ENDLESS_WORTH3 = 223
-SKILL_ENDLESS_WORTH4 = 224
-SKILL_ENDLESS_WORTH5 = 225
-SKILL_ENDLESS_WORTH6 = 226
-SKILL_ENDLESS_WORTH7 = 227
-SKILL_ENDLESS_WORTH8 = 228
-SKILL_ENDLESS_WORTH9 = 229
-SKILL_ENDLESS_WORTH10 = 230
-SKILL_ENDLESS_SPEED1 = 231
-SKILL_ENDLESS_SPEED2 = 232
-SKILL_ENDLESS_SPEED3 = 233
-SKILL_ENDLESS_SPEED4 = 234
-SKILL_ENDLESS_SPEED5 = 235
-SKILL_ENDLESS_SPEED6 = 236
-SKILL_ENDLESS_SPEED7 = 237
-SKILL_ENDLESS_SPEED8 = 238
-SKILL_ENDLESS_SPEED9 = 239
-SKILL_ENDLESS_SPEED10 = 240
-SKILL_ENDLESS_HEALTH1 = 241
-SKILL_ENDLESS_HEALTH2 = 242
-SKILL_ENDLESS_HEALTH3 = 243
-SKILL_ENDLESS_HEALTH4 = 244
-SKILL_ENDLESS_HEALTH5 = 245
-SKILL_ENDLESS_HEALTH6 = 246
-SKILL_ENDLESS_HEALTH7 = 247
-SKILL_ENDLESS_HEALTH8 = 248
-SKILL_ENDLESS_HEALTH9 = 249
-SKILL_ENDLESS_HEALTH10 = 250
-SKILL_ENDLESS_FISTMASTER = 251
+SKILL_ENDLESS_WORTH = 221
+SKILL_ENDLESS_SPEED = 222
+SKILL_ENDLESS_HEALTH = 223
+SKILL_ENDLESS_FISTMASTER = 224
 
 SKILLMOD_HEALTH = 1
 SKILLMOD_BLOODARMOR = 2
@@ -470,19 +447,59 @@ SKILLMOD_ZAPPER_DAMAGE_MUL = 111
 
 -- These are only used to check in Character stats and Skills (beta)
 GM.SkillModifiersNonMulOnly = {
-	SKILLMOD_HEALTH, SKILLMOD_BLOODARMOR, SKILLMOD_SPEED, SKILLMOD_WORTH, SKILLMOD_POINTS, SKILLMOD_MELEE_ATTACKER_DMG_REFLECT, SKILLMOD_MELEE_MOVEMENTSPEED_ON_KILL,
-	SKILLMOD_MELEE_LEG_DAMAGE_ADD, SKILLMOD_SCRAP_START, SKILLMOD_ENDWAVE_POINTS, SKILLMOD_MELEE_RANGE_ADD,
+	[SKILLMOD_HEALTH] = true,
+	[SKILLMOD_BLOODARMOR] = true,
+	[SKILLMOD_SPEED] = true,
+	[SKILLMOD_WORTH] = true,
+	[SKILLMOD_POINTS] = true,
+	[SKILLMOD_MELEE_ATTACKER_DMG_REFLECT] = true,
+	[SKILLMOD_MELEE_MOVEMENTSPEED_ON_KILL] = true,
+	[SKILLMOD_MELEE_LEG_DAMAGE_ADD] = true,
+	[SKILLMOD_SCRAP_START] = true,
+	[SKILLMOD_ENDWAVE_POINTS] = true,
+	[SKILLMOD_MELEE_RANGE_ADD] = true,
 }
 
 GM.SkillModifiersBadOnly = {
-	SKILLMOD_FALLDAMAGE_DAMAGE_MUL, SKILLMOD_FALLDAMAGE_SLOWDOWN_MUL, SKILLMOD_FALLDAMAGE_RECOVERY_MUL, SKILLMOD_FOODEATTIME_MUL, SKILLMOD_UNARMED_SWING_DELAY_MUL, SKILLMOD_HAMMER_SWING_DELAY_MUL,
-	SKILLMOD_MEDKIT_COOLDOWN_MUL, SKILLMOD_SELF_DAMAGE_MUL, SKILLMOD_AIMSPREAD_MUL, SKILLMOD_DEPLOYABLE_PACKTIME_MUL, SKILLMOD_MEDGUN_FIRE_DELAY_MUL,
-	SKILLMOD_RESUPPLY_DELAY_MUL, SKILLMOD_FIELD_DELAY_MUL, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, SKILLMOD_POISON_DAMAGE_TAKEN_MUL, SKILLMOD_BLEED_DAMAGE_TAKEN_MUL,
-	SKILLMOD_MELEE_SWING_DELAY_MUL, SKILLMOD_MELEE_ATTACK_DELAY_MUL, SKILLMOD_KNOCKDOWN_RECOVERY_MUL, SKILLMOD_SLOW_EFF_TAKEN_MUL, SKILLMOD_EXP_DAMAGE_TAKEN_MUL, SKILLMOD_FIRE_DAMAGE_TAKEN_MUL,
-	SKILLMOD_PHYSICS_DAMAGE_TAKEN_MUL, SKILLMOD_VISION_ALTER_DURATION_MUL, SKILLMOD_DIMVISION_EFF_MUL, SKILLMOD_PROP_CARRY_SLOW_MUL, SKILLMOD_BLEED_SPEED_MUL,
-	SKILLMOD_SIGIL_TELEPORT_MUL, SKILLMOD_POISON_SPEED_MUL, SKILLMOD_PROJECTILE_DAMAGE_TAKEN_MUL, SKILLMOD_WEAPON_WEIGHT_SLOW_MUL, SKILLMOD_FRIGHT_DURATION_MUL,
-	SKILLMOD_IRONSIGHT_EFF_MUL, SKILLMOD_LOW_HEALTH_SLOW_MUL, SKILLMOD_ARSENAL_DISCOUNT, SKILLMOD_AIM_SHAKE_MUL, SKILLMOD_WEAPON_FIREDELAY_MUL,
-	SKILLMOD_DAMAGE_TAKEN_MUL, SKILLMOD_REMANTLER_PRICE_MUL,
+	[SKILLMOD_FALLDAMAGE_DAMAGE_MUL] = true,
+	[SKILLMOD_FALLDAMAGE_SLOWDOWN_MUL] = true,
+	[SKILLMOD_FALLDAMAGE_RECOVERY_MUL] = true,
+	[SKILLMOD_FOODEATTIME_MUL] = true,
+	[SKILLMOD_UNARMED_SWING_DELAY_MUL] = true,
+	[SKILLMOD_HAMMER_SWING_DELAY_MUL] = true,
+	[SKILLMOD_MEDKIT_COOLDOWN_MUL] = true,
+	[SKILLMOD_SELF_DAMAGE_MUL] = true,
+	[SKILLMOD_AIMSPREAD_MUL] = true,
+	[SKILLMOD_DEPLOYABLE_PACKTIME_MUL] = true,
+	[SKILLMOD_MEDGUN_FIRE_DELAY_MUL] = true,
+	[SKILLMOD_RESUPPLY_DELAY_MUL] = true,
+	[SKILLMOD_FIELD_DELAY_MUL] = true,
+	[SKILLMOD_MELEE_DAMAGE_TAKEN_MUL] = true,
+	[SKILLMOD_POISON_DAMAGE_TAKEN_MUL] = true,
+	[SKILLMOD_BLEED_DAMAGE_TAKEN_MUL] = true,
+	[SKILLMOD_MELEE_SWING_DELAY_MUL] = true,
+	[SKILLMOD_MELEE_ATTACK_DELAY_MUL] = true,
+	[SKILLMOD_KNOCKDOWN_RECOVERY_MUL] = true,
+	[SKILLMOD_SLOW_EFF_TAKEN_MUL] = true,
+	[SKILLMOD_EXP_DAMAGE_TAKEN_MUL] = true,
+	[SKILLMOD_FIRE_DAMAGE_TAKEN_MUL] = true,
+	[SKILLMOD_PHYSICS_DAMAGE_TAKEN_MUL] = true,
+	[SKILLMOD_VISION_ALTER_DURATION_MUL] = true,
+	[SKILLMOD_DIMVISION_EFF_MUL] = true,
+	[SKILLMOD_PROP_CARRY_SLOW_MUL] = true,
+	[SKILLMOD_BLEED_SPEED_MUL] = true,
+	[SKILLMOD_SIGIL_TELEPORT_MUL] = true,
+	[SKILLMOD_POISON_SPEED_MUL] = true,
+	[SKILLMOD_PROJECTILE_DAMAGE_TAKEN_MUL] = true,
+	[SKILLMOD_WEAPON_WEIGHT_SLOW_MUL] = true,
+	[SKILLMOD_FRIGHT_DURATION_MUL] = true,
+	[SKILLMOD_IRONSIGHT_EFF_MUL] = true,
+	[SKILLMOD_LOW_HEALTH_SLOW_MUL] = true,
+	[SKILLMOD_ARSENAL_DISCOUNT] = true,
+	[SKILLMOD_AIM_SHAKE_MUL] = true,
+	[SKILLMOD_WEAPON_FIREDELAY_MUL] = true,
+	[SKILLMOD_DAMAGE_TAKEN_MUL] = true,
+	[SKILLMOD_REMANTLER_PRICE_MUL] = true,
 }
 
 
@@ -1673,11 +1690,12 @@ s.ColorModifierOverrideUnlocked = {128, 0.5, 0.2}
 s.ColorModifierOverrideActive = {128, 0.5, 0.2}
 GM:AddSkillModifier(SKILL_REDEMPTION_UNDEAD, SKILLMOD_DAMAGE_DEALT_MUL, -0.175)
 
-s = GM:AddSkill(SKILL_ENDLESS, "The Endless", PURPLE.."Activates the Endless Tree\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
-0, 0, {SKILL_NONE, SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4, SKILL_ENDLESS_WORTH1, SKILL_ENDLESS_SPEED1, SKILL_ENDLESS_HEALTH1}, TREE_ENDLESSTREE)
+s = GM:AddSkill(SKILL_ENDLESS, "The Endless", PURPLE.."Activates the Endless Tree\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+4% damage dealt (+2% per level)\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
+0, 0, {SKILL_NONE, SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4, SKILL_ENDLESS_WORTH, SKILL_ENDLESS_SPEED, SKILL_ENDLESS_HEALTH}, TREE_ENDLESSTREE)
 s.UnlockedSkillsRequirements = {SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4}
 s.RequiredSP = 10
 s.RemortReq = 10
+s.MaxLevel = 85
 s.EndlessOnly = true
 s.Rainbow = true
 s.ColorModifierOverride = {0.05, 0.15, 0.07}
@@ -1689,274 +1707,38 @@ s.Hidden = function(pl)
 end
 s.HideTruly = true
 GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
-GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, 0.04)
+GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, function(sk, pl, lvl) return 0.04 + lvl*0.02 end)
 
-s = GM:AddSkill(SKILL_ENDLESS_WORTH1, "Worth I", "+5 starting worth",
--1, 1, {SKILL_ENDLESS_WORTH2}, TREE_ENDLESSTREE)
+s = GM:AddSkill(SKILL_ENDLESS_WORTH, "Worth I", "+5 starting worth (+3 worth per level)",
+-1, 1, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
 s.Hidden = function(pl)
 	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
 end
 s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH1, SKILLMOD_WORTH, 5)
+s.RequiredSP = 2
+s.MaxLevel = 50
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH, SKILLMOD_WORTH, function(sk, pl, lvl) return 5 + lvl*3 end)
 
-s = GM:AddSkill(SKILL_ENDLESS_WORTH2, "Worth II", "+5 starting worth",
--2, 2, {SKILL_ENDLESS_WORTH3}, TREE_ENDLESSTREE)
+s = GM:AddSkill(SKILL_ENDLESS_SPEED, "Endless Speed", "+1.25 movement speed (+0.75 movement speed per level)",
+0, 1.5, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
 s.Hidden = function(pl)
 	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
 end
 s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH2, SKILLMOD_WORTH, 5)
+s.RequiredSP = 2
+s.MaxLevel = 50
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED, SKILLMOD_SPEED, function(sk, pl, lvl) return 1.25 + lvl*0.75 end)
 
-s = GM:AddSkill(SKILL_ENDLESS_WORTH3, "Worth III", "+5 starting worth",
--3, 3, {SKILL_ENDLESS_WORTH4}, TREE_ENDLESSTREE)
+
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH, "Endless Health", "+1.5 health (+1 health per level)",
+1, 1, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
 s.Hidden = function(pl)
 	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
 end
 s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH3, SKILLMOD_WORTH, 5)
-
-s = GM:AddSkill(SKILL_ENDLESS_WORTH4, "Worth IV", "+5 starting worth",
--4, 4, {SKILL_ENDLESS_WORTH5}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH4, SKILLMOD_WORTH, 5)
-
-s = GM:AddSkill(SKILL_ENDLESS_WORTH5, "Worth V", "+5 starting worth",
--5, 5, {SKILL_ENDLESS_WORTH6}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH5, SKILLMOD_WORTH, 5)
-
-s = GM:AddSkill(SKILL_ENDLESS_WORTH6, "Worth VI", "+5 starting worth",
--6, 6, {SKILL_ENDLESS_WORTH7}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH6, SKILLMOD_WORTH, 5)
-
-s = GM:AddSkill(SKILL_ENDLESS_WORTH7, "Worth VII", "+5 starting worth",
--7, 7, {SKILL_ENDLESS_WORTH8}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH7, SKILLMOD_WORTH, 5)
-
-s = GM:AddSkill(SKILL_ENDLESS_WORTH8, "Worth VIII", "+5 starting worth",
--8, 8, {SKILL_ENDLESS_WORTH9}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH8, SKILLMOD_WORTH, 5)
-
-s = GM:AddSkill(SKILL_ENDLESS_WORTH9, "Worth IX", "+5 starting worth",
--9, 9, {SKILL_ENDLESS_WORTH10}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH9, SKILLMOD_WORTH, 5)
-
-s = GM:AddSkill(SKILL_ENDLESS_WORTH10, "Worth X", "+5 starting worth",
--10, 10, {}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH10, SKILLMOD_WORTH, 5)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED1, "Speed I", "+1.25 movement speed",
-0, 1.5, {SKILL_ENDLESS_SPEED2}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED1, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED2, "Speed II", "+1.25 movement speed",
-0, 3, {SKILL_ENDLESS_SPEED3}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED2, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED3, "Speed III", "+1.25 movement speed",
-0, 4.5, {SKILL_ENDLESS_SPEED4}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED3, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED4, "Speed IV", "+1.25 movement speed",
-0, 6, {SKILL_ENDLESS_SPEED5}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED4, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED5, "Speed V", "+1.25 movement speed",
-0, 7.5, {SKILL_ENDLESS_SPEED6}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED5, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED6, "Speed VI", "+1.25 movement speed",
-0, 9, {SKILL_ENDLESS_SPEED7}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED6, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED7, "Speed VII", "+1.25 movement speed",
-0, 10.5, {SKILL_ENDLESS_SPEED8}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED7, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED8, "Speed VIII", "+1.25 movement speed",
-0, 12, {SKILL_ENDLESS_SPEED9}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED8, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED9, "Speed IX", "+1.25 movement speed",
-0, 13.5, {SKILL_ENDLESS_SPEED10}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED9, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_SPEED10, "Speed X", "+1.25 movement speed",
-0, 15, {}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED10, SKILLMOD_SPEED, 1.25)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH1, "Health I", "+1.5 health",
-1, 1, {SKILL_ENDLESS_HEALTH2}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH1, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH2, "Health II", "+1.5 health",
-2, 2, {SKILL_ENDLESS_HEALTH3}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH2, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH3, "Health III", "+1.5 health",
-3, 3, {SKILL_ENDLESS_HEALTH4}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH3, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH4, "Health IV", "+1.5 health",
-4, 4, {SKILL_ENDLESS_HEALTH5}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH4, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH5, "Health V", "+1.5 health",
-5, 5, {SKILL_ENDLESS_HEALTH6}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH5, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH6, "Health VI", "+1.5 health",
-6, 6, {SKILL_ENDLESS_HEALTH7}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH6, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH7, "Health VII", "+1.5 health",
-7, 7, {SKILL_ENDLESS_HEALTH8}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH7, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH8, "Health VIII", "+1.5 health",
-8, 8, {SKILL_ENDLESS_HEALTH9}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH8, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH9, "Health IX", "+1.5 health",
-9, 9, {SKILL_ENDLESS_HEALTH10}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH9, SKILLMOD_HEALTH, 1.5)
-
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH10, "Health X", "+1.5 health",
-10, 10, {}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
-s.HideTruly = true
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH10, SKILLMOD_HEALTH, 1.5)
+s.RequiredSP = 2
+s.MaxLevel = 50
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH, SKILLMOD_HEALTH, function(sk, pl, lvl) return 1.5 + lvl end)

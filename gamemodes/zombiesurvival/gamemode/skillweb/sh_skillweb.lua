@@ -142,6 +142,14 @@ function meta:IsSkillActive(skillid)
 	return self:GetActiveSkills()[skillid]-- == true
 end
 
+function meta:GetSkillLevel(skillid)
+	return self:GetSkillsLevels()[skillid] or 0
+end
+
+function meta:GetActiveSkillLevel(skillid)
+	return self:GetActiveSkillsLevels()[skillid] or 0
+end
+
 function meta:HasTrinket(trinket)
 	return self:HasInventoryItem("trinket_" .. trinket)
 end
@@ -160,14 +168,15 @@ function meta:CreateTrinketStatus(status)
 	end
 end
 
-function meta:ApplyAssocModifiers(assoc)
+function meta:ApplyAssocModifiers(assoc, levels)
 	local skillmodifiers = {}
 	local gm_modifiers = GAMEMODE.SkillModifiers
+	local allskills = GAMEMODE.Skills
 	for skillid in pairs(assoc) do
 		local modifiers = gm_modifiers[skillid]
 		if modifiers then
 			for modid, amount in pairs(modifiers) do
-				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + amount
+				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(allskills[skillid], self, self:GetActiveSkillLevel(skillid)) or amount)
 			end
 		end
 	end
@@ -183,6 +192,7 @@ function meta:ApplySkills(override)
 	local desired = override or self:Alive() and self:Team() == TEAM_HUMAN and self:GetDesiredActiveSkills() or {}
 	local current_active = self:GetActiveSkills()
 	local desired_assoc = table.ToAssoc(desired)
+	local skills_levels = {}
 
 	-- Do we even have these skills unlocked?
 	if not override then
@@ -195,7 +205,15 @@ function meta:ApplySkills(override)
 		end
 	end
 
-	self:ApplyAssocModifiers(desired_assoc)
+	for skillid in pairs(desired_assoc) do
+		local lvl = self:GetSkillLevel(skillid)
+		if lvl == 0 then continue end
+		skills_levels[skillid] = lvl
+	end
+
+	self:SetActiveSkillsLevels(skills_levels, not self.PlayerReady)
+
+	self:ApplyAssocModifiers(desired_assoc, skills_levels)
 
 	-- All skill function states can easily be kept track of.
 	local funcs
@@ -259,7 +277,7 @@ function meta:ApplyTrinkets(override)
 		end
 	end
 
-	self:ApplyAssocModifiers(real_assoc)
+	self:ApplyAssocModifiers(real_assoc, self:GetActiveSkillsLevels())
 
 	local funcs
 	local gm_functions = GAMEMODE.SkillFunctions
@@ -321,7 +339,7 @@ function meta:GetZSSPUsed()
 
 	for skillid in pairs(allskills) do
 		if self:IsSkillUnlocked(skillid) then
-			usedsp = usedsp + (allskills[skillid].RequiredSP or 1)
+			usedsp = usedsp + (allskills[skillid].RequiredSP or 1)*(1+self:GetSkillLevel(skillid))
 		end
 	end
 
@@ -369,6 +387,14 @@ end
 
 function meta:GetUnlockedSkills()
 	return self.UnlockedSkills or {}
+end
+
+function meta:GetSkillsLevels()
+	return self.SkillsLevels or {}
+end
+
+function meta:GetActiveSkillsLevels()
+	return self.ActiveSkillsLevels or {}
 end
 
 function meta:GetTotalAdditiveModifier(...)

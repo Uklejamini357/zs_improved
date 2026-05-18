@@ -59,6 +59,7 @@ net.Receive("zs_skills_init", function(length)
 
 	local unlocked = {}
 	local desired = {}
+	local levels = {}
 	local active = {}
 
 	for skillid in pairs(GAMEMODE.Skills) do
@@ -72,6 +73,9 @@ net.Receive("zs_skills_init", function(length)
 			desired[skillid] = true
 		end
 	end
+
+	levels = net.ReadTable()
+
 	if net.ReadBool() then
 		for skillid in pairs(GAMEMODE.Skills) do
 			if net.ReadBool() then
@@ -83,6 +87,7 @@ net.Receive("zs_skills_init", function(length)
 	if MySelf:IsValid() then
 		MySelf:SetUnlockedSkills(unlocked)
 		MySelf:SetDesiredActiveSkills(desired)
+		MySelf:SetSkillsLevels(levels)
 		MySelf:ApplySkills(active)
 	end
 end)
@@ -119,8 +124,26 @@ net.Receive("zs_skills_unlocked", function(length)
 	end
 end)
 
+net.Receive("zs_skills_level", function(length)
+	local skillid = net.ReadUInt(16)
+	local level = net.ReadUInt(8)
+
+	if MySelf:IsValid() then
+		MySelf:SetSkillLevel(skillid, level)
+	end
+end)
+
+net.Receive("zs_skills_levels", function(length)
+	local t = net.ReadTable()
+
+	if MySelf:IsValid() then
+		MySelf:SetSkillsLevels(t)
+	end
+end)
+
 net.Receive("zs_skills_nextreset", function(length)
-	GAMEMODE.NextSkillReset = net.ReadUInt(32)
+	-- GAMEMODE.NextSkillReset = net.ReadUInt(32)
+	GAMEMODE.NextSkillReset = 0
 
 	if GAMEMODE.SkillWeb and GAMEMODE.SkillWeb:IsValid() then
 		local hours = math.floor(GAMEMODE.NextSkillReset / 3600)
@@ -318,6 +341,20 @@ local function UnlockSkill(self, skillid)
 	net.SendToServer()
 
 	self:DisplayMessage(name.." unlocked and activated!", COLOR_GREEN)
+end
+
+local function UpgradeSkill(self, skillid)
+	local name = GAMEMODE.Skills[skillid].Name
+
+	if MySelf:GetSkillLevel(skillid) >= GAMEMODE.Skills[skillid].MaxLevel then
+		self:DisplayMessage("This skill is already at max level!", COLOR_GREEN)
+		return
+	end
+	net.Start("zs_skills_level")
+	net.WriteUInt(skillid, 16)
+	net.SendToServer()
+
+	self:DisplayMessage("Upgraded "..name.." to Lvl."..MySelf:GetSkillLevel(skillid)+1, COLOR_GREEN)
 end
 
 function PANEL:Init()
@@ -705,7 +742,9 @@ function PANEL:Init()
 	button.DoClick = function(me)
 		local skillid = contextmenu.SkillID
 		local name = allskills[skillid].Name
-		if MySelf:IsSkillDesired(skillid) then
+		if contextmenu.Upgrading then
+			UpgradeSkill(self, skillid)
+		elseif MySelf:IsSkillDesired(skillid) then
 			DeactivateSkill(self, skillid)
 		elseif MySelf:IsSkillUnlocked(skillid) then
 			ActivateSkill(self, skillid)
@@ -919,11 +958,13 @@ end
 function PANEL:UpdateQuickStats()
 	local skillmodifiers = {}
 	local gm_modifiers = GAMEMODE.SkillModifiers
+	local allskills = GAMEMODE.Skills
 	for skillid in pairs(table.ToAssoc(MySelf:GetDesiredActiveSkills())) do
 		local modifiers = gm_modifiers[skillid]
+		local skill = allskills[skillid]
 		if modifiers then
 			for modid, amount in pairs(modifiers) do
-				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + amount
+				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(skill, MySelf, MySelf:GetSkillLevel(skillid)) or amount)
 			end
 		end
 	end
@@ -1594,6 +1635,11 @@ function PANEL:Paint(w, h)
 					local colo = CheckHidden(skill) and Color(0,0,0,0) or skill.Disabled and COLOR_DARKGRAY or selected and color_white or notunlockable and COLOR_MIDGRAY or COLOR_GRAY
 
 					if hoveredskill == skillid then
+						if skill.MaxLevel then
+							draw_SimpleText("Current level: "..(!MySelf:IsSkillUnlocked(skillid) and "NOT UNLOCKED" or MySelf:GetSkillLevel(skillid).."/"..skill.MaxLevel), font, 0, y_pos, MySelf:IsSkillUnlocked(skillid) and colo2 or COLOR_RED, TEXT_ALIGN_CENTER)
+							y_pos = y_pos + y_pos_add
+						end
+
 						if skill.EndlessOnly then
 							draw_SimpleText(translate.Get("endless_mode_only"), font, 0, y_pos, colo2, TEXT_ALIGN_CENTER)
 							y_pos = y_pos + y_pos_add
@@ -1630,28 +1676,31 @@ function PANEL:Paint(w, h)
 					-- Allows to show skill modifier text, to see if there is any error in balancing.
 					if hoveredskill == skillid and self.vCamPos.x < 5000 and GAMEMODE.AddSkillDescriptions then
 						--local c = string.Explode("\n", skill.Description)
-						if (type(GAMEMODE.SkillModifiers[skillid]) == "table" and table.Count(GAMEMODE.SkillModifiers[skillid]) or 0) > 0 then
-							for k,v in pairs(GAMEMODE.SkillModifiers[skillid]) do
-								local i = v or 1
+						local skillmod = GAMEMODE.SkillModifiers[skillid]
+						if (type(skillmod) == "table" and table.Count(skillmod) or 0) > 0 then
+							for k,v in pairs(skillmod) do
+								local i = (isfunction(v) and v(skill, MySelf, MySelf:GetSkillLevel(skillid)) or v) or 0
+								if i == 0 or !isnumber(i) then continue end
 
-								if !table.HasValue(GAMEMODE.SkillModifiersNonMulOnly, k) then
-									i = (i*100).."%"
+								local str = i
+								if !GAMEMODE.SkillModifiersNonMulOnly[k] then
+									str = (i*100).."%"
 								end
 
-								if (v or 0) > 0 then
-									i = "+"..i
+								if i > 0 then
+									str = "+"..str
 								end
-								local colorred = table.HasValue(GAMEMODE.SkillModifiersBadOnly, k) and greencolor or redcolor
-								local colorgreen = table.HasValue(GAMEMODE.SkillModifiersBadOnly, k) and redcolor or greencolor
+								local colorred = GAMEMODE.SkillModifiersBadOnly[k] and greencolor or redcolor
+								local colorgreen = GAMEMODE.SkillModifiersBadOnly[k] and redcolor or greencolor
 								--translate.Format("skillmod_n"..i,c)
-								if (v or 0) < 0 then
+								if i < 0 then
 									col = colorred
-								elseif (v or 0) > 0 then
+								elseif i > 0 then
 									col = colorgreen
 								else
 									col = Color(255,255,255)
 								end
-								draw_SimpleText(translate.Format("skillmod_n"..k,i), font, 0, y_pos, col, TEXT_ALIGN_CENTER)
+								draw_SimpleText(translate.Format("skillmod_n"..k,str), font, 0, y_pos, col, TEXT_ALIGN_CENTER)
 								y_pos = y_pos + y_pos_add
 							end
 						end
@@ -1866,33 +1915,49 @@ function PANEL:OnMousePressed(mc)
 
 			contextmenu.SkillID = hoveredskill
 
+			contextmenu.Upgrading = false
+
 			contextmenu:SetVisible(true)
 		else
 			contextmenu:SetVisible(false)
 		end
-	elseif UseNewSkillTrees and mc == MOUSE_RIGHT and not hoveredskill then
-		if self.DesiredTree == 0 then
-			self:Remove()
-		else
-			self.DesiredTree = 0
-			self.DesiredZoom = 2500
-			self.ShadeVelocity = 255 * FrameTime() * 10
-				
-			timer.Simple(0.1, function()
-				if not IsValid(self) then return end
+	elseif mc == MOUSE_RIGHT then
+		if hoveredskill then
+			local contextmenu = self.ContextMenu
+			local mx, my = gui.MousePos()
+			contextmenu:SetPos(mx - contextmenu:GetWide() / 2, my - contextmenu:GetTall() / 2)
 
-				self.QuitButton:SetText("Close")
-				self.DesiredZoom = 5000
+			if MySelf:IsSkillUnlocked(hoveredskill) then
+				if GAMEMODE.OneClickSkillActivate then UpgradeSkill(self, hoveredskill) return end
+				contextmenu.Button:SetText("Upgrade")
+				contextmenu.SkillID = hoveredskill
+				contextmenu.Upgrading = true
+				contextmenu:SetVisible(true)
+			end
+		elseif UseNewSkillTrees and not hoveredskill then
+			if self.DesiredTree == 0 then
+				self:Remove()
+			else
 				self.DesiredTree = 0
-				self.ShadeVelocity = 255 * FrameTime() * -10
-				local campos = self:GetCamPos()
-				campos.y = 0
-				campos.z = 0
-				self:SetCamPos(campos)
-			end)
+				self.DesiredZoom = 2500
+				self.ShadeVelocity = 255 * FrameTime() * 10
 
-			self.ContextMenu:SetVisible(false)
-			MySelf:EmitSound("buttons/button24.wav", 60, 180)
+				timer.Simple(0.1, function()
+					if not IsValid(self) then return end
+
+					self.QuitButton:SetText("Close")
+					self.DesiredZoom = 5000
+					self.DesiredTree = 0
+					self.ShadeVelocity = 255 * FrameTime() * -10
+					local campos = self:GetCamPos()
+					campos.y = 0
+					campos.z = 0
+					self:SetCamPos(campos)
+				end)
+
+				self.ContextMenu:SetVisible(false)
+				MySelf:EmitSound("buttons/button24.wav", 60, 180)
+			end
 		end
 	end
 end
@@ -2086,6 +2151,14 @@ function meta:SetSkillUnlocked(skillid, unlocked)
 	self:SetUnlockedSkills(unlockedskills)
 end
 
+function meta:SetSkillLevel(skillid, level)
+	local tbl = self:GetSkillsLevels()
+
+	tbl[skillid] = level
+
+	self:SetSkillsLevels(tbl)
+end
+
 function meta:SetDesiredActiveSkills(skills, nosend)
 	self.DesiredActiveSkills = table.ToKeyValues(skills)
 end
@@ -2096,4 +2169,12 @@ end
 
 function meta:SetUnlockedSkills(skills, nosend)
 	self.UnlockedSkills = table.ToKeyValues(skills)
+end
+
+function meta:SetSkillsLevels(skills)
+	self.SkillsLevels = skills
+end
+
+function meta:SetActiveSkillsLevels(skills)
+	self.ActiveSkillsLevels = skills
 end
