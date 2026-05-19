@@ -260,7 +260,7 @@ SKILL_SANGUINE2 = 149
 SKILL_VITALITY4 = 150
 SKILL_MOTION4 = 151
 SKILL_BATTLER6 = 152
-SKILL_HANDY6 = 153
+SKILL_OVERHANDY = 153
 SKILL_HAMMERDISCIPLINE2 = 154
 SKILL_TORMENT1 = 155
 SKILL_TORMENT2 = 156
@@ -332,6 +332,7 @@ SKILL_ENDLESS_WORTH = 221
 SKILL_ENDLESS_SPEED = 222
 SKILL_ENDLESS_HEALTH = 223
 SKILL_ENDLESS_FISTMASTER = 224
+SKILL_ENDLESS_BLOODARMOR = 225
 
 SKILLMOD_HEALTH = 1
 SKILLMOD_BLOODARMOR = 2
@@ -919,12 +920,13 @@ s = GM:AddSkill(SKILL_HANDY4, "Handy IV", GOOD.."+5% repair rate",
 GM:AddSkillModifier(SKILL_HANDY4, SKILLMOD_REPAIRRATE_MUL, 0.05)
 
 s = GM:AddSkill(SKILL_HANDY5, "Handy V", GOOD.."+6% repair rate",
--3, 3, {SKILL_HANDY6}, TREE_BUILDINGTREE)
+-3, 3, {SKILL_OVERHANDY}, TREE_BUILDINGTREE)
 GM:AddSkillModifier(SKILL_HANDY5, SKILLMOD_REPAIRRATE_MUL, 0.06)
 
-s = GM:AddSkill(SKILL_HANDY6, "Handy VI", GOOD.."+7% repair rate",
+s = GM:AddSkill(SKILL_OVERHANDY, "Overhandy", GOOD.."+7% repair rate (+1% per level)",
 -2.5, 4.5, {}, TREE_BUILDINGTREE)
-GM:AddSkillModifier(SKILL_HANDY6, SKILLMOD_REPAIRRATE_MUL, 0.07)
+s.MaxLevel = 10
+GM:AddSkillModifier(SKILL_OVERHANDY, SKILLMOD_REPAIRRATE_MUL, function(sk, pl, lvl) return 0.06+lvl*0.01 end)
 
 s = GM:AddSkill(SKILL_HAMMERDISCIPLINE1, "Hammer Discipline I", GOOD.."-10% hammer swing delay\n"..BAD.."-8% repair rate",
 0, 1, {SKILL_BARRICADEEXPERT, SKILL_HAMMERDISCIPLINE2}, TREE_BUILDINGTREE)
@@ -1022,7 +1024,7 @@ s = GM:AddSkill(SKILL_CARRIER, "Carrier", GOOD.."-5% prop carrying slow down",
 9, -2, {}, TREE_BUILDINGTREE)
 GM:AddSkillModifier(SKILL_CARRIER, SKILLMOD_PROP_CARRY_SLOW_MUL, -0.05)
 
-s = GM:AddSkill(SKILL_STOCKPILE, "Stockpiling", GOOD.."Collect twice as much from resupplies\n"..BAD.."2.06x resupply box delay",
+s = GM:AddSkill(SKILL_STOCKPILE, "Stockpiling", GOOD.."Collect twice as much from resupplies\n"..BAD.."2x resupply box delay",
 8, -3, {}, TREE_BUILDINGTREE)
 
 s = GM:AddSkill(SKILL_ACUITY, "Supplier's Acuity", GOOD.."Locate nearby resupply boxes if behind walls\n"..GOOD.."Locate nearby unplaced resupply boxes on players through walls\n"..GOOD.."Locate nearby resupply packs through walls",
@@ -1690,7 +1692,7 @@ s.ColorModifierOverrideUnlocked = {128, 0.5, 0.2}
 s.ColorModifierOverrideActive = {128, 0.5, 0.2}
 GM:AddSkillModifier(SKILL_REDEMPTION_UNDEAD, SKILLMOD_DAMAGE_DEALT_MUL, -0.175)
 
-s = GM:AddSkill(SKILL_ENDLESS, "The Endless", PURPLE.."Activates the Endless Tree\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+4% damage dealt (+2% per level)\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
+s = GM:AddSkill(SKILL_ENDLESS, "The Endless", PURPLE.."Activates the Endless Tree\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+4% damage dealt (+1% per level)\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
 0, 0, {SKILL_NONE, SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4, SKILL_ENDLESS_WORTH, SKILL_ENDLESS_SPEED, SKILL_ENDLESS_HEALTH}, TREE_ENDLESSTREE)
 s.UnlockedSkillsRequirements = {SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4}
 s.RequiredSP = 10
@@ -1707,9 +1709,9 @@ s.Hidden = function(pl)
 end
 s.HideTruly = true
 GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
-GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, function(sk, pl, lvl) return 0.04 + lvl*0.02 end)
+GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, function(sk, pl, lvl) return 0.04 + lvl*0.01 end)
 
-s = GM:AddSkill(SKILL_ENDLESS_WORTH, "Worth I", "+5 starting worth (+3 worth per level)",
+s = GM:AddSkill(SKILL_ENDLESS_WORTH, "Endless Worth", GOOD.."+5 starting worth (+3 worth per level)\n"..GOOD.."Bonus +3 worth on max level!",
 -1, 1, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
 s.Hidden = function(pl)
@@ -1718,9 +1720,9 @@ end
 s.HideTruly = true
 s.RequiredSP = 2
 s.MaxLevel = 50
-GM:AddSkillModifier(SKILL_ENDLESS_WORTH, SKILLMOD_WORTH, function(sk, pl, lvl) return 5 + lvl*3 end)
+GM:AddSkillModifier(SKILL_ENDLESS_WORTH, SKILLMOD_WORTH, function(sk, pl, lvl) return 5 + (sk.MaxLevel == lvl and lvl or lvl-1)*3 end)
 
-s = GM:AddSkill(SKILL_ENDLESS_SPEED, "Endless Speed", "+1.25 movement speed (+0.75 movement speed per level)",
+s = GM:AddSkill(SKILL_ENDLESS_SPEED, "Endless Speed", GOOD.."+1.25 movement speed (+0.75 movement speed per level)\n"..GOOD.."Bonus +0.75 speed on max level!",
 0, 1.5, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
 s.Hidden = function(pl)
@@ -1729,16 +1731,30 @@ end
 s.HideTruly = true
 s.RequiredSP = 2
 s.MaxLevel = 50
-GM:AddSkillModifier(SKILL_ENDLESS_SPEED, SKILLMOD_SPEED, function(sk, pl, lvl) return 1.25 + lvl*0.75 end)
+GM:AddSkillModifier(SKILL_ENDLESS_SPEED, SKILLMOD_SPEED, function(sk, pl, lvl) return 1.25 + (sk.MaxLevel == lvl and lvl or lvl-1)*0.75 end)
 
 
-s = GM:AddSkill(SKILL_ENDLESS_HEALTH, "Endless Health", "+1.5 health (+1 health per level)",
-1, 1, {}, TREE_ENDLESSTREE)
+s = GM:AddSkill(SKILL_ENDLESS_HEALTH, "Endless Health", GOOD.."+1.5 health (+1 health per level)\n"..GOOD.."Bonus 1HP on max level!",
+1, 1, {SKILL_ENDLESS_BLOODARMOR}, TREE_ENDLESSTREE)
+s.EndlessOnly = true
+s.Hidden = function(pl)
+	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
+end
+s.ConnectionsLevels = {
+	[SKILL_ENDLESS_BLOODARMOR] = 5
+}
+s.HideTruly = true
+s.RequiredSP = 2
+s.MaxLevel = 50
+GM:AddSkillModifier(SKILL_ENDLESS_HEALTH, SKILLMOD_HEALTH, function(sk, pl, lvl) return 1.5 + (sk.MaxLevel == lvl and lvl or lvl-1) end)
+
+s = GM:AddSkill(SKILL_ENDLESS_BLOODARMOR, "Endless Blood armor", GOOD.."+1 blood armor per level",
+2, -2, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
 s.Hidden = function(pl)
 	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
 end
 s.HideTruly = true
 s.RequiredSP = 2
-s.MaxLevel = 50
-GM:AddSkillModifier(SKILL_ENDLESS_HEALTH, SKILLMOD_HEALTH, function(sk, pl, lvl) return 1.5 + lvl end)
+s.MaxLevel = 30
+GM:AddSkillModifier(SKILL_ENDLESS_BLOODARMOR, SKILLMOD_BLOODARMOR, function(sk, pl, lvl) return lvl end)

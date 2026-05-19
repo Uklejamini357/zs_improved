@@ -70,6 +70,16 @@ function GM:FixSkillConnections()
 				otherskill.Connections[skillid] = true
 			end
 		end
+
+		if skill.ConnectionsLevels then
+			for connectid, _ in pairs(skill.ConnectionsLevels) do
+				local otherskill = self.Skills[connectid]
+				otherskill.ConnectionsLevels = {}
+				if otherskill and not otherskill.ConnectionsLevels[skillid] then
+					otherskill.ConnectionsLevels[skillid] = skill.ConnectionsLevels[connectid]
+				end
+			end
+		end
 	end
 end
 
@@ -100,6 +110,7 @@ function GM:SkillCanUnlock(pl, skillid, skilllist)
 		end
 
 		local connections = skill.Connections
+		local connectionlvls = skill.ConnectionsLevels
 
 		if connections[SKILL_NONE] then
 			return true
@@ -107,7 +118,11 @@ function GM:SkillCanUnlock(pl, skillid, skilllist)
 
 		for _, myskillid in pairs(skilllist) do
 			if connections[myskillid] then
-				return true
+				if connectionlvls and connectionlvls[myskillid] then
+					return connectionlvls[myskillid] <= pl:GetSkillLevel(myskillid)
+				else
+					return true
+				end
 			end
 		end
 	end
@@ -143,7 +158,7 @@ function meta:IsSkillActive(skillid)
 end
 
 function meta:GetSkillLevel(skillid)
-	return self:GetSkillsLevels()[skillid] or 0
+	return self:GetSkillsLevels()[skillid] or self:IsSkillUnlocked(skillid) and 1 or 0
 end
 
 function meta:GetActiveSkillLevel(skillid)
@@ -339,7 +354,7 @@ function meta:GetZSSPUsed()
 
 	for skillid in pairs(allskills) do
 		if self:IsSkillUnlocked(skillid) then
-			usedsp = usedsp + (allskills[skillid].RequiredSP or 1)*(1+self:GetSkillLevel(skillid))
+			usedsp = usedsp + (allskills[skillid].RequiredSP or 1)*(self:GetSkillLevel(skillid))
 		end
 	end
 

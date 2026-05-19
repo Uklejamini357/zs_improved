@@ -224,6 +224,13 @@ GM.Achievements = {
         Diff = 5
     },
 
+    ["skill_upgrade"] = {
+        Name = "Is this how it works?",
+        Desc = "Upgrade a skill. This becomes necessary for endless.",
+        Reward = 195,
+        Diff = 3
+    },
+
 }
 
 -- As to not call the table.Count function again

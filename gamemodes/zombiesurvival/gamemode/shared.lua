@@ -2,7 +2,7 @@ GM.Name		=	"ZS Improved" -- wtf was it Redux or Improved?
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.5.0" -- skill levels update
+GM.Version	=	"1.5.1" -- further improvement
 
 local zs_enablesandbox = CreateConVar("zs_enablesandbox", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable Sandbox Mode. You know what it does, adds sandbox spawnmenu for admins only etc. Restart might be required when changing this value!")
 

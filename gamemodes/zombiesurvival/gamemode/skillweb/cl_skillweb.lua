@@ -343,18 +343,20 @@ local function UnlockSkill(self, skillid)
 	self:DisplayMessage(name.." unlocked and activated!", COLOR_GREEN)
 end
 
-local function UpgradeSkill(self, skillid)
-	local name = GAMEMODE.Skills[skillid].Name
+local function UpgradeSkill(self, skillid, all)
+	local sk = GAMEMODE.Skills[skillid]
+	local name = sk.Name
 
-	if MySelf:GetSkillLevel(skillid) >= GAMEMODE.Skills[skillid].MaxLevel then
+	if MySelf:GetSkillLevel(skillid) >= sk.MaxLevel then
 		self:DisplayMessage("This skill is already at max level!", COLOR_GREEN)
 		return
 	end
 	net.Start("zs_skills_level")
 	net.WriteUInt(skillid, 16)
+	net.WriteBool(all)
 	net.SendToServer()
 
-	self:DisplayMessage("Upgraded "..name.." to Lvl."..MySelf:GetSkillLevel(skillid)+1, COLOR_GREEN)
+	self:DisplayMessage("Upgraded "..name.." to Lvl."..MySelf:GetSkillLevel(skillid)+ (all and math.floor(math.min(sk.MaxLevel - MySelf:GetSkillLevel(skillid), MySelf:GetZSSPRemaining()/sk.RequiredSP)) or 1), COLOR_GREEN)
 end
 
 function PANEL:Init()
@@ -743,7 +745,7 @@ function PANEL:Init()
 		local skillid = contextmenu.SkillID
 		local name = allskills[skillid].Name
 		if contextmenu.Upgrading then
-			UpgradeSkill(self, skillid)
+			UpgradeSkill(self, skillid, input.IsShiftDown())
 		elseif MySelf:IsSkillDesired(skillid) then
 			DeactivateSkill(self, skillid)
 		elseif MySelf:IsSkillUnlocked(skillid) then
@@ -1679,7 +1681,7 @@ function PANEL:Paint(w, h)
 						local skillmod = GAMEMODE.SkillModifiers[skillid]
 						if (type(skillmod) == "table" and table.Count(skillmod) or 0) > 0 then
 							for k,v in pairs(skillmod) do
-								local i = (isfunction(v) and v(skill, MySelf, MySelf:GetSkillLevel(skillid)) or v) or 0
+								local i = (isfunction(v) and v(skill, MySelf, math.max(1, MySelf:GetSkillLevel(skillid))) or v) or 0
 								if i == 0 or !isnumber(i) then continue end
 
 								local str = i
@@ -1927,12 +1929,18 @@ function PANEL:OnMousePressed(mc)
 			local mx, my = gui.MousePos()
 			contextmenu:SetPos(mx - contextmenu:GetWide() / 2, my - contextmenu:GetTall() / 2)
 
-			if MySelf:IsSkillUnlocked(hoveredskill) then
-				if GAMEMODE.OneClickSkillActivate then UpgradeSkill(self, hoveredskill) return end
-				contextmenu.Button:SetText("Upgrade")
-				contextmenu.SkillID = hoveredskill
-				contextmenu.Upgrading = true
-				contextmenu:SetVisible(true)
+			if MySelf:IsSkillUnlocked(hoveredskill) and GAMEMODE.Skills[hoveredskill].MaxLevel then
+				local skillhovered = GAMEMODE.Skills[hoveredskill]
+				if skillhovered.RequiredSP == 0 or MySelf:GetZSSPRemaining() >= (skillhovered.RequiredSP or 1) then
+					if GAMEMODE.OneClickSkillActivate then UpgradeSkill(self, hoveredskill, input.IsShiftDown()) return end
+					contextmenu.Button:SetText("Upgrade")
+					contextmenu.SkillID = hoveredskill
+					contextmenu.Upgrading = true
+					contextmenu:SetVisible(true)
+				else
+					self:DisplayMessage(Format("You need %s SP to upgrade this skill!", skillhovered.RequiredSP or 1), COLOR_RED)
+					surface.PlaySound("buttons/button8.wav")
+				end
 			end
 		elseif UseNewSkillTrees and not hoveredskill then
 			if self.DesiredTree == 0 then

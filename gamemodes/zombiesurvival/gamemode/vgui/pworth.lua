@@ -21,11 +21,12 @@ local ExtraStartingWorth = 0
 local function GetStartingWorth()
 	local skillmodifiers = {}
 	local gm_modifiers = GAMEMODE.SkillModifiers
+	local allskills = GAMEMODE.Skills
 	for skillid in pairs(table.ToAssoc(MySelf:GetDesiredActiveSkills())) do
 		local modifiers = gm_modifiers[skillid]
 		if modifiers then
 			for modid, amount in pairs(modifiers) do
-				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(skill, MySelf, MySelf:GetSkillLevel(skillid)) or amount)
+				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(allskills[skillid], MySelf, MySelf:GetSkillLevel(skillid)) or amount)
 			end
 		end
 	end

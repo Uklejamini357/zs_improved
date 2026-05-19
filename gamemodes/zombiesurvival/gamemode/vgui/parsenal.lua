@@ -59,6 +59,7 @@ local function CanBuy(item, pan)
 	return true
 end
 
+local UpdateItemPanels
 local function ItemPanelThink(self)
 	local itemtab = FindItem(self.ID)
 	if itemtab then
@@ -86,6 +87,10 @@ local function ItemPanelThink(self)
 				self.StockLabel:InvalidateLayout()
 			end
 		end
+	end
+	
+	if GAMEMODE.AlwaysQuickBuy and self:IsHovered() then
+		UpdateItemPanels(self)
 	end
 end
 
@@ -224,9 +229,9 @@ function GM:SupplyItemViewerDetail(viewer, sweptable, shoptbl)
 	end
 end
 
+
 local function ItemPanelDoClick(self)
 	local shoptbl = self.ShopTabl
-	local viewer = self.NoPoints and GAMEMODE.RemantlerInterface.TrinketsFrame.Viewer or GAMEMODE.ArsenalInterface.Viewer
 
 	if not shoptbl then return end
 	local sweptable = GAMEMODE.ZSInventoryItemData[shoptbl.SWEP] or weapons.Get(shoptbl.SWEP)
@@ -235,6 +240,14 @@ local function ItemPanelDoClick(self)
 		RunConsoleCommand("zs_pointsshopbuy", self.ID, self.NoPoints and "scrap")
 		return
 	end
+
+	UpdateItemPanels(self)
+end
+UpdateItemPanels = function(self)
+	local shoptbl = self.ShopTabl
+	local viewer = self.NoPoints and GAMEMODE.RemantlerInterface.TrinketsFrame.Viewer or GAMEMODE.ArsenalInterface.Viewer
+	local sweptable = GAMEMODE.ZSInventoryItemData[shoptbl.SWEP] or weapons.Get(shoptbl.SWEP)
+	if not sweptable then return end
 
 	for _, v in pairs(self:GetParent():GetChildren()) do
 		v.On = false

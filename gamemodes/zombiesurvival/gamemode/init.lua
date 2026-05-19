@@ -1596,7 +1596,7 @@ function GM:Think()
 				if pl:IsSkillActive(SKILL_STOWAGE) and self:GetWave() > 0 and time > (pl.NextResupplyUse or 0) then
 					local stockpiling = pl:IsSkillActive(SKILL_STOCKPILE)
 
-					pl.NextResupplyUse = time + self.ResupplyBoxCooldown * (pl.ResupplyDelayMul or 1) * (stockpiling and 2.06 or 1) * (1 + (pl.StowageCaches or 0) * 0.02)
+					pl.NextResupplyUse = time + self.ResupplyBoxCooldown * (pl.ResupplyDelayMul or 1) * (stockpiling and 2 or 1) * (1 + (pl.StowageCaches or 0) * 0.02)
 					pl.StowageCaches = (pl.StowageCaches or 0) + (stockpiling and 2 or 1)
 
 					net.Start("zs_nextresupplyuse")
@@ -2079,6 +2079,8 @@ function GM:RestartRound()
 
 	self:RestartLua()
 	self:RestartGame()
+
+	game.SetTimeScale(1)
 
 	net.Start("zs_gamemodecall")
 	net.WriteString("RestartRound")

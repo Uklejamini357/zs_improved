@@ -64,10 +64,18 @@ end)
 
 net.Receive("zs_skills_level", function(len, pl)
 	local skillid = net.ReadUInt(16)
+	local all = net.ReadBool()
 	local skill = GAMEMODE.Skills[skillid]
 
-	if skill and skill.MaxLevel and pl:IsSkillUnlocked(skillid) and pl:GetZSSPRemaining() >= (skill.RequiredSP or 1) and pl:GetSkillLevel(skillid) < skill.MaxLevel then
-		pl:SetSkillLevel(skillid, pl:GetSkillLevel(skillid)+1)
+	if skill and skill.MaxLevel and pl:IsSkillUnlocked(skillid) then
+		for i=1,all and skill.MaxLevel or 1 do
+			if not (pl:GetZSSPRemaining() >= (skill.RequiredSP or 1) and pl:GetSkillLevel(skillid) < skill.MaxLevel) then break end
+			pl:SetSkillLevel(skillid, pl:GetSkillLevel(skillid)+1, true)
+		end
+
+		pl:SetSkillLevel(skillid, pl:GetSkillLevel(skillid))
+
+		pl:GiveAchievement("skill_upgrade")
 
 		local msg = "Upgraded "..skill.Name.." to Lvl."..pl:GetSkillLevel(skillid)
 		pl:CenterNotify(msg)
