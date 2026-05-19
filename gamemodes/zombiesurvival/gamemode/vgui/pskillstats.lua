@@ -78,16 +78,17 @@ function MakepStats()
 
 
 	local function UpdateList(changedonly, skillsonly)
+		local allskills = GAMEMODE.Skills
+		local gm_modifiers = GAMEMODE.SkillModifiers
 		for i = 1,#GAMEMODE.SkillModifierFunctions do
 			local i = i or 1
 			local skillmodifiers = {}
-			local gm_modifiers = GAMEMODE.SkillModifiers
 			if skillsonly then
 				for skillid in pairs(table.ToAssoc(MySelf:GetDesiredActiveSkills())) do
 					local modifiers = gm_modifiers[skillid]
 					if modifiers then
 						for modid, amount in pairs(modifiers) do
-							skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(skill, MySelf, MySelf:GetSkillLevel(skillid)) or amount)
+							skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(allskills[skillid], MySelf, MySelf:GetSkillLevel(skillid)) or amount)
 						end
 					end
 				end
@@ -96,7 +97,7 @@ function MakepStats()
 					modifiers = gm_modifiers[skillid]
 					if modifiers then
 						for modid, amount in pairs(modifiers) do
-							skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(skill, MySelf, MySelf:GetSkillLevel(skillid)) or amount)
+							skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(allskills[skillid], MySelf, MySelf:GetSkillLevel(skillid)) or amount)
 						end
 					end
 				end
@@ -106,14 +107,14 @@ function MakepStats()
 			if changedonly and c == 0 then continue end
 			local d = vgui.Create("DEXChangingLabel", bottom)
 
-			if !table.HasValue(GAMEMODE.SkillModifiersNonMulOnly, i) then
+			if !GAMEMODE.SkillModifiersNonMulOnly[i] then
 				c = (c*100).."%"
 			end
 			if (skillmodifiers[i] or 0) >= 0 then
 				c = "+"..c
 			end
-			local colorred = table.HasValue(GAMEMODE.SkillModifiersBadOnly, i) and Color(71,231,119) or Color(238,37,37)
-			local colorgreen = table.HasValue(GAMEMODE.SkillModifiersBadOnly, i) and Color(238,37,37) or Color(71,231,119)
+			local colorred = GAMEMODE.SkillModifiersBadOnly[i] and Color(71,231,119) or Color(238,37,37)
+			local colorgreen = GAMEMODE.SkillModifiersBadOnly[i] and Color(238,37,37) or Color(71,231,119)
 			d:SetChangeFunction(function()
 				return translate.Format("skillmod_n"..i,c)
 			end, true)

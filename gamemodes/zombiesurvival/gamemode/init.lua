@@ -2420,8 +2420,6 @@ function GM:EndRound(winner)
 	if winner == TEAM_HUMAN then
 		self.LastHumanPosition = nil
 
-		self:SetDifficulty(self:GetDifficulty() + 0.05)
-
 		for _, pl in pairs(player.GetAll()) do
 			if pl:Team() == TEAM_HUMAN then
 				if not self:GetUseSigils() then
@@ -2431,6 +2429,8 @@ function GM:EndRound(winner)
 				gamemode.Call("OnPlayerLose", pl)
 			end
 		end
+
+		self:SetDifficulty(self:GetDifficulty() + 0.05*player.GetCount())
 
 		hook.Add("PlayerShouldTakeDamage", "EndRoundShouldTakeDamage", EndRoundPlayerShouldTakeDamage)
 	elseif winner == TEAM_UNDEAD then
@@ -2729,7 +2729,9 @@ function GM:PlayerInitialSpawnRound(pl)
 
 	pl.SelfRedeemTimes = 0
 	pl.SelfRedeemCooldown = 0
-	
+
+	pl.AddPointGainMul = 0
+
 	--local nosend = not pl.DidInitPostEntity
 	pl.DamageVulnerability = nil
 	pl.SelfRedeemedOnce = nil
@@ -3345,6 +3347,9 @@ function GM:EntityTakeDamage(ent, dmginfo)
 								if ent.PointsMultiplier then
 									points = points * ent.PointsMultiplier
 								end
+								if attacker.PointsGainMul then
+									points = points * attacker.PointsGainMul
+								end
 
 								attacker:AddQueuePoints(points, "damage")
 								attacker:GainZSXP(xp)
@@ -3392,6 +3397,9 @@ function GM:EntityTakeDamage(ent, dmginfo)
 						end
 						if ent.PointsMultiplier then
 							points = points * ent.PointsMultiplier
+						end
+						if attacker.PointsGainMul then
+							points = points * attacker.PointsGainMul
 						end
 
 						attacker:AddQueuePoints(points, "damage")

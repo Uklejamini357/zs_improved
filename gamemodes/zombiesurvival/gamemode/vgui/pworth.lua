@@ -17,7 +17,7 @@ hook.Add("SetWave", "CloseWorthOnWave1", function(wave)
 	end
 end)
 
-local ExtraStartingWorth = 0
+local ExtraStartingWorth = GAMEMODE and GAMEMODE.ExtraStartingWorth or 0
 local function GetStartingWorth()
 	local skillmodifiers = {}
 	local gm_modifiers = GAMEMODE.SkillModifiers
@@ -36,6 +36,7 @@ end
 
 net.Receive("zs_extrastartingworth", function(len)
 	ExtraStartingWorth = net.ReadInt(16)
+	GAMEMODE.ExtraStartingWorth = ExtraStartingWorth
 end)
 
 local cvarDefaultCart = CreateClientConVar("zs_defaultcart", "", true, false)

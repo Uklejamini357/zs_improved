@@ -1023,8 +1023,16 @@ function GM:GetDifficulty()
 	return GetGlobalFloat("zs_difficulty_add", 0)
 end
 
+function GM:GetEffectiveDifficultyMul()
+	return GetGlobalFloat("zs_startingdiff_mul", 1) * (1 + GetGlobalFloat("zs_difficulty_add", 0))
+end
+
 function GM:SetDifficulty(value)
 	SetGlobalFloat("zs_difficulty_add", value or self:GetDifficulty())
+end
+
+function GM:SetStartingDifficulty(value)
+	SetGlobalFloat("zs_startingdiff_mul", value)
 end
 
 function GM:EnableDifficultyScaling(value)
