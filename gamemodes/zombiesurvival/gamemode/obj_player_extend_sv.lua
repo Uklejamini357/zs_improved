@@ -336,17 +336,17 @@ function meta:GetMiniBossZombieIndex()
 	return minibossindex or minibossclasses[1]
 end
 
-function meta:GetSemiBossZombieIndex()
-	local semibossclasses = {}
+function meta:GetDemiBossZombieIndex()
+	local demibossclasses = {}
 	for _, classtable in pairs(GAMEMODE.ZombieClasses) do
-		if classtable.SemiBoss then
-			table.insert(semibossclasses, classtable.Index)
+		if classtable.DemiBoss then
+			table.insert(demibossclasses, classtable.Index)
 		end
 	end
 
-	if #semibossclasses == 0 then return -1 end
+	if #demibossclasses == 0 then return -1 end
 
-	local desired = self:GetInfo("zs_semibossclass") or ""
+	local desired = self:GetInfo("zs_demibossclass") or ""
 
 	if self:IsBot() then
 		desired = table.Random({
@@ -361,16 +361,16 @@ function meta:GetSemiBossZombieIndex()
 --		desired = "Nightmare"
 	end
 
-	local semibossindex
-	for _, classindex in pairs(semibossclasses) do
+	local demibossindex
+	for _, classindex in pairs(demibossclasses) do
 		local classtable = GAMEMODE.ZombieClasses[classindex]
 		if string.lower(classtable.Name) == string.lower(desired) then
-			semibossindex = classindex
+			demibossindex = classindex
 			break
 		end
 	end
 
-	return semibossindex or semibossclasses[1]
+	return demibossindex or demibossclasses[1]
 end
 
 function meta:GetBossZombieIndex()

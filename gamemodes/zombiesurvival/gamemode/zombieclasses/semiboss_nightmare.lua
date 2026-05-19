@@ -1,9 +1,9 @@
-CLASS.Name = "Nightmare (Semiboss)"
-CLASS.TranslationName = "class_semiboss_nightmare"
-CLASS.Description = "description_semiboss_nightmare"
-CLASS.Help = "controls_semiboss_nightmare"
+CLASS.Name = "Nightmare (Demiboss)"
+CLASS.TranslationName = "class_demiboss_nightmare"
+CLASS.Description = "description_demiboss_nightmare"
+CLASS.Help = "controls_demiboss_nightmare"
 
-CLASS.SemiBoss = true
+CLASS.DemiBoss = true
 
 CLASS.KnockbackScale = 0
 

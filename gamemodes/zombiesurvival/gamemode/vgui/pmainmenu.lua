@@ -234,5 +234,40 @@ function GM:ShowHelp()
 	but:Dock(TOP)
 	but.DoClick = function() menu:Remove() end
 
+	if MySelf:IsSuperAdmin() then
+		but = vgui.Create("DButton", menu)
+		but:SetFont("ZSHUDFontSmaller")
+		but:SetText("(dev) Open class menu")
+		but:SetTall(buttonhei)
+		but:DockMargin(0, 84, 0, 0)
+		but:DockPadding(0, 12, 0, 12)
+		but:Dock(TOP)
+		but.DoClick = function() GAMEMODE:OpenClassSelect() menu:Remove() end
+
+		but = vgui.Create("DButton", menu)
+		but:SetFont("ZSHUDFontSmaller")
+		but:SetText("(dev) Open arsenal menu")
+		but:SetTall(buttonhei)
+		but:DockMargin(0, 24, 0, 0)
+		but:DockPadding(0, 12, 0, 12)
+		but:Dock(TOP)
+		but.DoClick = function() GAMEMODE:OpenArsenalMenu() menu:Remove() end
+
+		but = vgui.Create("DButton", menu)
+		but:SetFont("ZSHUDFontSmaller")
+		but:SetText("(dev) Close all panels")
+		but:SetTall(buttonhei)
+		but:DockMargin(0, 24, 0, 0)
+		but:DockPadding(0, 12, 0, 12)
+		but:Dock(TOP)
+		but.DoClick = function()
+			if IsValid(GAMEMODE.ArsenalInterface) then
+				GAMEMODE.ArsenalInterface:Remove()
+			end
+
+			menu:Remove()
+		end
+	end
+
 	menu:MakePopup()
 end

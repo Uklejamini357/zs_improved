@@ -1,5 +1,5 @@
 CreateClientConVar("zs_minibossclass", "", true, true)
-CreateClientConVar("zs_semibossclass", "", true, true)
+CreateClientConVar("zs_demibossclass", "", true, true)
 CreateClientConVar("zs_bossclass", "", true, true)
 CreateClientConVar("zs_superbossclass", "", true, true)
 
@@ -85,18 +85,18 @@ function PANEL:Init()
 		self.MiniBossClassTypeButton:SetColor(Color(255,0,0))
 	end
 
-	self.SemiBossClassTypeButton = EasyButton(nil, translate.Get("zclasses_semibosses"), 8, 4)
-	self.SemiBossClassTypeButton:SetToolTip(translate.Get("zclasses_semibosses_d"))
-	self.SemiBossClassTypeButton:SetFont("ZSHUDFontSmaller")
-	self.SemiBossClassTypeButton:SetSize(140, 28)
---	self.SemiBossClassTypeButton:SizeToContents()
-	self.SemiBossClassTypeButton.DoClick = function(self)
+	self.DemiBossClassTypeButton = EasyButton(nil, translate.Get("zclasses_demibosses"), 8, 4)
+	self.DemiBossClassTypeButton:SetToolTip(translate.Get("zclasses_demibosses_d"))
+	self.DemiBossClassTypeButton:SetFont("ZSHUDFontSmaller")
+	self.DemiBossClassTypeButton:SetSize(140, 28)
+--	self.DemiBossClassTypeButton:SizeToContents()
+	self.DemiBossClassTypeButton.DoClick = function(self)
 		if classselectmode == ZCLASSSELECT_SEMIBOSS then return end
 		classselectmode = ZCLASSSELECT_SEMIBOSS
 		GAMEMODE:OpenClassSelect()
 	end
 	if classselectmode == ZCLASSSELECT_SEMIBOSS then
-		self.SemiBossClassTypeButton:SetColor(Color(255,0,0))
+		self.DemiBossClassTypeButton:SetColor(Color(255,0,0))
 	end
 
 	self.BossClassTypeButton = EasyButton(nil, translate.Get("zclasses_bosses"), 8, 4)
@@ -173,11 +173,11 @@ function PANEL:Init()
 			elseif classselectmode == ZCLASSSELECT_BOSS then
 				ok = classtab.Boss and not classtab.Hidden
 			elseif classselectmode == ZCLASSSELECT_SEMIBOSS then
-				ok = classtab.SemiBoss and not classtab.Hidden
+				ok = classtab.DemiBoss and not classtab.Hidden
 			elseif classselectmode == ZCLASSSELECT_MINIBOSS then
 				ok = classtab.MiniBoss and not classtab.Hidden
 			else
-				ok = not classtab.SuperBoss and not classtab.Boss and not classtab.SemiBoss and not classtab.MiniBoss and
+				ok = not classtab.SuperBoss and not classtab.Boss and not classtab.DemiBoss and not classtab.MiniBoss and
 					(not classtab.Hidden or classtab.CanUse and classtab:CanUse(MySelf)) and
 					(classtab.EndlessOnly and GAMEMODE:IsEndlessMode() or not classtab.EndlessOnly) and
 					(not GAMEMODE.ObjectiveMap or classtab.Unlocked)
@@ -214,7 +214,7 @@ function PANEL:PerformLayout()
 	self:CenterHorizontal()
 	self:CenterVertical(0.35)
 
-	local button = self.SemiBossClassTypeButton
+	local button = self.DemiBossClassTypeButton
 
 	if IsValid(button) then
 		button:MoveAbove(self, 16)
@@ -225,7 +225,7 @@ function PANEL:PerformLayout()
 	
 	if IsValid(button) then
 		button:MoveAbove(self, 16)
-		button:MoveLeftOf(self.SemiBossClassTypeButton, 48)
+		button:MoveLeftOf(self.DemiBossClassTypeButton, 48)
 	end	
 
 	button = self.ClassTypeButton
@@ -239,7 +239,7 @@ function PANEL:PerformLayout()
 
 	if IsValid(button) then
 		button:MoveAbove(self, 16)
-		button:MoveRightOf(self.SemiBossClassTypeButton, 48)
+		button:MoveRightOf(self.DemiBossClassTypeButton, 48)
 	end
 
 	button = self.SuperBossClassTypeButton
@@ -280,7 +280,7 @@ function PANEL:OnRemove()
 	if IsValid(button) then button:Remove() end
 	button = self.MiniBossClassTypeButton
 	if IsValid(button) then button:Remove() end
-	button = self.SemiBossClassTypeButton
+	button = self.DemiBossClassTypeButton
 	if IsValid(button) then button:Remove() end
 	button = self.BossClassTypeButton
 	if IsValid(button) then button:Remove() end
@@ -374,9 +374,9 @@ function PANEL:DoClick()
 		elseif self.ClassTable.Boss then
 			RunConsoleCommand("zs_bossclass", self.ClassTable.Name)
 			GAMEMODE:CenterNotify(translate.Format("boss_class_select", self.ClassTable.Name))
-		elseif self.ClassTable.SemiBoss then
-			RunConsoleCommand("zs_semibossclass", self.ClassTable.Name)
-			GAMEMODE:CenterNotify(translate.Format("semiboss_class_select", self.ClassTable.Name))
+		elseif self.ClassTable.DemiBoss then
+			RunConsoleCommand("zs_demibossclass", self.ClassTable.Name)
+			GAMEMODE:CenterNotify(translate.Format("demiboss_class_select", self.ClassTable.Name))
 		elseif self.ClassTable.MiniBoss then
 			RunConsoleCommand("zs_minibossclass", self.ClassTable.Name)
 			GAMEMODE:CenterNotify(translate.Format("miniboss_class_select", self.ClassTable.Name))
@@ -418,7 +418,7 @@ function PANEL:Think()
 	local enabled
 	if MySelf:GetZombieClass() == self.ClassTable.Index then
 		enabled = 2
-	elseif self.ClassTable.SuperBoss or self.ClassTable.Boss or self.ClassTable.SemiBoss or self.ClassTable.MiniBoss or gamemode.Call("IsClassUnlocked", self.ClassTable.Index) then
+	elseif self.ClassTable.SuperBoss or self.ClassTable.Boss or self.ClassTable.DemiBoss or self.ClassTable.MiniBoss or gamemode.Call("IsClassUnlocked", self.ClassTable.Index) then
 		enabled = 1
 	else
 		enabled = 0

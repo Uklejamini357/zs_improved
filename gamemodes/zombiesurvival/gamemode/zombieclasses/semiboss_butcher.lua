@@ -3,7 +3,7 @@ CLASS.TranslationName = "class_butcher"
 CLASS.Description = "description_butcher"
 CLASS.Help = "controls_butcher"
 
-CLASS.SemiBoss = true -- This will become demiboss soon. (Did you mean: Semiboss)
+CLASS.DemiBoss = true -- This will become demiboss soon. (Did you mean: Demiboss)
 
 CLASS.KnockbackScale = 0
 

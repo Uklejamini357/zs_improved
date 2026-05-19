@@ -1187,6 +1187,11 @@ function PANEL:DoEdgeScroll(deltatime)
 	if not system.HasFocus() then return end
 
 	local mx, my = gui.MousePos()
+	if !system.HasFocus() and self.PrevMousePos then
+		mx, my = self.PrevMousePos[1], self.PrevMousePos[2]
+	end
+	self.PrevMousePos = {mx, my}
+
 	local edge = math.min(w, h) * 0.035
 	local scrolldir = Vector(0, 0, 0)
 	local campos = self.vCamPos
@@ -1336,6 +1341,10 @@ function PANEL:Paint(w, h)
 	--ang.roll = math.sin(realtime / 4) * 1.8
 
 	local mx, my = gui.MousePos()
+	if !system.HasFocus() and self.PrevMousePos then
+		mx, my = self.PrevMousePos[1], self.PrevMousePos[2]
+	end
+	self.PrevMousePos = {mx, my}
 	local aimvector = util.AimVector(ang, self.fFOV, mx, my, w, h)
 	local intersectpos = util.IntersectRayWithPlane(self.vCamPos, aimvector, self:GetLookAt(), Vector(-1, 0, 0))
 
@@ -1835,6 +1844,10 @@ function PANEL:OnMousePressed(mc)
 
 		if hoveredskill then
 			local mx, my = gui.MousePos()
+			if !system.HasFocus() and self.PrevMousePos then
+				mx, my = self.PrevMousePos[1], self.PrevMousePos[2]
+			end
+			self.PrevMousePos = {mx, my}
 			local can_remort = MySelf:CanSkillsRemort()
 			contextmenu:SetPos(mx - contextmenu:GetWide() / 2, my - contextmenu:GetTall() / 2)
 

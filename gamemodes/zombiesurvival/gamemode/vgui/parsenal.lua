@@ -9,11 +9,12 @@ local function pointslabelThink(self)
 end
 
 hook.Add("Think", "ArsenalMenuThink", function()
+	if !system.HasFocus() then return end
 	local pan = GAMEMODE.ArsenalInterface
 	if pan and pan:IsValid() and pan:IsVisible() then
-		local mx, my = gui.MousePos()
+		local mx, my = input.GetCursorPos()
 		local x, y = pan:GetPos()
-		if mx < x - 16 or my < y - 16 or mx > x + pan:GetWide() + 16 or my > y + pan:GetTall() + 16 then
+		if pan.AllowCloseIn < SysTime() and (mx < x - 16 or my < y - 16 or mx > x + pan:GetWide() + 16 or my > y + pan:GetTall() + 16) then
 			pan:SetVisible(false)
 		end
 	end
@@ -22,7 +23,7 @@ end)
 local function ArsenalMenuCenterMouse(self)
 	local x, y = self:GetPos()
 	local w, h = self:GetSize()
-	gui.SetMousePos(x + w / 2, y + h / 2)
+	input.SetCursorPos(x + w / 2, y + h / 2)
 end
 
 local function worthmenuDoClick()
@@ -687,6 +688,7 @@ end
 
 function GM:OpenArsenalMenu()
 	if self.ArsenalInterface and self.ArsenalInterface:IsValid() then
+		self.ArsenalInterface.AllowCloseIn = SysTime()+0.2
 		self.ArsenalInterface:SetVisible(true)
 		self.ArsenalInterface:CenterMouse()
 		return
@@ -702,13 +704,13 @@ function GM:OpenArsenalMenu()
 	frame:SetDeleteOnClose(false)
 	frame:SetTitle(" ")
 	frame:SetDraggable(false)
+	frame.AllowCloseIn = SysTime()+0.2
 	if frame.btnClose and frame.btnClose:IsValid() then frame.btnClose:SetVisible(false) end
 	if frame.btnMinim and frame.btnMinim:IsValid() then frame.btnMinim:SetVisible(false) end
 	if frame.btnMaxim and frame.btnMaxim:IsValid() then frame.btnMaxim:SetVisible(false) end
 	frame.CenterMouse = ArsenalMenuCenterMouse
 	frame.Think = ArsenalMenuThink
 	self.ArsenalInterface = frame
-
 	local topspace = vgui.Create("DPanel", frame)
 	topspace:SetWide(wid - 16)
 

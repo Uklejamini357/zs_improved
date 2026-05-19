@@ -1,4 +1,4 @@
-CLASS.Base = "semiboss_butcher"
+CLASS.Base = "demiboss_butcher"
 
 CLASS.Name = "The Grave Digger"
 CLASS.TranslationName = "class_gravedigger"
@@ -6,7 +6,7 @@ CLASS.Description = "description_gravedigger"
 CLASS.Help = "controls_gravedigger"
 
 CLASS.Boss = true
-CLASS.SemiBoss = false
+CLASS.DemiBoss = false
 
 CLASS.Health = 1600
 CLASS.DynamicHealth = 80

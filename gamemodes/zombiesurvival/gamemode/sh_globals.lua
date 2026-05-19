@@ -170,14 +170,14 @@ GM.BarricadeHealthMassFactor = 3.625 * 0.85 --3.5 * 0.85
 GM.BarricadeHealthVolumeFactor = 4.125 * 0.85 --4 * 0.85
 GM.BarricadeRepairCapacity = 1.35 --1.25
 
--- Allow Semiboss zombies?
-GM.SemiBossZombies = true
+-- Allow Demiboss zombies?
+GM.DemiBossZombies = true
 
--- Amount of players needed for the semiboss to spawn.
-GM.SemiBossZombiePlayersRequired = 3
+-- Amount of players needed for the demiboss to spawn.
+GM.DemiBossZombiePlayersRequired = 3
 
 -- Amount (in seconds) for the boss to spawn in before wave starts
-GM.SemiBossZombieSpawnBeforeWaveStart = 1
+GM.DemiBossZombieSpawnBeforeWaveStart = 1
 
 -- Amount of players needed for the boss to spawn. (Comment: player bots count too)
 GM.BossZombiePlayersRequired = 8

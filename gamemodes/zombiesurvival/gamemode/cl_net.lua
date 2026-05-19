@@ -211,7 +211,7 @@ net.Receive("zs_miniboss_spawned", function(length)
 	end
 end)
 
-net.Receive("zs_semiboss_spawned", function(length)
+net.Receive("zs_demiboss_spawned", function(length)
 	local ent = net.ReadEntity()
 	local classindex = net.ReadUInt(8)
 	local classtbl = GAMEMODE.ZombieClasses[classindex]
