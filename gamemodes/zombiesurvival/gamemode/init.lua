@@ -1390,7 +1390,6 @@ function GM:SortZombieSpawnDistances(allplayers)
 end
 
 function GM:ShouldRestartRound()
-	if GetGlobalBool("gamemode_code_ruined") then return false end
 	if self.TimeLimit == -1 or self.RoundLimit == -1 then return true end
 
 	local roundlimit = self.RoundLimit
@@ -1450,7 +1449,7 @@ function GM:Think()
 					end
 				end
 
-				if self.SuperBossZombies and self.LastSuperBossZombieSpawned ~= wave and (self.LastSuperBossZombieSpawned or GAMEMODE:GetNumberOfWaves() - 1) >= wave and wave > 0 --and not self.RoundEnded
+				if self.SuperBossZombies and self.LastSuperBossZombieSpawned ~= wave and (self.LastSuperBossZombieSpawned or 0) <= wave-3 and wave >= self:GetNumberOfWaves() - 1 --and not self.RoundEnded
 				and (self.SuperBossZombiePlayersRequired <= 0 or #player.GetAll() >= self.SuperBossZombiePlayersRequired) then
 					if self:GetWaveStart() - 10 <= time then
 						self:SpawnSuperBossZombie()
@@ -5423,7 +5422,7 @@ function GM:OnReloaded()
 	self.gm_code_ruined = true
 */
 
-	SetGlobalBool("gamemode_code_ruined", true)
+	-- SetGlobalBool("gamemode_code_ruined", true)
 	BroadcastLua("chat.AddText(Color(223, 0, 0), \"BRUH DOES THE GAMEMODE FILES RELOADING REALLY HAVE TO RUIN THE GAMEMODE CODE?!?!?!?\")")
 end
 
