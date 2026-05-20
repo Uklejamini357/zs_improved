@@ -4818,8 +4818,10 @@ function GM:PlayerSpawn(pl)
 		if self.ZombieEscape then
 			pl:Give("weapon_zs_zeknife")
 			pl:Give("weapon_zs_zegrenade")
-			pl:Give(table.Random(self.ZombieEscapeWeaponsPrimary))
-			pl:Give(table.Random(self.ZombieEscapeWeaponsSecondary))
+			local wep1 = table.Random(self.ZombieEscapeWeaponsPrimary)
+			local wep2 = table.Random(self.ZombieEscapeWeaponsSecondary)
+			pl:Give(wep1)
+			pl:Give(wep2)
 		else
 			local start = pl:GetRandomStartingItem()
 			if start and (pl.m_PreRedeem or not pl.SelfRedeemedOnce) then

@@ -333,6 +333,7 @@ SKILL_ENDLESS_SPEED = 222
 SKILL_ENDLESS_HEALTH = 223
 SKILL_ENDLESS_FISTMASTER = 224
 SKILL_ENDLESS_BLOODARMOR = 225
+SKILL_U_AR2PULSERIFLE = 226
 
 SKILLMOD_HEALTH = 1
 SKILLMOD_BLOODARMOR = 2
@@ -1183,6 +1184,10 @@ s = GM:AddSkill(SKILL_U_BULLETSTORMMG, "Unlock: Bullet Storm Machine Gun", GOOD.
 1.5, -6.5, {SKILL_SOFTDET}, TREE_GUNTREE)
 s.RequiredSP = 2
 
+s = GM:AddSkill(SKILL_U_AR2PULSERIFLE, "Unlock: 'AR2' Pulse Rifle", GOOD.."Unlocks purchasing the 'AR2' Pulse Rifle\nTier 6 weapon\nHas better DPS output, but lacks the ability to slow down zombies",
+0, -8, {SKILL_SOFTDET}, TREE_GUNTREE)
+s.RequiredSP = 3
+
 s = GM:AddSkill(SKILL_SLEIGHTOFHAND, "Sleight of Hand", GOOD.."+10% weapon reload speed\n"..BAD.."+20% weapon aim spread",
 -5, -1, {}, TREE_GUNTREE)
 s.CanUseInZE = true
@@ -1711,12 +1716,14 @@ s.HideTruly = true
 GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
 GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, function(sk, pl, lvl) return 0.04 + lvl*0.01 end)
 
+local endlesshidden = function(pl)
+	return not (GAMEMODE:IsEndlessMode() and pl:IsSkillUnlocked(SKILL_ENDLESS))
+end
+
 s = GM:AddSkill(SKILL_ENDLESS_WORTH, "Endless Worth", GOOD.."+5 starting worth (+3 worth per level)\n"..GOOD.."Bonus +3 worth on max level!",
 -1, 1, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
+s.Hidden = endlesshidden
 s.HideTruly = true
 s.RequiredSP = 2
 s.MaxLevel = 50
@@ -1725,9 +1732,7 @@ GM:AddSkillModifier(SKILL_ENDLESS_WORTH, SKILLMOD_WORTH, function(sk, pl, lvl) r
 s = GM:AddSkill(SKILL_ENDLESS_SPEED, "Endless Speed", GOOD.."+1.25 movement speed (+0.75 movement speed per level)\n"..GOOD.."Bonus +0.75 speed on max level!",
 0, 1.5, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
+s.Hidden = endlesshidden
 s.HideTruly = true
 s.RequiredSP = 2
 s.MaxLevel = 50
@@ -1737,9 +1742,7 @@ GM:AddSkillModifier(SKILL_ENDLESS_SPEED, SKILLMOD_SPEED, function(sk, pl, lvl) r
 s = GM:AddSkill(SKILL_ENDLESS_HEALTH, "Endless Health", GOOD.."+1.5 health (+1 health per level)\n"..GOOD.."Bonus 1HP on max level!",
 1, 1, {SKILL_ENDLESS_BLOODARMOR}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
+s.Hidden = endlesshidden
 s.ConnectionsLevels = {
 	[SKILL_ENDLESS_BLOODARMOR] = 5
 }
@@ -1751,9 +1754,7 @@ GM:AddSkillModifier(SKILL_ENDLESS_HEALTH, SKILLMOD_HEALTH, function(sk, pl, lvl)
 s = GM:AddSkill(SKILL_ENDLESS_BLOODARMOR, "Endless Blood armor", GOOD.."+1 blood armor per level",
 2, -2, {}, TREE_ENDLESSTREE)
 s.EndlessOnly = true
-s.Hidden = function(pl)
-	return not pl:IsSkillUnlocked(SKILL_ENDLESS)
-end
+s.Hidden = endlesshidden
 s.HideTruly = true
 s.RequiredSP = 2
 s.MaxLevel = 30

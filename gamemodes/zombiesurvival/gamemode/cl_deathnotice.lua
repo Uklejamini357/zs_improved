@@ -399,6 +399,7 @@ killicon.Add("ammo_nail", "zombiesurvival/killicons/nail_ammo_icon_2")
 
 killicon.AddFont("weapon_zs_doomstick", "zsdeathnotice", "0")
 killicon.AddFont("weapon_zs_bulletstorm_machinegun", "zsdeathnoticecs", "m")
+killicon.AddFont("weapon_zs_ar2", "zsdeathnotice", "2")
 killicon.Add("weapon_zs_ultrabutcherknife", "zombiesurvival/killicons/weapon_zs_butcherknife2", Color(255, 127, 127))
 
 killicon.Add("prop_gunturret_minigun", "zombiesurvival/killicons/weapon_zs_gunturret2.png")
