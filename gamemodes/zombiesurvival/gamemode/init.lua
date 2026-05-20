@@ -1250,6 +1250,8 @@ function GM:SpawnDemiBossZombie(bossplayer, silent, bossindex, triggerboss)
 			net.WriteUInt(bossindex, 8)
 		net.Broadcast()
 	end
+
+	return bossplayer
 end
 
 function GM:SpawnBossZombie(bossplayer, silent, bossindex, triggerboss)
@@ -1287,6 +1289,8 @@ function GM:SpawnBossZombie(bossplayer, silent, bossindex, triggerboss)
 			net.WriteUInt(bossindex, 8)
 		net.Broadcast()
 	end
+
+	return bossplayer
 end
 
 function GM:SpawnSuperBossZombie(bossplayer, silent, bossindex, triggerboss)
@@ -1324,6 +1328,8 @@ function GM:SpawnSuperBossZombie(bossplayer, silent, bossindex, triggerboss)
 			net.WriteUInt(bossindex, 8)
 		net.Broadcast()
 	end
+
+	return bossplayer
 end
 
 function GM:SendZombieVolunteers(pl, nonemptyonly)
@@ -1425,11 +1431,11 @@ function GM:Think()
 				and (self.DemiBossZombiePlayersRequired <= 0 or #player.GetAll() >= self.DemiBossZombiePlayersRequired) then
 					if self:GetWaveStart() - tonumber(self.DemiBossZombieSpawnBeforeWaveStart or 1) <= time then
 						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.032 + (self:GetWave() * 0.013)))) do
-							self:SpawnDemiBossZombie()
+							if !self:SpawnDemiBossZombie() then break end
 						end
 						self.LastDemiBossZombiesSpawned = wave
 					else
-						self:CalculateNextBoss()
+						self:CalculateNextDemiBoss()
 					end
 				end
 
@@ -1437,7 +1443,7 @@ function GM:Think()
 				and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
 					if self:GetWaveStart() - tonumber(self.BossZombieSpawnBeforeWaveStart or 5) <= time then
 						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.011 + (self:GetWave() * 0.004)))) do
-							self:SpawnBossZombie()
+							if !self:SpawnBossZombie() then break end
 						end
 					else
 						self:CalculateNextBoss()
@@ -1693,7 +1699,7 @@ end
 function GM:CalculateNextDemiBoss()
 	local zombies = {}
 	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
-		if (ent:IsBot() or ent:GetInfo("zs_nodemibosspick") == "0") and not ent:GetZombieClassTable().DemiBoss then
+		if (ent:IsBot() or ent:GetInfo("zs_nodemibosspick") == "0") and not ent:GetZombieClassTable().DemiBoss and not ent:GetZombieClassTable().Boss and not ent:GetZombieClassTable().SuperBoss then
 			table.insert(zombies, ent)
 		end
 	end
@@ -1711,7 +1717,7 @@ end
 function GM:CalculateNextBoss()
 	local zombies = {}
 	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
-		if (ent:IsBot() or ent:GetInfo("zs_nobosspick") == "0") and not ent:GetZombieClassTable().Boss then
+		if (ent:IsBot() or ent:GetInfo("zs_nobosspick") == "0") and not ent:GetZombieClassTable().Boss and not ent:GetZombieClassTable().SuperBoss then
 			table.insert(zombies, ent)
 		end
 	end
