@@ -25,7 +25,7 @@ function ENT:AcceptInput(name, activator, caller, arg)
 	local pos = self:GetPos()
 	local totalheal = self.HealPower * (self:GetOwner().RepairRateMul or 1)
 
-	for _, hitent in pairs(ents.FindInSphere(pos, self.Radius * (owner.CloudRadius or 1))) do
+	for _, hitent in ipairs(ents.FindInSphere(pos, self.Radius * (owner.CloudRadius or 1))) do
 		if not hitent:IsValid() or hitent == self or not WorldVisible(pos, hitent:NearestPoint(pos)) then
 			continue
 		end

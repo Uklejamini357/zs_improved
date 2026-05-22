@@ -1374,6 +1374,9 @@ function GM:RestartRound()
 	self:InitPostEntity()
 
 	self:RevertZombieClasses()
+
+	hook.Remove("CalcView", "EndRoundCalcView")
+	hook.Remove("ShouldDrawLocalPlayer", "EndRoundShouldDrawLocalPlayer")
 end
 
 function GM:_HUDShouldDraw(name)
@@ -2330,8 +2333,13 @@ function GM:EndRound(winner, nextmap)
 	end
 
 	timer.Simple(self.ZombieEscape and 0 or 0.5, function()
+		if !self.RoundEnded then return end
 		if not (pEndBoard and pEndBoard:IsValid()) then
 			MakepEndBoard(winner)
+			timer.Simple(0.5, function()
+				if self.RoundEnded then return end
+				pEndBoard:Remove()
+			end)
 		end
 	end)
 end

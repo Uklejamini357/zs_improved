@@ -90,7 +90,7 @@ function SWEP:CheckCry()
 		util.ScreenShake(worldspace, 5, 5, 2, 400)
 		owner:EmitSound("physics/concrete/concrete_break2.wav", 77, 50)
 
-		for k, ent in pairs(ents.FindInSphere(worldspace, 150)) do
+		for k, ent in ipairs(ents.FindInSphere(worldspace, 150)) do
 			if ent:IsValid() and ent:IsValidLivingHuman() and WorldVisible(ent:GetPos(), worldspace) then
 				if CurTime() >= (ent.NextKnockdown or 0) then
 					ent:KnockDown()

@@ -142,7 +142,7 @@ function ENT:Think()
 
 	local totalheal = self.HealValue * (self:GetObjectOwner().RepairRateMul or 1)
 
-	for _, hitent in pairs(ents.FindInSphere(pos, self.MaxDistance * (self:GetObjectOwner().FieldRangeMul or 1))) do
+	for _, hitent in ipairs(ents.FindInSphere(pos, self.MaxDistance * (self:GetObjectOwner().FieldRangeMul or 1))) do
 		if not hitent:IsValid() or hitent == self or not WorldVisible(pos, hitent:NearestPoint(pos)) then
 			continue
 		end

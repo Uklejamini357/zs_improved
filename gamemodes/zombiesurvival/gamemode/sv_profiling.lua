@@ -176,7 +176,7 @@ function GM:ProfilerPlayerValid(pl)
 	end
 
 	-- Are they near a trigger hurt?
-	for _, ent in pairs(ents.FindInSphere(plcenter, 256)) do
+	for _, ent in ipairs(ents.FindInSphere(plcenter, 256)) do
 		if ent and ent:IsValid() then
 			local entclass = ent:GetClass()
 			if entclass == "trigger_hurt" then

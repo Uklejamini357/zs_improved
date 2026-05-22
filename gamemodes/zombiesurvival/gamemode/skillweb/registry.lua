@@ -334,6 +334,8 @@ SKILL_ENDLESS_HEALTH = 223
 SKILL_ENDLESS_FISTMASTER = 224
 SKILL_ENDLESS_BLOODARMOR = 225
 SKILL_U_AR2PULSERIFLE = 226
+SKILL_ENDLESS_LANKY = 227
+SKILL_ENDLESS_BATTLER = 228
 
 SKILLMOD_HEALTH = 1
 SKILLMOD_BLOODARMOR = 2
@@ -511,6 +513,18 @@ local NEUTRAL = "^"..COLORID_YELLOW
 local BAD = "^"..COLORID_RED
 local VERYBAD = "^"..COLORID_DARKRED
 local PURPLE = "^"..COLORID_PURPLE
+
+
+local function MakeSkillEndless(sk)
+	sk.Hidden = function(pl)
+		return not (GAMEMODE:IsEndlessMode() and pl:IsSkillUnlocked(SKILL_ENDLESS))
+	end
+	sk.HideTruly = true
+	sk.EndlessOnly = true
+
+	return sk
+end
+
 
 -- Health Tree
 local s = GM:AddSkill(SKILL_STOIC1, "Stoic I", GOOD.."+1 maximum health\n"..BAD.."-0.75 movement speed",
@@ -1329,10 +1343,21 @@ s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_BATTLER5, SKILLMOD_MELEE_DAMAGE_MUL, 0.06)
 
 s = GM:AddSkill(SKILL_BATTLER6, "Battler VI", GOOD.."+7% melee damage",
-0, -1, {}, TREE_MELEETREE)
+0, -1, {SKILL_ENDLESS_BATTLER}, TREE_MELEETREE)
 s.RemortReq = 1
 s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_BATTLER6, SKILLMOD_MELEE_DAMAGE_MUL, 0.07)
+
+s = GM:AddSkill(SKILL_ENDLESS_BATTLER, "Infini-endurable battler", GOOD.."+2% melee damage (+1% per level)",
+0, -3, {}, TREE_MELEETREE)
+s.CanUseInZE = true
+s.MaxLevel = 35
+s.ColorModifierOverride = {1.5, 5, 5}
+s.ColorModifierOverrideCanUnlock = {1.5, 5, 5}
+s.ColorModifierOverrideUnlocked = {1.5, 5, 5}
+s.ColorModifierOverrideActive = {1.5, 5, 5}
+MakeSkillEndless(s)
+GM:AddSkillModifier(SKILL_ENDLESS_BATTLER, SKILLMOD_MELEE_DAMAGE_MUL, function(sk, pl, lvl) return 0.02+0.01*lvl end)
 
 s = GM:AddSkill(SKILL_LASTSTAND, "Last Stand", GOOD.."1.85x melee damage when below 25% health\n"..GOOD.."-10% melee damage taken when below 25% health\n"..BAD.."0.8x melee weapon damage at any other time\n"..BAD.."-5 maximum health\n"..BAD.."-5 maximum blood armor",
 0, 6, {}, TREE_MELEETREE)
@@ -1350,7 +1375,7 @@ GM:AddSkillFunction(SKILL_D_CLUMSY, function(pl, active)
 	pl.IsClumsy = active
 end)
 
-s = GM:AddSkill(SKILL_CHEAPKNUCKLE, "Cheap Tactics", GOOD.."Slow targets when striking with a melee weapon from behind\n"..BAD.."-10% melee range multiplier",
+s = GM:AddSkill(SKILL_CHEAPKNUCKLE, "Cheap Tactics", GOOD.."Slow targets when striking with a melee weapon from behind\n"..BAD.."-10% melee range mul.",
 4, -2, {SKILL_HEAVYSTRIKES, SKILL_WORTHINESS2}, TREE_MELEETREE)
 GM:AddSkillModifier(SKILL_CHEAPKNUCKLE, SKILLMOD_MELEE_RANGE_MUL, -0.1)
 
@@ -1394,24 +1419,36 @@ GM:AddSkillModifier(SKILL_JOUSTER2, SKILLMOD_MELEE_DAMAGE_MUL, 0.075)
 GM:AddSkillModifier(SKILL_JOUSTER2, SKILLMOD_MELEE_KNOCKBACK_MUL, -0.6)
 GM:AddSkillModifier(SKILL_JOUSTER2, SKILLMOD_MELEE_RANGE_ADD, 1.5)
 
-s = GM:AddSkill(SKILL_LANKY1, "Lanky I", GOOD.."+6.5% melee range multiplier\n"..BAD.."-10% melee damage",
+s = GM:AddSkill(SKILL_LANKY1, "Lanky I", GOOD.."+10% melee range mul.\n"..BAD.."-10% melee damage",
 -4, 0, {SKILL_LANKY2}, TREE_MELEETREE)
 s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_LANKY1, SKILLMOD_MELEE_DAMAGE_MUL, -0.1)
-GM:AddSkillModifier(SKILL_LANKY1, SKILLMOD_MELEE_RANGE_MUL, 0.065)
+GM:AddSkillModifier(SKILL_LANKY1, SKILLMOD_MELEE_RANGE_MUL, 0.1)
 
-s = GM:AddSkill(SKILL_LANKY2, "Lanky II", GOOD.."+7.5% melee range multiplier\n"..BAD.."-11.5% melee damage",
+s = GM:AddSkill(SKILL_LANKY2, "Lanky II", GOOD.."+10% melee range mul.\n"..BAD.."-12% melee damage",
 -4, 1.5, {SKILL_LANKY3}, TREE_MELEETREE)
 s.CanUseInZE = true
-GM:AddSkillModifier(SKILL_LANKY2, SKILLMOD_MELEE_DAMAGE_MUL, -0.115)
-GM:AddSkillModifier(SKILL_LANKY2, SKILLMOD_MELEE_RANGE_MUL, 0.075)
+GM:AddSkillModifier(SKILL_LANKY2, SKILLMOD_MELEE_DAMAGE_MUL, -0.12)
+GM:AddSkillModifier(SKILL_LANKY2, SKILLMOD_MELEE_RANGE_MUL, 0.1)
 
-s = GM:AddSkill(SKILL_LANKY3, "Lanky III", GOOD.."+8.5% melee range multiplier\n"..BAD.."-13% melee damage",
--4, 3, {}, TREE_MELEETREE)
+s = GM:AddSkill(SKILL_LANKY3, "Lanky III", GOOD.."+10% melee range mul.\n"..BAD.."-15% melee damage",
+-4, 3, {SKILL_ENDLESS_LANKY}, TREE_MELEETREE)
 s.CanUseInZE = true
 s.RemortReq = 1
-GM:AddSkillModifier(SKILL_LANKY3, SKILLMOD_MELEE_DAMAGE_MUL, -0.13)
+GM:AddSkillModifier(SKILL_LANKY3, SKILLMOD_MELEE_DAMAGE_MUL, -0.15)
 GM:AddSkillModifier(SKILL_LANKY3, SKILLMOD_MELEE_RANGE_MUL, 0.085)
+
+s = GM:AddSkill(SKILL_ENDLESS_LANKY, "Outgrown Hands", GOOD.."+3 melee range (+2 per level)\n"..BAD.."-5% melee damage (-4% per level)\n"..PURPLE.."Your hands seem to be streching out endlessly...",
+-3, 5, {}, TREE_MELEETREE)
+s.CanUseInZE = true
+s.MaxLevel = 10
+s.ColorModifierOverride = {1.5, 7, 7}
+s.ColorModifierOverrideCanUnlock = {1.5, 7, 7}
+s.ColorModifierOverrideUnlocked = {1.5, 7, 7}
+s.ColorModifierOverrideActive = {1.5, 7, 7}
+MakeSkillEndless(s)
+GM:AddSkillModifier(SKILL_ENDLESS_LANKY, SKILLMOD_MELEE_DAMAGE_MUL, function(sk, pl, lvl) return -(0.01+lvl*0.04) end)
+GM:AddSkillModifier(SKILL_ENDLESS_LANKY, SKILLMOD_MELEE_RANGE_ADD, function(sk, pl, lvl) return 1+lvl*2 end)
 
 s = GM:AddSkill(SKILL_MASTERCHEF, "Master Chef", GOOD.."Zombies hit by culinary weapons in the past second have a chance to drop food items on death\n"..BAD.."-10% melee damage",
 0, -3, {SKILL_BATTLER4}, TREE_MELEETREE)
@@ -1674,7 +1711,7 @@ GM:AddSkillFunction(SKILL_D_FRAGILITY, function(pl, active)
 end)
 
 s = GM:AddSkill(SKILL_ANCIENT_SKILL, "Ancient Skill", "An ancient skill that was secretly hidden until now.\n"..PURPLE.."-10% damage taken from ancient nightmare",
--2, 6, {SKILL_REDEMPTION_UNDEAD, SKILL_POINT_OLD, SKILL_ENDLESS}, TREE_REMORTTREE)
+-2, 6, {SKILL_REDEMPTION_UNDEAD, SKILL_POINT_OLD}, TREE_REMORTTREE)
 s.ColorModifierOverride = {0.3, 1, 0.3}
 
 s = GM:AddSkill(SKILL_POINT_OLD, "Old Pointer", PURPLE.."Gives 2 points every minute\n"..BAD.."Taking damage resets the timer\n"..BAD.."Unable to gain points from wave end",
@@ -1697,43 +1734,34 @@ s.ColorModifierOverrideUnlocked = {128, 0.5, 0.2}
 s.ColorModifierOverrideActive = {128, 0.5, 0.2}
 GM:AddSkillModifier(SKILL_REDEMPTION_UNDEAD, SKILLMOD_DAMAGE_DEALT_MUL, -0.175)
 
-s = GM:AddSkill(SKILL_ENDLESS, "The Endless", PURPLE.."Activates the Endless Tree\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+4% damage dealt (+1% per level)\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
+s = GM:AddSkill(SKILL_ENDLESS, "The Endless", PURPLE.."Activates the Endless Tree, and unhides endless skills\n"..PURPLE.."-3% melee damage taken\n"..PURPLE.."+4% damage dealt (+1% per level)\n"..PURPLE.."+1% damage dealt per wave\nThe only issue: Attempting to balance it",
 0, 0, {SKILL_NONE, SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4, SKILL_ENDLESS_WORTH, SKILL_ENDLESS_SPEED, SKILL_ENDLESS_HEALTH}, TREE_ENDLESSTREE)
 s.UnlockedSkillsRequirements = {SKILL_SIGILDEFENDER1, SKILL_SIGILDEFENDER2, SKILL_SIGILDEFENDER3, SKILL_SIGILDEFENDER4}
 s.RequiredSP = 10
 s.RemortReq = 10
 s.MaxLevel = 85
-s.EndlessOnly = true
 s.Rainbow = true
 s.ColorModifierOverride = {0.05, 0.15, 0.07}
 s.ColorModifierOverrideCanUnlock = {0.05, 0.15, 0.07}
 s.ColorModifierOverrideUnlocked = {0.05, 0.15, 0.07}
 s.ColorModifierOverrideActive = {0.05, 0.15, 0.07}
+MakeSkillEndless(s)
 s.Hidden = function(pl)
 	return not (GAMEMODE:IsEndlessMode() and pl:GetZSRemortLevel() >= 10 and pl:IsSkillUnlocked(SKILL_SIGILDEFENDER1) and pl:IsSkillUnlocked(SKILL_SIGILDEFENDER2) and pl:IsSkillUnlocked(SKILL_SIGILDEFENDER3) and pl:IsSkillUnlocked(SKILL_SIGILDEFENDER4))
 end
-s.HideTruly = true
 GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
 GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, function(sk, pl, lvl) return 0.04 + lvl*0.01 end)
 
-local endlesshidden = function(pl)
-	return not (GAMEMODE:IsEndlessMode() and pl:IsSkillUnlocked(SKILL_ENDLESS))
-end
-
 s = GM:AddSkill(SKILL_ENDLESS_WORTH, "Endless Worth", GOOD.."+5 starting worth (+3 worth per level)\n"..GOOD.."Bonus +3 worth on max level!",
 -1, 1, {}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = endlesshidden
-s.HideTruly = true
+MakeSkillEndless(s)
 s.RequiredSP = 2
 s.MaxLevel = 50
 GM:AddSkillModifier(SKILL_ENDLESS_WORTH, SKILLMOD_WORTH, function(sk, pl, lvl) return 5 + (sk.MaxLevel == lvl and lvl or lvl-1)*3 end)
 
 s = GM:AddSkill(SKILL_ENDLESS_SPEED, "Endless Speed", GOOD.."+1.25 movement speed (+0.75 movement speed per level)\n"..GOOD.."Bonus +0.75 speed on max level!",
 0, 1.5, {}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = endlesshidden
-s.HideTruly = true
+MakeSkillEndless(s)
 s.RequiredSP = 2
 s.MaxLevel = 50
 GM:AddSkillModifier(SKILL_ENDLESS_SPEED, SKILLMOD_SPEED, function(sk, pl, lvl) return 1.25 + (sk.MaxLevel == lvl and lvl or lvl-1)*0.75 end)
@@ -1741,21 +1769,17 @@ GM:AddSkillModifier(SKILL_ENDLESS_SPEED, SKILLMOD_SPEED, function(sk, pl, lvl) r
 
 s = GM:AddSkill(SKILL_ENDLESS_HEALTH, "Endless Health", GOOD.."+1.5 health (+1 health per level)\n"..GOOD.."Bonus 1HP on max level!",
 1, 1, {SKILL_ENDLESS_BLOODARMOR}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = endlesshidden
 s.ConnectionsLevels = {
 	[SKILL_ENDLESS_BLOODARMOR] = 5
 }
-s.HideTruly = true
+MakeSkillEndless(s)
 s.RequiredSP = 2
 s.MaxLevel = 50
 GM:AddSkillModifier(SKILL_ENDLESS_HEALTH, SKILLMOD_HEALTH, function(sk, pl, lvl) return 1.5 + (sk.MaxLevel == lvl and lvl or lvl-1) end)
 
 s = GM:AddSkill(SKILL_ENDLESS_BLOODARMOR, "Endless Blood armor", GOOD.."+1 blood armor per level",
 2, -2, {}, TREE_ENDLESSTREE)
-s.EndlessOnly = true
-s.Hidden = endlesshidden
-s.HideTruly = true
+MakeSkillEndless(s)
 s.RequiredSP = 2
 s.MaxLevel = 30
 GM:AddSkillModifier(SKILL_ENDLESS_BLOODARMOR, SKILLMOD_BLOODARMOR, function(sk, pl, lvl) return lvl end)

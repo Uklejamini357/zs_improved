@@ -36,7 +36,7 @@ function ENT:RecalculateValidity()
 		if self:IsInsideProp() then
 			valid = false
 		else
-			for _, ent in pairs(ents.FindInSphere(tr.HitPos, 48)) do
+			for _, ent in ipairs(ents.FindInSphere(tr.HitPos, 48)) do
 				if ent and ent:IsValid() and ent:GetClass() == "prop_messagebeacon" then
 					valid = false
 					break

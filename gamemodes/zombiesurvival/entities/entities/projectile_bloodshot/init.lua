@@ -43,7 +43,7 @@ function ENT:Explode(hitpos, hitnormal)
 	end
 
 	if owner:IsValidLivingHuman() then
-		for _, ent in pairs(ents.FindInSphere(hitpos, self.Radius * (owner.CloudRadius or 1))) do
+		for _, ent in ipairs(ents.FindInSphere(hitpos, self.Radius * (owner.CloudRadius or 1))) do
 			if ent and ent:IsValidLivingHuman() and WorldVisible(hitpos, ent:NearestPoint(hitpos)) then
 				ent:SetBloodArmor(math.min(ent:GetBloodArmor() + 10 * ent.BloodarmorGainMul, ent.MaxBloodArmor))
 

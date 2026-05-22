@@ -1828,7 +1828,7 @@ function meta:DoSigilTeleport(target, from, corrupted)
 			end
 		end)
 
-		for _, e in pairs(ents.FindInSphere(movepos, 64)) do
+		for _, e in ipairs(ents.FindInSphere(movepos, 64)) do
 			if e:IsValidLivingZombie() then
 				e:TemporaryNoCollide(true)
 			end

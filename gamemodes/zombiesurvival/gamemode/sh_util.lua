@@ -223,7 +223,7 @@ end
 function util.BlastDamageEx(inflictor, attacker, epicenter, radius, damage, damagetype, taperfactor)
 	local basedmg = damage
 
-	for _, ent in pairs(ents.FindInSphere(epicenter, radius)) do
+	for _, ent in ipairs(ents.FindInSphere(epicenter, radius)) do
 		if ent:IsValid() then
 			local nearest = ent:NearestPoint(epicenter)
 			if TrueVisibleFilters(epicenter, nearest, inflictor, attacker, ent)
@@ -244,7 +244,7 @@ function util.BlastDamageExAlloc(inflictor, attacker, epicenter, radius, damage,
 	local dmg
 	local t = {}
 
-	for _, ent in pairs(ents.FindInSphere(epicenter, radius)) do
+	for _, ent in ipairs(ents.FindInSphere(epicenter, radius)) do
 		if ent:IsValid() then
 			local nearest = ent:NearestPoint(epicenter)
 			if TrueVisibleFilters(epicenter, nearest, inflictor, attacker, ent)
@@ -265,7 +265,7 @@ end
 function util.BlastAlloc(inflictor, attacker, epicenter, radius)
 	local t = {}
 
-	for _, ent in pairs(ents.FindInSphere(epicenter, radius)) do
+	for _, ent in ipairs(ents.FindInSphere(epicenter, radius)) do
 		if ent:IsValid() then
 			local nearest = ent:NearestPoint(epicenter)
 			if TrueVisibleFilters(epicenter, nearest, inflictor, attacker, ent)
@@ -292,7 +292,7 @@ function util.FindValidInSphere(pos, radius)
 end
 
 function util.PoisonBlastDamage(inflictor, attacker, epicenter, radius, damage, noreduce, instant)
-	for _, ent in pairs(ents.FindInSphere(epicenter, radius)) do
+	for _, ent in ipairs(ents.FindInSphere(epicenter, radius)) do
 		if ent:IsValid() then
 			local nearest = ent:NearestPoint(epicenter)
 			if TrueVisibleFilters(epicenter, nearest, inflictor, attacker, ent)

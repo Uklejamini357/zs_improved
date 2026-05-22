@@ -31,7 +31,7 @@ function ENT:SetProp(ent)
 
 	--local teamid = self:GetTeam()
 	local inrad = false
-	for _, pl in pairs(ents.FindInSphere(ent:LocalToWorld(ent:OBBCenter()), ent:BoundingRadius() / 2 + self:GetExtraRadius())) do
+	for _, pl in ipairs(ents.FindInSphere(ent:LocalToWorld(ent:OBBCenter()), ent:BoundingRadius() / 2 + self:GetExtraRadius())) do
 		if pl and pl:IsValidLivingPlayer() then --and (teamid == 0 or pl:Team() == teamid) then
 			inrad = true
 			break
@@ -81,7 +81,7 @@ function ENT:Think()
 
 	rate = rate * math.Clamp(1 - (self.PushPeak - CurTime()) / self.PushRamp, 0, 1)
 
-	for _, pl in pairs(ents.FindInSphere(center, ent:BoundingRadius() / 2 + self:GetExtraRadius())) do
+	for _, pl in ipairs(ents.FindInSphere(center, ent:BoundingRadius() / 2 + self:GetExtraRadius())) do
 		if pl and pl:IsValidLivingHuman() or (pl:IsPlayer() and pl:Team() == TEAM_UNDEAD and pl:GetZombieClassTable().Boss) then
 			pushout = true
 

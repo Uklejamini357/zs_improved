@@ -165,7 +165,7 @@ function ZSBOTS.StartCommand(pl, cmd)
 				local obstruction_positions = {}
 				local obstruction_position
 
-				for _, ent in pairs(ents.FindInSphere(eyepos, math.sqrt(meleerange))) do
+				for _, ent in ipairs(ents.FindInSphere(eyepos, math.sqrt(meleerange))) do
 					if ent:GetClass() == "func_breakable" or ent:IsBarricadeProp() or (ent:GetMoveType() == MOVETYPE_VPHYSICS and ent:GetPhysicsObject():IsValid() and ent:GetPhysicsObject():IsMoveable()) --[[and ent:VisibleVec(eyepos)]] then
 						local nearest = ent:NearestPoint(eyepos)
 						if nearest == vector_origin then nearest = ent:WorldSpaceCenter() end

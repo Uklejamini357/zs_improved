@@ -1440,7 +1440,7 @@ function GM:Think()
 
 				if self.BossZombies and self.LastBossZombieSpawned ~= wave and wave > 0 --and not self.RoundEnded
 				and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
-					if self:GetWaveStart() - tonumber(self.BossZombieSpawnBeforeWaveStart or 5) <= time then
+					if self:GetWaveStart() - tonumber(self.BossZombieSpawnBeforeWaveStart or 3) <= time then
 						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.011 + (self:GetWave() * 0.004)))) do
 							if !self:SpawnBossZombie() then break end
 						end
@@ -1451,7 +1451,7 @@ function GM:Think()
 
 				if self.SuperBossZombies and self.LastSuperBossZombieSpawned ~= wave and (self.LastSuperBossZombieSpawned or 0) <= wave-3 and wave >= self:GetNumberOfWaves() - 1 --and not self.RoundEnded
 				and (self.SuperBossZombiePlayersRequired <= 0 or #player.GetAll() >= self.SuperBossZombiePlayersRequired) then
-					if self:GetWaveStart() - 10 <= time then
+					if self:GetWaveStart() - 5 <= time then
 						self:SpawnSuperBossZombie()
 					else
 						self:CalculateNextSuperBoss()

@@ -22,8 +22,17 @@ function ENT:IsInsideProp()
 	if self.GhostNotBarricadeProp then return false end
 
 	local mycenter = self:WorldSpaceCenter()
-	for _, ent in pairs(ents.FindInSphere(mycenter, self:BoundingRadius())) do
-		if ent and ent ~= self and ent:IsValid() and ent:GetMoveType() == MOVETYPE_VPHYSICS and ent:GetSolid() > 0 then
+	local blacklist = {
+		"status_arsenalpack",
+		"status_resupplypack",
+		"status_oxygentank",
+		"prop_ammo",
+		"prop_invitem",
+		"prop_weapon",
+		"prop_playergib"
+	}
+	for _, ent in ipairs(ents.FindInSphere(mycenter, self:BoundingRadius())) do
+		if ent and ent ~= self and ent:IsValid() and ent:GetMoveType() == MOVETYPE_VPHYSICS and ent:GetSolid() > 0 and not table.HasValue(blacklist, ent:GetClass()) then
 			local nearest = ent:NearestPoint(mycenter)
 			if self:NearestPoint(nearest):DistToSqr(nearest) <= 144 then
 				return true
@@ -64,7 +73,7 @@ function ENT:RecalculateValidity()
 		if self.GhostLimitedNormal and tr.HitNormal.z < self.GhostLimitedNormal then
 			valid = false
 		elseif self.GhostDistance then
-			for _, ent in pairs(ents.FindInSphere(tr.HitPos, self.GhostDistance)) do
+			for _, ent in ipairs(ents.FindInSphere(tr.HitPos, self.GhostDistance)) do
 				if ent and ent:IsValid() then
 					if self.GhostEntityWildCard then
 						if self.GhostEntityWildCard == ent:GetClass():sub(1, #self.GhostEntityWildCard) then

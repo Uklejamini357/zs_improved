@@ -22,11 +22,16 @@ function ENT:AcceptInput(name, activator, caller, arg)
 	local healer = self:GetOwner()
 	if not healer:IsValidLivingHuman() then healer = self end
 
+	local toheal = {}
 	local vPos = self:GetPos()
-	for _, ent in pairs(ents.FindInSphere(vPos, self.Radius * (healer.CloudRadius or 1))) do
+	for _, ent in ipairs(ents.FindInSphere(vPos, self.Radius * (healer.CloudRadius or 1))) do
 		if ent and ent:IsValidLivingHuman() and WorldVisible(vPos, ent:NearestPoint(vPos)) then
-			healer:HealPlayer(ent, self.HealPower, 0.5, true)
+			toheal[#toheal+1] = ent
 		end
+	end
+
+	for i=1,#toheal do
+		healer:HealPlayer(toheal[i], self.HealPower * math.max(1, 2.5-(#toheal/2)), 0.5, true)
 	end
 
 	if self.Ticks > 0 then

@@ -25,7 +25,7 @@ function ENT:Think()
 	if not activeweapon:IsValid() or not activeweapon.IsMagnet then return end
 
 	local pos = self:GetPos()
-	for _, ent in pairs(ents.FindInSphere(pos, self.Radius)) do
+	for _, ent in ipairs(ents.FindInSphere(pos, self.Radius)) do
 		local class = ent:GetClass()
 		local ownsitem = not ent.NoPickupsOwner or ent.NoPickupsOwner == owner
 		local droppedrecent = not ent.DroppedTime or ent.DroppedTime + 4 < CurTime()

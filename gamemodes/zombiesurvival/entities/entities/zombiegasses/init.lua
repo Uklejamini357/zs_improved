@@ -27,7 +27,7 @@ function ENT:AcceptInput(name, activator, caller, arg)
 
 	local vPos = self:GetPos()
 
-	for _, ent in pairs(ents.FindInSphere(vPos, self:GetRadius())) do
+	for _, ent in ipairs(ents.FindInSphere(vPos, self:GetRadius())) do
 		if ent and ent:IsValidLivingPlayer() and WorldVisible(vPos, ent:WorldSpaceCenter()) then
 			if ent:Team() == TEAM_UNDEAD then
 				if CurTime() >= (ent.LastRangedAttack or 0) + 3 then

@@ -15,7 +15,7 @@ function ENT:IsInsideProp()
 	--for _, ent in pairs(ents.FindInBox(self:WorldSpaceAABB())) do
 
 	local mycenter = self:WorldSpaceCenter()
-	for _, ent in pairs(ents.FindInSphere(mycenter, self:BoundingRadius())) do
+	for _, ent in ipairs(ents.FindInSphere(mycenter, self:BoundingRadius())) do
 		if ent and ent ~= self and ent:IsValid() and ent:GetMoveType() == MOVETYPE_VPHYSICS and ent:GetSolid() > 0 then
 			local nearest = ent:NearestPoint(mycenter)
 			if self:NearestPoint(nearest):DistToSqr(nearest) <= 144 then

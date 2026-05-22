@@ -1,5 +1,5 @@
 hook.Add("InitPostEntityMap", "Adding", function()
-	for _, ent in pairs(ents.FindInSphere(Vector(1736.2645, -1860.0313, -525.5502), 32)) do
+	for _, ent in ipairs(ents.FindInSphere(Vector(1736.2645, -1860.0313, -525.5502), 32)) do
 		if ent:GetClass() == "func_door_rotating" then ent:Remove() end
 	end
 
