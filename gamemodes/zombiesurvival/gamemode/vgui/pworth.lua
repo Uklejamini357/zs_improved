@@ -433,6 +433,32 @@ function MakepWorth()
 	checkout:CenterHorizontal()
 	checkout.DoClick = CheckoutDoClick
 
+	if MySelf:IsSuperAdmin() then
+		local arsmenu = vgui.Create("DButton", frame)
+		arsmenu:SetFont("ZSHUDFontTinier")
+		arsmenu:SetText("Open Arsenal")
+		arsmenu:SizeToContents()
+		arsmenu:SetSize(130 * screenscale, 30 * screenscale)
+		arsmenu:AlignBottom(8)
+		arsmenu:MoveRightOf(checkout, 80)
+		arsmenu.DoClick = function()
+			pWorth:Remove()
+			GAMEMODE:OpenArsenalMenu()
+		end
+
+		local remmenu = vgui.Create("DButton", frame)
+		remmenu:SetFont("ZSHUDFontTinier")
+		remmenu:SetText("Open Remantler")
+		remmenu:SizeToContents()
+		remmenu:SetSize(130 * screenscale, 30 * screenscale)
+		remmenu:AlignBottom(8)
+		remmenu:MoveLeftOf(checkout, 80)
+		remmenu.DoClick = function()
+			pWorth:Remove()
+			GAMEMODE:OpenRemantlerMenu(true)
+		end
+	end
+
 	local randombutton = vgui.Create("DButton", frame)
 	randombutton:SetFont("ZSHUDFontTiny")
 	randombutton:SetText("Random")

@@ -5,3 +5,9 @@ hook.Add("SetupProps", "RemoveBoomstick", function()
 		end
 	end
 end)
+
+hook.Add("AcceptInput", "InfWavesOnEndless", function(ent, input)
+	if (ent:GetName() == "infinite_wave" or ent:GetName() == "wave_5_end_time") and GAMEMODE:IsEndlessMode() then
+		return true
+	end
+end)

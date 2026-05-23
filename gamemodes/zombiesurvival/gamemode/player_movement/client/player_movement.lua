@@ -43,7 +43,7 @@ function GM:_CreateMove(cmd)
 	end
 
 	-- Don't allow jumping if our legs are damaged or we're pulse slowed
-	if MySelf:GetLegDamage() >= 0.5 then
+	if MySelf:GetLegDamage() >= 0.5 and MySelf:GetMoveType() ~= MOVETYPE_NOCLIP then
 		PressJump(cmd, false)
 	end
 

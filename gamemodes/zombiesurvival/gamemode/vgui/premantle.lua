@@ -29,7 +29,7 @@ hook.Add("Think", "RemantlerMenuThink", function()
 	if pan and pan:IsValid() and pan:IsVisible() then
 		local mx, my = gui.MousePos()
 		local x, y = pan:GetPos()
-		if mx < x - 16 or my < y - 16 or mx > x + pan:GetWide() + 16 or my > y + pan:GetTall() + 16 then
+		if pan.AllowCloseIn < SysTime() and (mx < x - 16 or my < y - 16 or mx > x + pan:GetWide() + 16 or my > y + pan:GetTall() + 16) then
 			pan:SetVisible(false)
 		end
 	end
@@ -508,11 +508,12 @@ end
 vgui.Register("ZSRemantlePath", PANEL, "Panel")
 
 function GM:OpenRemantlerMenu(remantler)
-	if not (remantler and remantler:IsValid()) or (self.RemantlerInterface and self.RemantlerInterface:IsVisible()) then return end
+	if not (remantler and (remantler == true or remantler:IsValid())) or (self.RemantlerInterface and self.RemantlerInterface:IsVisible()) then return end
 	local mytarget = SelectedInv() or MySelf:GetActiveWeapon():GetClass()
 
 	if self.RemantlerInterface and self.RemantlerInterface:IsValid() and self.RemantlerInterface.m_WepClass == mytarget then
 		self.RemantlerInterface:SetVisible(true)
+		self.RemantlerInterface.AllowCloseIn = SysTime()+0.2
 		self.RemantlerInterface:CenterMouse()
 		return
 	end
@@ -527,6 +528,7 @@ function GM:OpenRemantlerMenu(remantler)
 	frame:SetDeleteOnClose(false)
 	frame:SetTitle(" ")
 	frame:SetDraggable(false)
+	frame.AllowCloseIn = SysTime()+0.2
 	if frame.btnClose and frame.btnClose:IsValid() then frame.btnClose:SetVisible(false) end
 	if frame.btnMinim and frame.btnMinim:IsValid() then frame.btnMinim:SetVisible(false) end
 	if frame.btnMaxim and frame.btnMaxim:IsValid() then frame.btnMaxim:SetVisible(false) end

@@ -1349,13 +1349,13 @@ s.CanUseInZE = true
 GM:AddSkillModifier(SKILL_BATTLER6, SKILLMOD_MELEE_DAMAGE_MUL, 0.07)
 
 s = GM:AddSkill(SKILL_ENDLESS_BATTLER, "Infini-endurable battler", GOOD.."+2% melee damage (+1% per level)",
-0, -3, {}, TREE_MELEETREE)
+2, -3, {}, TREE_MELEETREE)
 s.CanUseInZE = true
 s.MaxLevel = 35
-s.ColorModifierOverride = {1.5, 5, 5}
-s.ColorModifierOverrideCanUnlock = {1.5, 5, 5}
-s.ColorModifierOverrideUnlocked = {1.5, 5, 5}
-s.ColorModifierOverrideActive = {1.5, 5, 5}
+s.ColorModifierOverride = {0.5, 5, 5}
+s.ColorModifierOverrideCanUnlock = {1.5, 2, 2}
+s.ColorModifierOverrideUnlocked = {1.5, 1, 1}
+s.ColorModifierOverrideActive = {1.5, 0.5, 0.5}
 MakeSkillEndless(s)
 GM:AddSkillModifier(SKILL_ENDLESS_BATTLER, SKILLMOD_MELEE_DAMAGE_MUL, function(sk, pl, lvl) return 0.02+0.01*lvl end)
 
