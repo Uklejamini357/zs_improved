@@ -262,7 +262,9 @@ end
 function meta:NearRemantler()
 	local pos = self:EyePos()
 
-	local remantlers = ents.FindByClass("prop_remantler")
+	local remantlers = {}
+	table.Add(remantlers, ents.FindByClass("prop_remantler"))
+	table.Add(remantlers, ents.FindByClass("status_remantlerpack"))
 
 	for _, ent in pairs(remantlers) do
 		local nearest = ent:NearestPoint(pos)

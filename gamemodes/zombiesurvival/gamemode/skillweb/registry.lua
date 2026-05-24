@@ -336,6 +336,7 @@ SKILL_ENDLESS_BLOODARMOR = 225
 SKILL_U_AR2PULSERIFLE = 226
 SKILL_ENDLESS_LANKY = 227
 SKILL_ENDLESS_BATTLER = 228
+SKILL_ENDLESS_POINTS = 229
 
 SKILLMOD_HEALTH = 1
 SKILLMOD_BLOODARMOR = 2
@@ -1274,10 +1275,10 @@ GM:AddSkillModifier(SKILL_POINTFULNESS1, SKILLMOD_WORTH, -10)
 GM:AddSkillModifier(SKILL_POINTFULNESS1, SKILLMOD_POINTS, 3)
 GM:AddSkillModifier(SKILL_POINTFULNESS1, SKILLMOD_POINT_MULTIPLIER, 0.01)
 
-s = GM:AddSkill(SKILL_CANNONBALL, "Cannonball", "-25% projectile speed\n"..GOOD.."+3% projectile damage",
+s = GM:AddSkill(SKILL_CANNONBALL, "Cannonball", GOOD.."+7% projectile damage\n-25% projectile speed",
 -2, -3, {}, TREE_GUNTREE)
 GM:AddSkillModifier(SKILL_CANNONBALL, SKILLMOD_PROJ_SPEED, -0.25)
-GM:AddSkillModifier(SKILL_CANNONBALL, SKILLMOD_PROJECTILE_DAMAGE_MUL, 0.03)
+GM:AddSkillModifier(SKILL_CANNONBALL, SKILLMOD_PROJECTILE_DAMAGE_MUL, 0.07)
 
 s = GM:AddSkill(SKILL_SCOURER, "Scourer", GOOD.."Earn end of wave points as scrap\n"..BAD.."Earn no end of wave points",
 4, -3, {}, TREE_GUNTREE)
@@ -1359,10 +1360,9 @@ s.ColorModifierOverrideActive = {1.5, 0.5, 0.5}
 MakeSkillEndless(s)
 GM:AddSkillModifier(SKILL_ENDLESS_BATTLER, SKILLMOD_MELEE_DAMAGE_MUL, function(sk, pl, lvl) return 0.02+0.01*lvl end)
 
-s = GM:AddSkill(SKILL_LASTSTAND, "Last Stand", GOOD.."1.85x melee damage when below 25% health\n"..GOOD.."-10% melee damage taken when below 25% health\n"..BAD.."0.8x melee weapon damage at any other time\n"..BAD.."-5 maximum health\n"..BAD.."-5 maximum blood armor",
+s = GM:AddSkill(SKILL_LASTSTAND, "Last Stand", GOOD.."1.85x melee damage when below 25% health\n"..GOOD.."-10% melee damage taken when below 25% health\n"..BAD.."0.8x melee weapon damage at any other time\n"..BAD.."-5 maximum health",
 0, 6, {}, TREE_MELEETREE)
 GM:AddSkillModifier(SKILL_LASTSTAND, SKILLMOD_HEALTH, -5)
-GM:AddSkillModifier(SKILL_LASTSTAND, SKILLMOD_BLOODARMOR, -5)
 
 s = GM:AddSkill(SKILL_GLASSWEAPONS, "Glass Weapons", VERYGOOD.."3.23x melee weapon damage vs. zombies\n"..BAD.."Your melee weapons have a 35% chance to break when hitting a zombie\n"..NEUTRAL.."Some melee weapons are not affected by this skill", --\nFirst melee hit will never break a melee weapon,
 2, 4.5, {}, TREE_MELEETREE)
@@ -1753,7 +1753,7 @@ GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_MELEE_DAMAGE_TAKEN_MUL, -0.03)
 GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, function(sk, pl, lvl) return 0.04 + lvl*0.01 end)
 
 s = GM:AddSkill(SKILL_ENDLESS_WORTH, "Endless Worth", GOOD.."+5 starting worth (+3 worth per level)\n"..GOOD.."Bonus +3 worth on max level!",
--1, 1, {}, TREE_ENDLESSTREE)
+-1, 1, {SKILL_ENDLESS_POINTS}, TREE_ENDLESSTREE)
 MakeSkillEndless(s)
 s.RequiredSP = 2
 s.MaxLevel = 50
@@ -1783,3 +1783,11 @@ MakeSkillEndless(s)
 s.RequiredSP = 2
 s.MaxLevel = 30
 GM:AddSkillModifier(SKILL_ENDLESS_BLOODARMOR, SKILLMOD_BLOODARMOR, function(sk, pl, lvl) return lvl end)
+
+s = GM:AddSkill(SKILL_ENDLESS_POINTS, "Endless Points", GOOD.."+1 starting points per level\n"..GOOD.."Every 5 levels: +1% point gain multiplier",
+-2, 2, {}, TREE_ENDLESSTREE)
+MakeSkillEndless(s)
+s.RequiredSP = 2
+s.MaxLevel = 30
+GM:AddSkillModifier(SKILL_ENDLESS_POINTS, SKILLMOD_POINTS, function(sk, pl, lvl) return lvl end)
+GM:AddSkillModifier(SKILL_ENDLESS_POINTS, SKILLMOD_POINT_MULTIPLIER, function(sk, pl, lvl) return math.floor(lvl/5)*0.01 end)

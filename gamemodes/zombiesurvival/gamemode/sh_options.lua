@@ -622,10 +622,11 @@ item.SkillRequirement = SKILL_JUGGERNAUT
 GM:AddPointShopItem("supasm",			ITEMCAT_TRINKETS,		70,				"trinket_supasm").SubCategory =							ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddPointShopItem("pulseimpedance",	ITEMCAT_TRINKETS,		70,				"trinket_pulseimpedance").SubCategory =					ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddPointShopItem("arsenalpack",		ITEMCAT_TRINKETS,		70,				"trinket_arsenalpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
---GM:AddPointShopItem("remantlerpack",	ITEMCAT_TRINKETS,		70,				"trinket_remantlerpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT -- Added soon!
+GM:AddPointShopItem("remantlerpack",	ITEMCAT_TRINKETS,		70,				"trinket_remantlerpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
 -- Tier 6
 GM:AddPointShopItem("dmgbooster",		ITEMCAT_TRINKETS,		100,			"trinket_dmgbooster").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddPointShopItem("cadebooster",		ITEMCAT_TRINKETS,		100,			"trinket_cadebooster").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+GM:AddPointShopItem("hoardermanifest",	ITEMCAT_TRINKETS,		100,			"trinket_hoardermanifest").SubCategory =				ITEMSUBCAT_TRINKETS_SUPPORT
 
 GM:AddPointShopItem("flashbomb",		ITEMCAT_OTHER,			25,				"weapon_zs_flashbomb")
 GM:AddPointShopItem("molotov",			ITEMCAT_OTHER,			30,				"weapon_zs_molotov")

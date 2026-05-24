@@ -329,6 +329,16 @@ cvars.AddChangeCallback("zs_rainbowf2text", function(cvar, oldvalue, newvalue)
 	GAMEMODE.RainbowF2PointShopText = tonumber(newvalue) == 1
 end)
 
+GM.NoPointsShopText = CreateClientConVar("zs_nopstext", "0", true, false):GetBool()
+cvars.AddChangeCallback("zs_nopstext", function(cvar, oldvalue, newvalue)
+	GAMEMODE.NoPointsShopText = tonumber(newvalue) == 1
+end)
+
+GM.NoRemantlerText = CreateClientConVar("zs_noremtext", "0", true, false):GetBool()
+cvars.AddChangeCallback("zs_noremtext", function(cvar, oldvalue, newvalue)
+	GAMEMODE.NoRemantlerText = tonumber(newvalue) == 1
+end)
+
 GM.AddSkillDescriptions = CreateClientConVar("zs_addskilldesc", "0", true, false):GetBool()
 cvars.AddChangeCallback("zs_addskilldesc", function(cvar, oldvalue, newvalue)
 	GAMEMODE.AddSkillDescriptions = tonumber(newvalue) == 1
@@ -357,6 +367,26 @@ end)
 GM.NoNotifyUnusedSP = CreateClientConVar("zs_nonotifyunusedsp", "0", true, false):GetBool()
 cvars.AddChangeCallback("zs_nonotifyunusedsp", function(cvar, oldvalue, newvalue)
 	GAMEMODE.NoNotifyUnusedSP = tonumber(newvalue) == 1
+end)
+
+GM.BiggerArsenalInterfaceOption = CreateClientConVar("zs_arsenalui_larger", "0", true, false, "Makes arsenal interface larger"):GetBool()
+cvars.AddChangeCallback("zs_arsenalui_larger", function(cvar, oldvalue, newvalue)
+	GAMEMODE.BiggerArsenalInterfaceOption = tonumber(newvalue) == 1
+
+	if GAMEMODE.ArsenalInterface and GAMEMODE.ArsenalInterface:IsValid() then
+		GAMEMODE.ArsenalInterface:Remove()
+		GAMEMODE.ArsenalInterface = nil
+	end
+end)
+
+GM.BiggerRemantlerInterfaceOption = CreateClientConVar("zs_remantlerui_larger", "0", true, false, "Makes arsenal interface larger"):GetBool()
+cvars.AddChangeCallback("zs_remantlerui_larger", function(cvar, oldvalue, newvalue)
+	GAMEMODE.BiggerRemantlerInterfaceOption = tonumber(newvalue) == 1
+
+	if GAMEMODE.RemantlerInterface and GAMEMODE.RemantlerInterface:IsValid() then
+		GAMEMODE.RemantlerInterface:Remove()
+		GAMEMODE.RemantlerInterface = nil
+	end
 end)
 
 

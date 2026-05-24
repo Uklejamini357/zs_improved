@@ -24,6 +24,7 @@ function ENT:IsInsideProp()
 	local mycenter = self:WorldSpaceCenter()
 	local blacklist = {
 		"status_arsenalpack",
+		"status_remantlerpack",
 		"status_resupplypack",
 		"status_oxygentank",
 		"prop_ammo",

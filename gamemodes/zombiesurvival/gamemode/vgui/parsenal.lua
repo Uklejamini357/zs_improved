@@ -398,6 +398,12 @@ function GM:AddShopItem(list, i, tab, issub, nopointshop)
 				end
 			end)
 		end
+		if usescrap and (tab.Category == ITEMCAT_TRINKETS or tab.Category == ITEMCAT_AMMO) and FindItem(self.ID).CanMakeFromScrap then
+			menu:AddOption("Remantle with Scrap", function()
+				RunConsoleCommand("zs_pointsshopbuy", itempan.ID, "scrap")
+			end)
+		end
+
 		menu:Open()
 	end
 	list:AddItem(itempan)
@@ -695,7 +701,7 @@ function GM:OpenArsenalMenu()
 	end
 
 	local screenscale = BetterScreenScale()
-	local wid, hei = math.min(ScrW(), 900) * screenscale, math.min(ScrH(), 800) * screenscale
+	local wid, hei = math.min(ScrW(), self.BiggerArsenalInterfaceOption and 1200 or 900) * screenscale, math.min(ScrH(), self.BiggerArsenalInterfaceOption and 900 or 800) * screenscale
 	local tabhei = 24 * screenscale
 
 	local frame = vgui.Create("DFrame")
@@ -779,7 +785,7 @@ function GM:OpenArsenalMenu()
 	propertysheet:SetSize(wid - 320 * screenscale, boty - topy - 8 - topspace:GetTall())
 	propertysheet:MoveBelow(topspace, 4)
 	propertysheet:SetPadding(1)
-	propertysheet:CenterHorizontal(0.33)
+	propertysheet:CenterHorizontal(self.BiggerArsenalInterfaceOption and 0.37 or 0.33)
 
 	for catid, catname in ipairs(GAMEMODE.ItemCategories) do
 		local hasitems = false
@@ -808,7 +814,7 @@ function GM:OpenArsenalMenu()
 				local list = vgui.Create("DGrid", itemframe)
 				list:SetPos(0, 0)
 				list:SetSize(propertysheet:GetWide() - 312, propertysheet:GetTall())
-				list:SetCols(2)
+				list:SetCols(self.BiggerArsenalInterfaceOption and 3 or 2)
 				list:SetColWide(280 * screenscale)
 				list:SetRowHeight((trinkets and 64 or 100) * screenscale)
 
@@ -828,11 +834,13 @@ function GM:OpenArsenalMenu()
 					local ispacer = trinkets and ((i-1) % 3)+1 or i
 					local start = i == (catid == ITEMCAT_GUNS and 2 or ind)
 
-					tbn = EasyButton(tabpane, trinkets and subcats[i] or (" "..i.." "), 2, 8)
+					tbn = EasyButton(tabpane, trinkets and subcats[i] or ("  "..i.."  "), 2, 8)
 					tbn:SetFont(trinkets and "ZSHUDFontSmallest" or "ZSHUDFontSmall")
 					tbn:SetAlpha(start and 255 or 70)
 					tbn:AlignRight((trinkets and -35 or -15) * screenscale -
-						(ispacer - ind) * (ind == 1 and (trinkets and 190 or 45) or 145) * screenscale
+						(ispacer - ind) * (ind == 1 and (trinkets and
+						(self.BiggerArsenalInterfaceOption and 290 or 190) or 45) or
+						(self.BiggerArsenalInterfaceOption and 245 or 145)) * screenscale
 					)
 					tbn:AlignTop(trinkets and i <= 3 and 0 or trinkets and 28 or 16)
 					tbn:SetContentAlignment(5)

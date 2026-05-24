@@ -146,6 +146,30 @@ function MakepOptions()
 	check:SizeToContents()
 	list:AddItem(check)
 
+	check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText("Larger Arsenal UI")
+	check:SetConVar("zs_arsenalui_larger")
+	check:SizeToContents()
+	list:AddItem(check)
+
+	check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText("Larger Remantler UI")
+	check:SetConVar("zs_remantlerui_larger")
+	check:SizeToContents()
+	list:AddItem(check)
+
+	check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText("No Points shop text on HUD")
+	check:SetConVar("zs_nopstext")
+	check:SizeToContents()
+	list:AddItem(check)
+
+	check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText("No Remantler text on HUD")
+	check:SetConVar("zs_noremtext")
+	check:SizeToContents()
+	list:AddItem(check)
+
 	list:AddItem(EasyLabel(Window, "Display options", "DefaultFontSmall", color_white))
 
 	check = vgui.Create("DCheckBoxLabel", Window)

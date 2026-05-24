@@ -171,9 +171,10 @@ timer.Create("CachedRemantlerEntities", 0.5, 0, function()
 
 	local remanents = {}
 	table.Add(remanents, ents.FindByClass("prop_remantler"))
+	table.Add(arseents, ents.FindByClass("status_arsenalpack"))
 
 	for _, v in pairs(player.GetAll()) do
-		if v ~= MySelf and v:HasWeapon("weapon_zs_remantler") then
+		if v ~= MySelf and not v:HasTrinket("remantlerpack") and v:HasWeapon("weapon_zs_remantler") then
 			table.insert(remanents, v)
 		end
 	end

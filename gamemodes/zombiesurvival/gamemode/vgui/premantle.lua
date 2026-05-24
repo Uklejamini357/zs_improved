@@ -519,7 +519,7 @@ function GM:OpenRemantlerMenu(remantler)
 	end
 
 	local screenscale = BetterScreenScale()
-	local wid, hei = math.min(ScrW(), 900) * screenscale, math.min(ScrH(), 800) * screenscale
+	local wid, hei = math.min(ScrW(), (self.BiggerRemantlerInterfaceOption and 1200 or 900)) * screenscale, math.min(ScrH(), self.BiggerRemantlerInterfaceOption and 900 or 800) * screenscale
 	local tabhei = 24 * screenscale
 
 	local frame = vgui.Create("DFrame")
@@ -633,7 +633,7 @@ function GM:OpenRemantlerMenu(remantler)
 				local list = vgui.Create("DGrid", itemframe)
 				list:SetPos(0, 0)
 				list:SetSize(curframe:GetWide() - 312, curframe:GetTall())
-				list:SetCols(2)
+				list:SetCols(self.BiggerRemantlerInterfaceOption and 3 or 2)
 				list:SetColWide(280 * screenscale)
 				list:SetRowHeight(64 * screenscale)
 
@@ -672,7 +672,7 @@ function GM:OpenRemantlerMenu(remantler)
 			local list = vgui.Create("DGrid", curframe)
 			list:SetPos(0, 0)
 			list:SetSize(curframe:GetWide() - 312, curframe:GetTall())
-			list:SetCols(3)
+			list:SetCols(self.BiggerRemantlerInterfaceOption and 4 or 3)
 			list:SetColWide(290 * screenscale)
 			list:SetRowHeight(100 * screenscale)
 

@@ -976,7 +976,8 @@ function GM:HumanHUD(screenscale)
 		draw_SimpleTextBlurry(translate.Format("giving_items_to", lockon:Name()), "ZSHUDFontSmall", w * 0.5, h * 0.55 + txth, COLOR_GRAY, TEXT_ALIGN_CENTER)
 	end
 
-	if gamemode.Call("PlayerCanPurchase", MySelf) then
+	local y = 135
+	if not self.NoPointsShopText and gamemode.Call("PlayerCanPurchase", MySelf) then
 /*
 		local str = translate.Get("press_f2_for_the_points_shop")
 		local font = "ZSHUDFontSmall"
@@ -989,7 +990,12 @@ function GM:HumanHUD(screenscale)
 		end
 */
 		local col = HSVToColor(RealTime() * 40 % 360, 1, 1)
-		draw_SimpleTextBlurry(translate.Get("press_f2_for_the_points_shop"), "ZSHUDFontSmall", w * 0.5, screenscale * 135, self.RainbowF2PointShopText and col or COLOR_GRAY, TEXT_ALIGN_CENTER)
+		draw_SimpleTextBlurry(translate.Get("press_f2_for_the_points_shop"), "ZSHUDFontSmall", w * 0.5, screenscale * y, self.RainbowF2PointShopText and col or COLOR_GRAY, TEXT_ALIGN_CENTER)
+		y = y + 30
+	end
+
+	if not self.NoRemantlerText and MySelf:NearRemantler() then
+		draw_SimpleTextBlurry("Press R+F2 to open remantler!", "ZSHUDFontSmall", w * 0.5, screenscale * y, COLOR_GRAY, TEXT_ALIGN_CENTER)
 	end
 end
 
@@ -1967,7 +1973,11 @@ function GM:PlayerBindPress(pl, bind, wasin)
 				menu:SetPos(gui.MousePos())
 			else
 				if self:GetWave() > 0 then
-					self:OpenArsenalMenu()
+					if input.IsKeyDown(KEY_R) then
+						self:OpenRemantlerMenu(true)
+					else
+						self:OpenArsenalMenu()
+					end
 				else
 					MakepWorth()
 				end

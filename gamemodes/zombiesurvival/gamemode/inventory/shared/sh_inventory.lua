@@ -385,6 +385,14 @@ trinket, trinketwep = GM:AddTrinket("Arsenal Pack", "arsenalpack", false, {
 GM:AddSkillModifier(trinket, SKILLMOD_ARSENAL_DISCOUNT, -0.01)
 trinketwep.PermitDismantle = true
 
+-- ehm.. what?????
+trinket, trinketwep = GM:AddTrinket("Remantler Pack", "remantlerpack", false, {
+	["base"] = { type = "Model", model = "models/props_lab/powerbox01a.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(4, 2, -1), angle = Angle(0, -90, 180), size = Vector(0.35, 0.35, 0.35), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
+}, {
+	["base"] = { type = "Model", model = "models/props_lab/powerbox01a.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(4, 2, -1), angle = Angle(0, -90, 180), size = Vector(0.35, 0.35, 0.35), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
+}, 5, "Allows nearby humans to use the remantler.", "remantlerpack", 3)
+trinketwep.PermitDismantle = true
+
 trinket, trinketwep = GM:AddTrinket("Resupply Pack", "resupplypack", true, nil, {
 	["base"] = { type = "Model", model = "models/Items/ammocrate_ar2.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(4, 2, -1), angle = Angle(0, -90, 180), size = Vector(0.35, 0.35, 0.35), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
 }, 4, "Allows humans to resupply from you\nPress LMB with the pack in your hand to resupply yourself.", "resupplypack", 3)
@@ -460,6 +468,7 @@ GM:AddSkillModifier(trinket, SKILLMOD_TURRET_RANGE_MUL, 0.15)
 
 GM:AddSkillModifier(GM:AddTrinket("Acquisitions Manifest", "acqmanifest", false, supveles, supweles, 2, "-6% resupply delay time"), SKILLMOD_RESUPPLY_DELAY_MUL, -0.06)
 GM:AddSkillModifier(GM:AddTrinket("Procurement Manifest", "promanifest", false, supveles, supweles, 4, "-10% resupply delay time"), SKILLMOD_RESUPPLY_DELAY_MUL, -0.1)
+GM:AddSkillModifier(GM:AddTrinket("Hoarder Manifest", "hoardermanifest", false, supveles, supweles, 6, "-15% resupply delay time"), SKILLMOD_RESUPPLY_DELAY_MUL, -0.15)
 
 -- Boss Trinkets
 
