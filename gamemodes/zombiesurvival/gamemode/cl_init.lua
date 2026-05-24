@@ -1064,6 +1064,7 @@ end
 local colLifeStats = Color(255, 50, 50, 255)
 function GM:ZombieHUD()
 	local w, h = ScrW(), ScrH()
+	local screenscale = BetterScreenScale()
 
 	if self.LifeStatsEndTime and CurTime() < self.LifeStatsEndTime and (self.LifeStatsBarricadeDamage > 0 or self.LifeStatsHumanDamage > 0 or self.LifeStatsBrainsEaten > 0) then
 		colLifeStats.a = math.Clamp((self.LifeStatsEndTime - CurTime()) / (self.LifeStatsLifeTime * 0.33), 0, 1) * 255
@@ -1109,6 +1110,14 @@ function GM:ZombieHUD()
 		local boss = self.NextBossZombie
 		local superboss = self.NextSuperBossZombie
 
+		local bosscount = math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.011 + (self:GetWave() * 0.004))))
+		local demibosscount = math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD) - bosscount, #player.GetAll() * (0.032 + (self:GetWave() * 0.013))))
+
+		if demibosscount >= 1 then
+			local x, y = ScrW() / 2, ScrH() * 0.34 + draw_GetFontHeight("ZSHUDFont")
+			draw_SimpleTextBlur("Demibosses: "..demibosscount, "ZSHUDFontSmaller", x, y - 5*screenscale, COLOR_YELLOW, TEXT_ALIGN_CENTER)
+		end
+
 		if boss and boss:IsValid() and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
 			local x, y = ScrW() / 2, ScrH() * 0.3 + draw_GetFontHeight("ZSHUDFont")
 			if boss == MySelf then
@@ -1116,10 +1125,13 @@ function GM:ZombieHUD()
 			else
 				draw_SimpleTextBlur(translate.Format("x_will_be_y_soon", boss:Name(), self.NextBossZombieClass), "ZSHUDFont", x, y, COLOR_GRAY, TEXT_ALIGN_CENTER)
 			end
+			if bosscount > 1 then
+				draw_SimpleTextBlur("Bosses: "..bosscount, "ZSHUDFontSmaller", x, y + 60*screenscale, COLOR_YELLOW, TEXT_ALIGN_CENTER)
+			end
 		end
 
 		if superboss and superboss:IsValid() and (self.SuperBossZombiePlayersRequired <= 0 or #player.GetAll() >= self.SuperBossZombiePlayersRequired) then
-			local x, y = ScrW() / 2, ScrH() * 0.2 + draw_GetFontHeight("ZSHUDFont")
+			local x, y = ScrW() / 2, ScrH() * 0.25 + draw_GetFontHeight("ZSHUDFont")
 			local rcol = HSVToColor(RealTime() * 65 % 360, 1, 1)
 			if superboss == MySelf then
 				draw_SimpleTextBlur(translate.Format("you_will_be_x_soon", self.NextSuperBossZombieClass), "ZSHUDFont", x, y, rcol, TEXT_ALIGN_CENTER)

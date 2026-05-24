@@ -1,24 +1,22 @@
 CLASS.Base = "fast_zombie"
 
-CLASS.Name = "Undead Fast Zombie"
-CLASS.TranslationName = "class_undead_fast_zombie"
-CLASS.Description = "description_undead_fast_zombie"
+CLASS.Name = "Omega Fast Zombie"
+CLASS.TranslationName = "class_omega_fast_zombie"
+CLASS.Description = "description_omega_fast_zombie"
 CLASS.Help = "controls_fast_zombie"
 
 CLASS.Model = Model("models/player/zombie_fast.mdl")
 
-CLASS.Wave = 13 / GM.NumberOfWaves
-CLASS.Infliction = 0.93
+CLASS.Wave = 24 / GM.NumberOfWaves
 CLASS.Revives = true
-CLASS.EndlessOnly = true
 
-CLASS.Health = 525
-CLASS.DynamicHealth = 5
-CLASS.Speed = 285
-CLASS.SWEP = "weapon_zs_undeadfastzombie"
+CLASS.Health = 595
+CLASS.DynamicHealth = 15
+CLASS.Speed = 315
+CLASS.SWEP = "weapon_zs_omegafastzombie"
 
-CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio / 0.6
-CLASS.Points = (CLASS.Health/GM.NoHeadboxZombiePointRatio) * 0.6
+CLASS.DamageNeedPerPoint = GM.NoHeadboxZombiePointRatio / 0.75
+CLASS.Points = (CLASS.Health/GM.NoHeadboxZombiePointRatio) * 0.75
 CLASS.XP = CLASS.Health/GM.NoHeadboxZombiePointRatio
 
 CLASS.CanTaunt = true
@@ -59,8 +57,8 @@ function CLASS:Move(pl, mv)
 	end
 
 	if mv:GetForwardSpeed() <= 0 then
-		mv:SetMaxSpeed(math_min(mv:GetMaxSpeed(), 120))
-		mv:SetMaxClientSpeed(math_min(mv:GetMaxClientSpeed(), 120))
+		mv:SetMaxSpeed(math_min(mv:GetMaxSpeed(), 180))
+		mv:SetMaxClientSpeed(math_min(mv:GetMaxClientSpeed(), 180))
 	end
 end
 
@@ -243,22 +241,21 @@ if SERVER then
 end
 
 CLASS.Icon = "zombiesurvival/killicons/fastzombie"
-CLASS.IconColor = Color(85, 245, 25)
+CLASS.IconColor = Color(0, 128, 255)
 
 local render_SetMaterial = render.SetMaterial
 local render_DrawSprite = render.DrawSprite
 local angle_zero = angle_zero
 local LocalToWorld = LocalToWorld
 
-local colGlow = Color(110, 180, 55)
 local matGlow = Material("sprites/glow04_noz")
 local vecEyeLeft = Vector(4, -4.6, -1)
 local vecEyeRight = Vector(4, -4.6, 1)
 
 function CLASS:PrePlayerDraw(pl)
-	render.SetColorModulation(0.17, 0.95, 0)
+	local col = HSVToColor((CurTime() - pl:GetNW2Float("SpawnTime", 0)) * 85 % 360, 1, 1)
+	render.SetColorModulation(col.r / 255, col.g / 255, col.b / 255)
 end
-
 
 function CLASS:PostPlayerDraw(pl)
 	render.ModelMaterialOverride()
@@ -269,6 +266,7 @@ function CLASS:PostPlayerDraw(pl)
 	local pos, ang = pl:GetBonePositionMatrixed(6)
 	if pos then
 		render_SetMaterial(matGlow)
+		local colGlow = HSVToColor((CurTime() - pl:GetNW2Float("SpawnTime", 0)) * 85 % 360, 0.6, 1)
 		render_DrawSprite(LocalToWorld(vecEyeLeft, angle_zero, pos, ang), 4, 4, colGlow)
 		render_DrawSprite(LocalToWorld(vecEyeRight, angle_zero, pos, ang), 4, 4, colGlow)
 	end

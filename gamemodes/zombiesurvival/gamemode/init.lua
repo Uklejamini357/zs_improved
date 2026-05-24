@@ -1426,10 +1426,14 @@ function GM:Think()
 			if self:GetWaveStart() <= time then
 				gamemode.Call("SetWaveActive", true)
 			elseif not self.PantsMode and not self:IsClassicMode() and not self.ZombieEscape then
+				local bosscount = math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.011 + (self:GetWave() * 0.004))))
+				local demibosscount = math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD) - bosscount, #player.GetAll() * (0.032 + (self:GetWave() * 0.013))))
+
+
 				if self.DemiBossZombies and self.LastDemiBossZombiesSpawned ~= wave and wave > 0 --and not self.RoundEnded
 				and (self.DemiBossZombiePlayersRequired <= 0 or #player.GetAll() >= self.DemiBossZombiePlayersRequired) then
 					if self:GetWaveStart() - tonumber(self.DemiBossZombieSpawnBeforeWaveStart or 1) <= time then
-						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.032 + (self:GetWave() * 0.013)))) do
+						for i=1,demibosscount do
 							if !self:SpawnDemiBossZombie() then break end
 						end
 						self.LastDemiBossZombiesSpawned = wave
@@ -1441,7 +1445,7 @@ function GM:Think()
 				if self.BossZombies and self.LastBossZombieSpawned ~= wave and wave > 0 --and not self.RoundEnded
 				and (self.BossZombiePlayersRequired <= 0 or #player.GetAll() >= self.BossZombiePlayersRequired) then
 					if self:GetWaveStart() - tonumber(self.BossZombieSpawnBeforeWaveStart or 3) <= time then
-						for i=1, math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.011 + (self:GetWave() * 0.004)))) do
+						for i=1,bosscount do
 							if !self:SpawnBossZombie() then break end
 						end
 					else
