@@ -163,8 +163,9 @@ function PANEL:Init()
 		if GAMEMODE.ClassicMode then break end
 
 		local classtab = GAMEMODE.ZombieClasses[GAMEMODE:GetBestAvailableZombieClass(i)]
+		if already_added[classtab.Index] then continue end
 
-		if classtab and not classtab.Disabled and not already_added[classtab.Index] then
+		if classtab and not classtab.Disabled then
 			already_added[classtab.Index] = true
 
 			local ok

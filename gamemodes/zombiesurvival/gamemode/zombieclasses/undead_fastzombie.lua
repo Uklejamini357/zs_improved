@@ -229,6 +229,16 @@ if SERVER then
 		end
 	end
 
+	function CLASS:InflictDamage(pl, ent, dmginfo)
+		local damage = dmginfo:GetDamage()
+
+		local attacker, inflictor = dmginfo:GetAttacker(), dmginfo:GetInflictor()
+
+		if GAMEMODE:GetWave() >= 13 and dmginfo:GetDamageType() == DMG_SLASH then
+			dmginfo:ScaleDamage(1.2)
+		end
+	end
+
 	return
 end
 

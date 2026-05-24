@@ -88,6 +88,10 @@ function meta:ProcessDamage(dmginfo)
 		return not dmgbypass and self:CallZombieFunction1("ProcessDamage", dmginfo)
 	end
 
+	if attacker:IsValidLivingZombie() then
+		attacker:CallZombieFunction2("InflictDamage", self, dmginfo)
+	end
+
 	-- Opted for multiplicative.
 	if attacker == self and dmgtype ~= DMG_CRUSH and dmgtype ~= DMG_FALL and self.SelfDamageMul then
 		dmginfo:ScaleDamage(self.SelfDamageMul)
@@ -1776,7 +1780,7 @@ function meta:PlayPainSound()
 	rf:AddPAS(self:GetPos())
 	net.Start("voice_pain")
 	net.WriteEntity(self)
-	net.WriteUInt(math.ceil(self:Health() / 25), 4)
+	net.WriteUInt(math.Clamp(math.ceil(self:Health() / 25), 1, 15), 4)
 	net.Send(rf)
 end
 
