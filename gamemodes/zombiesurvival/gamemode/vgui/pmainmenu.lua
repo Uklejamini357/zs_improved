@@ -132,6 +132,17 @@ function GM:ShowHelp()
 	header.Think = function()
 		header:SetTextColor(HSVToColor(RealTime() * -60 % 360, 1, 1))
 	end
+	-- local mat = Material("gui/center_gradient")
+	-- header.PaintOver = function(self, w, h)
+	-- 	-- vibecoded (FUCK IT)
+	-- 	render.OverrideBlend(true, BLEND_SRC_ALPHA, BLEND_DST_ALPHA, BLENDFUNC_ADD)
+	-- 	render.OverrideColorWriteEnable(true, true)
+	-- 	surface.SetMaterial(mat)
+	-- 	surface.SetDrawColor(255, 0, 0, 255)
+	-- 	surface.DrawTexturedRect(0, 0, w, h)
+	-- 	render.OverrideColorWriteEnable(false, false)
+	-- 	render.OverrideBlend(false)
+	-- end
 
 	local buttonhei = 32 * screenscale
 
