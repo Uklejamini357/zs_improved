@@ -970,6 +970,18 @@ function GM:HumanHUD(screenscale)
 		end
 	end
 
+	if self.ShowDamagePerSecond then
+		local x = w * 0.02
+		local y = h * 0.3
+		local y_add = 22*BetterScreenScale()
+		local color = Color(205,55,55,145)
+
+		draw_SimpleTextBlurry("Damage per second: "..string.Comma(math.Round(self.DamagePerSecondCounter)), "ZSHUDFontSmaller", x, y, color, TEXT_ALIGN_LEFT)
+		y = y + y_add
+		draw_SimpleTextBlurry("Max: "..string.Comma(math.Round(self.DamagePerSecondCounterMax)), "ZSHUDFontSmaller", x, y, color, TEXT_ALIGN_LEFT)
+		y = y + y_add
+	end
+
 	local lockon = self.HumanMenuLockOn
 	if lockon and self:ValidMenuLockOnTarget(MySelf, lockon) then
 		local txth = draw_GetFontHeight("ZSHUDFontSmall")
@@ -1644,6 +1656,8 @@ function GM:Initialize()
 	-- Flashlight dynamic lights of other players.
 	RunConsoleCommand("r_dynamic", "0")
 
+	self.DamagePerSecondCounter = 0
+	self.DamagePerSecondCounterMax = 0
 	self.AchievementsProgress = {}
 	self.UsedMutations = {}
 

@@ -344,6 +344,14 @@ cvars.AddChangeCallback("zs_addskilldesc", function(cvar, oldvalue, newvalue)
 	GAMEMODE.AddSkillDescriptions = tonumber(newvalue) == 1
 end)
 
+GM.ShowDamagePerSecond = CreateClientConVar("zs_showdps", "0", true, false):GetBool()
+cvars.AddChangeCallback("zs_showdps", function(cvar, oldvalue, newvalue)
+	GAMEMODE.ShowDamagePerSecond = tonumber(newvalue) == 1
+end)
+
+
+
+
 GM.ZombieNightVisionSound = CreateClientConVar("zs_zombienvsound", "1", true, false):GetBool()
 cvars.AddChangeCallback("zs_zombienvsound", function(cvar, oldvalue, newvalue)
 	GAMEMODE.ZombieNightVisionSound = tonumber(newvalue) == 1

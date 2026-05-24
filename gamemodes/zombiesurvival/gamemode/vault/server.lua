@@ -60,13 +60,13 @@ function GM:LoadVault(pl)
 					pl:SetZSXP(contents.XP)
 				end
 				if contents.UnlockedSkills then
-					pl:SetUnlockedSkills(util.DecompressBitTable(contents.UnlockedSkills), true)
+					pl:SetUnlockedSkills(util.DecompressBitTable(contents.UnlockedSkills), not pl.PlayerReady)
 				end
 				if contents.DesiredActiveSkills then
-					pl:SetDesiredActiveSkills(util.DecompressBitTable(contents.DesiredActiveSkills), true)
+					pl:SetDesiredActiveSkills(util.DecompressBitTable(contents.DesiredActiveSkills), not pl.PlayerReady)
 				end
 				if contents.SkillsLevels then
-					pl:SetSkillsLevels(contents.SkillsLevels, true)
+					pl:SetSkillsLevels(contents.SkillsLevels, not pl.PlayerReady)
 				end
 				if contents.NextSkillReset then
 					pl.NextSkillReset = contents.NextSkillReset

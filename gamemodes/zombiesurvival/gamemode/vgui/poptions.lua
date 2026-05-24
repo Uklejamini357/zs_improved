@@ -170,6 +170,12 @@ function MakepOptions()
 	check:SizeToContents()
 	list:AddItem(check)
 
+	check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText("Show DPS (Damage per Second)")
+	check:SetConVar("zs_showdps")
+	check:SizeToContents()
+	list:AddItem(check)
+
 	list:AddItem(EasyLabel(Window, "Display options", "DefaultFontSmall", color_white))
 
 	check = vgui.Create("DCheckBoxLabel", Window)

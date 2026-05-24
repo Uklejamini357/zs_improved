@@ -7,8 +7,8 @@ CLASS.SuperBoss = true
 
 CLASS.KnockbackScale = 0
 
-CLASS.Health = 5500
-CLASS.DynamicHealth = 0
+CLASS.Health = 3500
+CLASS.DynamicHealth = 1000
 CLASS.Speed = 295 -- 150
 
 CLASS.CanTaunt = true

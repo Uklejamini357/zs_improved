@@ -55,6 +55,19 @@ net.Receive("zs_dmg", function(length)
 			effectdata:SetMagnitude(damage)
 			effectdata:SetScale(0)
 		util.Effect("damagenumber", effectdata)
+
+		GAMEMODE.DamagePerSecondCounter = GAMEMODE.DamagePerSecondCounter + damage
+		if GAMEMODE.DamagePerSecondCounterMax < GAMEMODE.DamagePerSecondCounter then
+			GAMEMODE.DamagePerSecondCounterMax = GAMEMODE.DamagePerSecondCounter
+		end
+
+
+		timer.Simple(1, function()
+			GAMEMODE.DamagePerSecondCounter = GAMEMODE.DamagePerSecondCounter - damage
+		end)
+		timer.Create("ZS.DPSReset", 5, 1, function()
+			GAMEMODE.DamagePerSecondCounterMax = 0
+		end)
 	end
 end)
 

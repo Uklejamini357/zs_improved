@@ -19,8 +19,8 @@ CLASS.SWEP = "weapon_zs_mutatedhowler"
 CLASS.Model = Model("models/player/zombie_classic_hbfix.mdl")
 CLASS.OverrideModel = Model("models/player/zombie_lacerator2.mdl")
 
-CLASS.Health = 6150
-CLASS.DynamicHealth = 0
+CLASS.Health = 4150
+CLASS.DynamicHealth = 800
 CLASS.Speed = 195
 
 CLASS.VoicePitch = 0.65

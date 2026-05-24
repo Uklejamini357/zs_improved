@@ -1208,11 +1208,11 @@ s = GM:AddSkill(SKILL_U_DOOMSTICK, "Unlock: Doom Stick", GOOD.."Unlocks purchasi
 
 s = GM:AddSkill(SKILL_U_BULLETSTORMMG, "Unlock: Bullet Storm Machine Gun", GOOD.."Unlocks purchasing the Bullet Storm Machine Gun\nTier 6 weapon\nThis weapon is the most expensive but also very powerful\nStorm Firing Mode unavailable",
 1.5, -6.5, {SKILL_SOFTDET}, TREE_GUNTREE)
-s.RequiredSP = 2
+s.RequiredSP = 3
 
 s = GM:AddSkill(SKILL_U_AR2PULSERIFLE, "Unlock: 'AR2' Pulse Rifle", GOOD.."Unlocks purchasing the 'AR2' Pulse Rifle\nTier 6 weapon\nHas better DPS output, but lacks the ability to slow down zombies",
 0, -8, {SKILL_SOFTDET}, TREE_GUNTREE)
-s.RequiredSP = 3
+s.RequiredSP = 2
 
 s = GM:AddSkill(SKILL_SLEIGHTOFHAND, "Sleight of Hand", GOOD.."+10% weapon reload speed\n"..BAD.."+20% weapon aim spread",
 -5, -1, {}, TREE_GUNTREE)
