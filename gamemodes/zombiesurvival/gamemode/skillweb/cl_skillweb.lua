@@ -15,7 +15,7 @@ net.Receive("zs_skills_notify", function(length)
 end)
 
 net.Receive("zs_skill_is_desired", function(length)
-	local skillid = net.ReadUInt(16)
+	local skillid = net.ReadUInt(12)
 	local yesno = net.ReadBool()
 
 	if MySelf:IsValid() then
@@ -32,7 +32,7 @@ net.Receive("zs_skill_is_desired", function(length)
 end)
 
 net.Receive("zs_skill_is_unlocked", function(length)
-	local skillid = net.ReadUInt(16)
+	local skillid = net.ReadUInt(12)
 	local yesno = net.ReadBool()
 
 	if MySelf:IsValid() then
@@ -125,8 +125,8 @@ net.Receive("zs_skills_unlocked", function(length)
 end)
 
 net.Receive("zs_skills_level", function(length)
-	local skillid = net.ReadUInt(16)
-	local level = net.ReadUInt(8)
+	local skillid = net.ReadUInt(12)
+	local level = net.ReadUInt(12)
 
 	if MySelf:IsValid() then
 		MySelf:SetSkillLevel(skillid, level)

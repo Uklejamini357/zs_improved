@@ -279,14 +279,14 @@ end
 
 function meta:SendSkillDesired(skillid, desired)
 	net.Start("zs_skill_is_desired")
-		net.WriteUInt(skillid, 16)
+		net.WriteUInt(skillid, 12)
 		net.WriteBool(desired)
 	net.Send(self)
 end
 
 function meta:SendSkillUnlocked(skillid, unlocked)
 	net.Start("zs_skill_is_unlocked")
-		net.WriteUInt(skillid, 16)
+		net.WriteUInt(skillid, 12)
 		net.WriteBool(unlocked)
 	net.Send(self)
 end
@@ -297,8 +297,8 @@ function meta:SetSkillLevel(skillid, level, nosend)
 
 	if not nosend then
 		net.Start("zs_skills_level")
-		net.WriteUInt(skillid, 16)
-		net.WriteUInt(level, 8)
+		net.WriteUInt(skillid, 12)
+		net.WriteUInt(level, 12)
 		net.Send(self)
 	end
 end
