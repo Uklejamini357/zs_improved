@@ -956,7 +956,9 @@ end
 function meta:NearestRemantler()
 	local pos = self:EyePos()
 
-	local remantlers = ents.FindByClass("prop_remantler")
+	local remantlers = {}
+	table.Add(remantlers, ents.FindByClass("prop_remantler"))
+	table.Add(remantlers, ents.FindByClass("status_remantlerpack"))
 	local min, remantler = 99999
 
 	for _, ent in pairs(remantlers) do

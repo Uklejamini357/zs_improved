@@ -1,5 +1,6 @@
 GM.Skills = {}
 GM.SkillModifiers = {}
+GM.SkillModifierMuls = {}
 GM.SkillFunctions = {}
 GM.SkillModifierFunctions = {}
 
@@ -63,6 +64,16 @@ function GM:AddSkillModifier(skillid, modifier, amount)
 		self.SkillModifiers[skillid][modifier] = amount
 	else
 		self.SkillModifiers[skillid][modifier] = (self.SkillModifiers[skillid][modifier] or 0) + amount
+	end
+end
+
+-- Multiplies the specific skill mult, applies after additions.
+function GM:AddSkillModifierMul(skillid, modifier, amount)
+	self.SkillModifierMuls[skillid] = self.SkillModifierMuls[skillid] or {}
+	if isfunction(amount) then
+		self.SkillModifierMuls[skillid][modifier] = amount
+	else
+		self.SkillModifierMuls[skillid][modifier] = (self.SkillModifierMuls[skillid][modifier] or 0) + amount
 	end
 end
 
@@ -1755,6 +1766,9 @@ GM:AddSkillModifier(SKILL_ENDLESS, SKILLMOD_DAMAGE_DEALT_MUL, function(sk, pl, l
 s = GM:AddSkill(SKILL_ENDLESS_WORTH, "Endless Worth", GOOD.."+5 starting worth (+3 worth per level)\n"..GOOD.."Bonus +3 worth on max level!",
 -1, 1, {SKILL_ENDLESS_POINTS}, TREE_ENDLESSTREE)
 MakeSkillEndless(s)
+s.ConnectionsLevels = {
+	[SKILL_ENDLESS_POINTS] = 10
+}
 s.RequiredSP = 2
 s.MaxLevel = 50
 GM:AddSkillModifier(SKILL_ENDLESS_WORTH, SKILLMOD_WORTH, function(sk, pl, lvl) return 5 + (sk.MaxLevel == lvl and lvl or lvl-1)*3 end)

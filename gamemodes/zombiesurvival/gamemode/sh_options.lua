@@ -411,9 +411,9 @@ GM:AddPointShopItem("broadside",		ITEMCAT_GUNS,			220,			"weapon_zs_broadside")
 GM:AddPointShopItem("smelter",			ITEMCAT_GUNS,			220,			"weapon_zs_smelter")
 
 -- Tier 6?
-GM:AddPointShopItem("doomstick",		ITEMCAT_GUNS,			350,			"weapon_zs_doomstick").SkillRequirement = SKILL_U_DOOMSTICK
-GM:AddPointShopItem("bulletstormmg",	ITEMCAT_GUNS,			350,			"weapon_zs_bulletstorm_machinegun").SkillRequirement = SKILL_U_BULLETSTORMMG
-GM:AddPointShopItem("ar2rifle",			ITEMCAT_GUNS,			350,			"weapon_zs_ar2").SkillRequirement = SKILL_U_AR2PULSERIFLE
+GM:AddPointShopItem("doomstick",		ITEMCAT_GUNS,			550,			"weapon_zs_doomstick").SkillRequirement = SKILL_U_DOOMSTICK
+GM:AddPointShopItem("bulletstormmg",	ITEMCAT_GUNS,			550,			"weapon_zs_bulletstorm_machinegun").SkillRequirement = SKILL_U_BULLETSTORMMG
+GM:AddPointShopItem("ar2rifle",			ITEMCAT_GUNS,			550,			"weapon_zs_ar2").SkillRequirement = SKILL_U_AR2PULSERIFLE
 
 
 GM:AddPointShopItem("pistolammo",		ITEMCAT_AMMO,			9,				nil,	"18 pistol ammo",				nil,									"ammo_pistol",					function(pl) pl:GiveAmmo(18, "pistol", true) end)
