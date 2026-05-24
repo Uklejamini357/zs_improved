@@ -3233,12 +3233,20 @@ function GM:EntityTakeDamage(ent, dmginfo)
 		return
 	end
 
+	if (ent:IsValid() and ent:IsPlayer() and ent:Alive()) and ent:HasGodMode() then
+		return true
+	end
+
 	if ent.LastHeld and CurTime() < ent.LastHeld + 0.1 and attacker:IsPlayer() and P_Team(attacker) == TEAM_HUMAN then
 		dmginfo:SetDamage(0)
 		dmginfo:SetDamageType(0)
 		dmginfo:ScaleDamage(0)
 		dmginfo:SetDamageForce(vector_origin)
 		return
+	end
+
+	if ent:IsValidLivingHuman() and attacker:IsValid() and (attacker:IsPhysicsModel() or attacker.IsPhysbox) and ent:GetBarricadeGhosting() and ent:GetDTBool(1) then -- fix prop damage while in sigil
+		return true
 	end
 
 	if attacker:IsValidHuman() and not directdmg then
@@ -3256,7 +3264,7 @@ function GM:EntityTakeDamage(ent, dmginfo)
 	end
 
 	if attacker:IsValidZombie() and not directdmg then
-		if attacker:GetZombieClassTable().Name == "Ancient Nightmare" and ent:IsValidHuman() and ent:IsSkillActive(SKILL_ANCIENT_SKILL) then
+		if attacker:GetZombieClassTable().Name == "Ancient Nightmare" and dmginfo:GetDamageType() == DMG_SLASH and ent:IsValidHuman() and ent:IsSkillActive(SKILL_ANCIENT_SKILL) then
 			dmginfo:ScaleDamage(0.9)
 		end
 
