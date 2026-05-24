@@ -1426,8 +1426,8 @@ function GM:Think()
 			if self:GetWaveStart() <= time then
 				gamemode.Call("SetWaveActive", true)
 			elseif not self.PantsMode and not self:IsClassicMode() and not self.ZombieEscape then
-				local bosscount = math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.011 + (self:GetWave() * 0.004))))
-				local demibosscount = math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD) - bosscount, #player.GetAll() * (0.032 + (self:GetWave() * 0.013))))
+				local bosscount = math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD), #player.GetAll() * (0.011 + (wave * 0.004))))
+				local demibosscount = math.ceil(math.min(#team.GetPlayers(TEAM_UNDEAD) - bosscount, #player.GetAll() * (0.032 + (wave * 0.013))))
 
 
 				if self.DemiBossZombies and self.LastDemiBossZombiesSpawned ~= wave and wave > 0 --and not self.RoundEnded
@@ -1525,7 +1525,7 @@ function GM:Think()
 					pl:GiveStatus("drown")
 				end
 
-				if pl:IsSkillActive(SKILL_POINT_OLD) and self:GetWave() >= 1 and time >= pl.BonusDamageCheck + 60 then
+				if pl:IsSkillActive(SKILL_POINT_OLD) and wave > 0 and time >= pl.BonusDamageCheck + 60 then
 					pl.BonusDamageCheck = time
 					pl:AddPoints(2)
 					pl:GainZSXP(1)
@@ -1570,7 +1570,7 @@ function GM:Think()
 				end
 
 				if pl:IsSkillActive(SKILL_D_LATEBUYER) and not pl.LateBuyerMessage then
-					local midwave = self:GetWave() < self:GetNumberOfWaves() / 2 or self:GetWave() == self:GetNumberOfWaves() / 2 and self:GetWaveActive() and time < self:GetWaveEnd() - (self:GetWaveEnd() - self:GetWaveStart()) / 2
+					local midwave = wave < self:GetNumberOfWaves() / 2 or wave == self:GetNumberOfWaves() / 2 and self:GetWaveActive() and time < self:GetWaveEnd() - (self:GetWaveEnd() - self:GetWaveStart()) / 2
 					if not midwave then
 						pl:CenterNotify(COLOR_CYAN, translate.ClientGet(pl, "late_buyer_finished"))
 						pl:SendLua("surface.PlaySound(\"buttons/button5.wav\")")
@@ -1602,7 +1602,7 @@ function GM:Think()
 					pl.OldWeaponToReload = nil
 				end
 
-				if pl:IsSkillActive(SKILL_STOWAGE) and self:GetWave() > 0 and time > (pl.NextResupplyUse or 0) then
+				if pl:IsSkillActive(SKILL_STOWAGE) and wave > 0 and time > (pl.NextResupplyUse or 0) then
 					local stockpiling = pl:IsSkillActive(SKILL_STOCKPILE)
 
 					pl.NextResupplyUse = time + self.ResupplyBoxCooldown * (pl.ResupplyDelayMul or 1) * (stockpiling and 2 or 1) * (1 + (pl.StowageCaches or 0) * 0.02)
@@ -1617,6 +1617,21 @@ function GM:Think()
 					net.Send(pl)
 				end
 			elseif P_Team(pl) == TEAM_UNDEAD then
+				if self:IsEndlessMode() then
+					if wave > self:GetNumberOfWaves() then
+						pl.ZombieTokensRemainder = pl.ZombieTokensRemainder + (wave^1.5)*0.01
+					elseif self.ObjectiveMap and wave > 0 and self.GameStartTime then
+						pl.ZombieTokensRemainder = pl.ZombieTokensRemainder + (CurTime() - self.GameStartTime) / 5e4
+					end
+				elseif self.ObjectiveMap and wave > 0 and self.GameStartTime then
+					pl.ZombieTokensRemainder = pl.ZombieTokensRemainder + (CurTime() - self.GameStartTime) /5e4
+				end
+
+				if pl.ZombieTokensRemainder >= 1 then
+					pl:SetZombieTokens(pl:GetZombieTokens() + pl.ZombieTokensRemainder)
+					pl.ZombieTokensRemainder = pl.ZombieTokensRemainder - math.floor(pl.ZombieTokensRemainder)
+				end
+
 				if pl:IsBot() then
 					for _,mut in pairs(self.Mutations) do
 						if mut.Bots and gamemode.Call("BuyZombieMutation", pl, mut.Signature) then
@@ -3954,7 +3969,7 @@ function GM:PlayerHurt(victim, attacker, healthremaining, damage)
 		victim:PlayPainSound()
 		victim.BonusDamageCheck = CurTime()
 
-		if healthremaining < 75 then
+		if healthremaining < victim:GetMaxHealth()*0.75 then
 			victim:ResetSpeed(nil, healthremaining)
 		end
 
@@ -4941,6 +4956,8 @@ function GM:WaveStateChanged(newstate)
 
 			self:SetClosestsToZombie()
 
+			self.GameStartTime = CurTime()
+
 			local humans = {}
 			for _, pl in pairs(player.GetAll()) do
 				if pl:Team() == TEAM_HUMAN and pl:Alive() then
@@ -5137,7 +5154,7 @@ function GM:WaveStateChanged(newstate)
 					pl:GainZSXP(pointsreward * 0.5)
 				end
 
-				if not self.ObjectiveMap and not self.ZombieEscape and not self.ClassicMode and self.EndlessMode then
+				if not self.ObjectiveMap and not self.ZombieEscape and not self.ClassicMode and self:IsEndlessMode() then
 					if self:GetWave() >= 8 then
 						pl:GiveAchievement("survivor_1")
 					end

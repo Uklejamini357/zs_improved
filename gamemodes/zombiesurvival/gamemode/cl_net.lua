@@ -165,6 +165,13 @@ net.Receive("zs_wavestart", function(length)
 		end
 	end
 
+	if GAMEMODE:IsEndlessMode() and wave == GAMEMODE:GetNumberOfWaves()+1 then
+		GAMEMODE:CenterNotify(COLOR_RED, "H A V E   F U N .")
+
+		MySelf:EmitSound("ambient/creatures/town_zombie_call1.wav", 0, 80)
+		return
+	end
+
 	surface_PlaySound("ambient/creatures/town_zombie_call1.wav")
 end)
 
@@ -196,6 +203,27 @@ net.Receive("zs_waveend", function(length)
 					GAMEMODE:CenterNotify(COLOR_ORANGE, translate.Format("scrap_for_surviving", pointsbonus))
 				end
 			end
+		end
+
+
+		if GAMEMODE:IsEndlessMode() and wave == GAMEMODE:GetNumberOfWaves() then
+			timer.Simple(5, function()
+				GAMEMODE:CenterNotify(COLOR_PURPLE, "Entering endless waves.")
+			end)
+			timer.Simple(8, function()
+				GAMEMODE:CenterNotify(COLOR_RPURPLE, "The zombies will continously grow stronger.")
+			end)
+			timer.Simple(11, function()
+				GAMEMODE:CenterNotify(COLOR_RPURPLE, "And will gain zombie tokens passively.")
+			end)
+			timer.Simple(15, function()
+				GAMEMODE:CenterNotify(COLOR_RPURPLE, "Endless mode-exclusive zombies will also be unlocked, the further you get.")
+			end)
+			timer.Simple(20, function()
+				if MySelf:Team() == TEAM_HUMAN then
+					GAMEMODE:CenterNotify(COLOR_PINK, "How far can you get?")
+				end
+			end)
 		end
 
 		surface_PlaySound("ambient/atmosphere/cave_hit"..math.random(6)..".wav")
