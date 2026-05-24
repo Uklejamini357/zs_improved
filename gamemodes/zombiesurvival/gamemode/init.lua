@@ -5134,7 +5134,7 @@ function GM:WaveStateChanged(newstate)
 
 	else
 		gamemode.Call("SetWaveStart", CurTime() + (GetGlobalBool("classicmode") and self.WaveIntermissionLengthClassic + math.min(self.WaveIntermissionLengthMaxClassic, math.max(0, self:GetWave() - 1) * self.TimeAddedPerWaveIntermissionClassic)
-		or self.WaveIntermissionLength + math.min(self.WaveIntermissionLengthMax, math.max(0, self:GetWave() - 1) * self.TimeAddedPerWaveIntermission)))
+		or math.min(self.WaveIntermissionLengthMax, self.WaveIntermissionLength + math.max(0, self:GetWave() - 1) * self.TimeAddedPerWaveIntermission)))
 
 		net.Start("zs_waveend")
 			net.WriteInt(self:GetWave(), 16)
