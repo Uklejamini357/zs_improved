@@ -436,14 +436,6 @@ function GM:AddResources()
 		resource.AddFile("sound/"..tostring(self.AllLoseSound))
 	end
 
-	if istable(self.RoundDrawSound) then
-		for _, filename in pairs(self.RoundDrawSound) do
-			resource.AddFile("sound/"..tostring(filename))
-		end
-	else
-		resource.AddFile("sound/"..tostring(self.RoundDrawSound))
-	end
-
 	if istable(self.HumanWinSound) then
 		for _, filename in pairs(self.HumanWinSound) do
 			resource.AddFile("sound/"..tostring(filename))
@@ -463,7 +455,6 @@ function GM:AddResources()
 /*
 	resource.AddFile("sound/"..tostring(self.LastHumanSound))
 	resource.AddFile("sound/"..tostring(self.AllLoseSound))
-	resource.AddFile("sound/"..tostring(self.RoundDrawSound))
 	resource.AddFile("sound/"..tostring(self.HumanWinSound))
 	resource.AddFile("sound/"..tostring(self.DeathSound))
 */
@@ -2463,9 +2454,6 @@ function GM:EndRound(winner)
 		self:SetDifficulty(self:GetDifficulty() * 0.2)
 
 		for _, pl in pairs(team.GetPlayers(TEAM_UNDEAD)) do
-			if not self.ZombieEscape and self.EndlessMode then
-				pl:PrintTranslatedMessage(HUD_PRINTTALK, "humans_lost", self:GetWave())
-			end
 			gamemode.Call("OnPlayerLoseRound", pl)
 		end
 	end
@@ -5209,7 +5197,7 @@ function GM:WaveStateChanged(newstate)
 		end
 	end
 
-	gamemode.Call("OnWaveStateChanged")
+	hook.Run("OnWaveStateChanged")
 end
 
 function GM:PlayerSwitchFlashlight(pl, newstate)

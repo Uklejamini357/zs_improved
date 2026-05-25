@@ -2345,13 +2345,11 @@ function GM:EndRound(winner, nextmap)
 
 	local losesound = self.AllLoseSound
 	local winsound = self.HumanWinSound
-	local drawsound = self.RoundDrawSound
 
 	local dvar = winner == TEAM_UNDEAD and (istable(losesound) and table.Random(losesound) or losesound) or
-	winner == TEAM_HUMAN and (istable(winsound) and table.Random(winsound) or winsound) or
-	(istable(drawsound) and table.Random(drawsound) or drawsound)
+	winner == TEAM_HUMAN and (istable(winsound) and table.Random(winsound) or winsound) or "common/null.wav"
 
-	local snd = GetGlobalString(winner == TEAM_UNDEAD and "losemusic" or winner == TEAM_HUMAN and "winmusic" or "drawmusic", dvar)
+	local snd = GetGlobalString(winner == TEAM_UNDEAD and "losemusic" or "winmusic", dvar)
 	if snd == "default" then
 		snd = dvar
 	elseif snd == "none" then
@@ -2361,8 +2359,7 @@ function GM:EndRound(winner, nextmap)
 	if snd then
 		timer.Simple(self.ZombieEscape and 0.05 or 0.25, function()
 			if not self.PlayWinMusic and winner == TEAM_HUMAN and snd == GetGlobalString("winmusic", dvar) or
-			not self.PlayLoseMusic and winner == TEAM_UNDEAD and snd == GetGlobalString("losemusic", dvar) or
-			not self.PlayDrawMusic and (winner ~= TEAM_UNDEAD and winner ~= TEAM_HUMAN) then return end
+			not self.PlayLoseMusic and winner == TEAM_UNDEAD and snd == GetGlobalString("losemusic", dvar) then return end
 
 			surface_PlaySound(snd)
 		end)

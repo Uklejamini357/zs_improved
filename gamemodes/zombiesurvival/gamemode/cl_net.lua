@@ -165,7 +165,7 @@ net.Receive("zs_wavestart", function(length)
 		end
 	end
 
-	if GAMEMODE:IsEndlessMode() and wave == GAMEMODE:GetNumberOfWaves()+1 then
+	if !GAMEMODE.ObjectiveMap and GAMEMODE:IsEndlessMode() and wave == GAMEMODE:GetNumberOfWaves()+1 then
 		GAMEMODE:CenterNotify(COLOR_RED, "H A V E   F U N .")
 
 		MySelf:EmitSound("ambient/creatures/town_zombie_call1.wav", 0, 80)
@@ -206,7 +206,7 @@ net.Receive("zs_waveend", function(length)
 		end
 
 
-		if GAMEMODE:IsEndlessMode() and wave == GAMEMODE:GetNumberOfWaves() then
+		if !GAMEMODE.ObjectiveMap and GAMEMODE:IsEndlessMode() and wave == GAMEMODE:GetNumberOfWaves() then
 			timer.Simple(5, function()
 				GAMEMODE:CenterNotify(COLOR_PURPLE, "Entering endless waves.")
 			end)

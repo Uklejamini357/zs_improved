@@ -931,11 +931,6 @@ GM.HumanWinSound = {
 --	Sound("zombiesurvival/won_theme.wav")
 }
 
--- Sound played when round ends in draw.
-GM.RoundDrawSound = {
-	Sound("zombiesurvival/music_draw.ogg")
-}
-
 -- Sound played to a person when they die as a human.
 GM.DeathSound = {
 	Sound("zombiesurvival/human_death_stinger.ogg"),
