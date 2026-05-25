@@ -2517,3 +2517,4 @@ end
 function PlayMenuCloseSound()
 	MySelf:EmitSound("buttons/lightswitch2.wav", 100, 20)
 end
+

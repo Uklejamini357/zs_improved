@@ -266,7 +266,7 @@ function CLASS:PostPlayerDraw(pl)
 	local pos, ang = pl:GetBonePositionMatrixed(6)
 	if pos then
 		render_SetMaterial(matGlow)
-		local colGlow = HSVToColor((CurTime() - pl:GetNW2Float("SpawnTime", 0)) * 85 % 360, 0.6, 1)
+		local colGlow = HSVToColor(60 + (CurTime() - pl:GetNW2Float("SpawnTime", 0)) * 85 % 360, 0.6, 1)
 		render_DrawSprite(LocalToWorld(vecEyeLeft, angle_zero, pos, ang), 4, 4, colGlow)
 		render_DrawSprite(LocalToWorld(vecEyeRight, angle_zero, pos, ang), 4, 4, colGlow)
 	end

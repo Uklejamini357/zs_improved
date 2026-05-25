@@ -754,10 +754,37 @@ concommand.Add("zs_admin_forcerestartround", function(pl, cmd, args)
 	print(Format("Forced a new round restart %s(Command received by %s)", args[1] == "1" and "(Vaults saved) " or "", Format("%s [%s]", pl:Name(), pl:SteamID())) )
 end, nil, text)
 
-concommand.Add("zs_admin_luarun", function(pl, cmd, args, str)
+
+
+-- Dev purposes only.
+
+-- No reverse.
+concommand.Add("zs_dev_disableviewpunchperma", function(pl, cmd, args, str)
+	if not IsPlayerValidSuperAdmin(pl) then return end
+	local s = [[local m=FindMetaTable("Player")
+m.OldViewPunch = m.OldViewPunch or m.ViewPunch
+function m:ViewPunch(ang) end]]
+
+	RunString(s)
+	BroadcastLua(s)
+end)
+
+
+concommand.Add("zs_dev_toggleendround", function(pl, cmd, args, str)
+	GAMEMODE.NoEndRound = GAMEMODE.NoEndRound
+
+	for _,pl in player.Iterator() do
+		if !pl:IsAdmin() then continue end
+		pl:PrintMessage(3, "EndRound: "..(GAMEMODE.NoEndRound and "DISABLED" or "ENABLED"))
+	end
+end)
+
+--[[ -- who needs it anyway when there is lua_run?
+concommand.Add("zs_dev_luarun", function(pl, cmd, args, str)
 	if not IsPlayerValidSuperAdmin(pl, true) then return end
 	local value
 	if string.len(str) > 0 then
 		RunString(str)
 	end
 end, nil, text)
+]]
