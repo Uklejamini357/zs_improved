@@ -384,7 +384,7 @@ function GM:GetBestAvailableZombieClass(baseclass_id)
 end
 
 function GM:ShouldUseBetterVersionSystem()
-	return not self.ObjectiveMap
+	return not self.ObjectiveMap or GetGlobalBool("ZS.ForceBetterClasses")
 end
 
 local playerheight = Vector(0, 0, 72)

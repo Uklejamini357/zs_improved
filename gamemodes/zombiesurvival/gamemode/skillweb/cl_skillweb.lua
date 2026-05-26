@@ -1316,6 +1316,7 @@ function PANEL:Paint(w, h)
 	local lifetime = realtime - self.CreationTime
 	local dt = realtime - self.LastPaint
 	local can_remort = MySelf:CanSkillsRemort()
+	local screenscale = BetterScreenScale()
 	local skillid, skill, nodepos, selected
 	local col, connectskill, othernode, othernodepos
 	local add, pos_a, pos_b, sat
@@ -1592,7 +1593,7 @@ function PANEL:Paint(w, h)
 
 			render_SetColorModulation(1, 1, 1)
 
-			if self.vCamPos.x < (self.DesiredTree == 0 and 11500 or 9500) and not CheckHidden(skill) then
+			if self.vCamPos.x < (self.DesiredTree == 0 and 11500 or 9500)*screenscale and not CheckHidden(skill) then
 				local colo = skill.Disabled and COLOR_DARKGRAY or skill.Rainbow and HSVToColor(RealTime() * 160 % 360, 0.5, 1) or selected and color_white or notunlockable and COLOR_MIDGRAY or COLOR_GRAY
 				local colo2 = COLOR_GRAY
 
@@ -1613,10 +1614,10 @@ function PANEL:Paint(w, h)
 					draw_SimpleText(skill.Name, skillid <= -1 and "ZS3D2DFont2" or "ZS3D2DFont2Small", 0, 0, colo, TEXT_ALIGN_CENTER) -- "ZS3D2DFont2Big" "ZS3D2DFont2"
 				end
 
-				if self.vCamPos.x < 7000 then
+				if self.vCamPos.x < 7000*screenscale then
 					local font = "ZSHUDFontSmall" --"ZSHUDFont"
 					local y_pos = 42 --58
-					local y_pos_add = 26 --32
+					local y_pos_add = 26*screenscale --32
 					if skill.AlwaysActive then
 						draw_SimpleText(translate.Get("s_always_active"), font, 0, y_pos, COLOR_RPINK, TEXT_ALIGN_CENTER)
 						y_pos = y_pos + y_pos_add
@@ -1685,7 +1686,7 @@ function PANEL:Paint(w, h)
 
 
 					-- Allows to show skill modifier text, to see if there is any error in balancing.
-					if hoveredskill == skillid and self.vCamPos.x < 5000 and GAMEMODE.AddSkillDescriptions then
+					if hoveredskill == skillid and self.vCamPos.x < 5000*screenscale and GAMEMODE.AddSkillDescriptions then
 						--local c = string.Explode("\n", skill.Description)
 						local skillmod = GAMEMODE.SkillModifiers[skillid]
 						if (type(skillmod) == "table" and table.Count(skillmod) or 0) > 0 then

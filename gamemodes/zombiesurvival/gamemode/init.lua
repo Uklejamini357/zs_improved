@@ -837,17 +837,19 @@ function GM:RemoveUnusedEntities()
 	util.RemoveAll("prop_ragdoll")
 
 
-	-- Remove NPCs because first of all this game is PvP and NPCs can cause crashes. (Comment: are you sure?)
---	util.RemoveAll("npc_maker")
---	util.RemoveAll("npc_template_maker")
---	util.RemoveAll("npc_zombie")
---	util.RemoveAll("npc_zombie_torso")
---	util.RemoveAll("npc_fastzombie")
---	util.RemoveAll("npc_headcrab")
---	util.RemoveAll("npc_headcrab_fast")
---	util.RemoveAll("npc_headcrab_black")
---	util.RemoveAll("npc_poisonzombie")
-	
+	-- Remove NPCs because first of all this game is PvP and NPCs can cause crashes.
+	if !self.PreserveNPCs then
+		util.RemoveAll("npc_maker")
+		util.RemoveAll("npc_template_maker")
+		util.RemoveAll("npc_zombie")
+		util.RemoveAll("npc_zombie_torso")
+		util.RemoveAll("npc_fastzombie")
+		util.RemoveAll("npc_headcrab")
+		util.RemoveAll("npc_headcrab_fast")
+		util.RemoveAll("npc_headcrab_black")
+		util.RemoveAll("npc_poisonzombie")
+	end
+
 	-- Such a headache. Just remove them all.
 	util.RemoveAll("item_ammo_crate")
 	

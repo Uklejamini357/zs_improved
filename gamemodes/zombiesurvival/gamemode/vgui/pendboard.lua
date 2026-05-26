@@ -70,7 +70,7 @@ function MakepEndBoard(winner)
 		end
 	elseif winner == TEAM_UNDEAD then
 		local s = "The undead army grows stronger."
-		if GAMEMODE:IsEndlessMode() then
+		if GAMEMODE:IsEndlessMode() and not GAMEMODE.ZombieEscapeand and not GAMEMODE.ObjectiveMap then
 			s = s.."\nHumans survived till wave "..GAMEMODE:GetWave()
 		end
 		subheading = EasyLabel(frame, s, "ZSHUDFontSmaller", COLOR_LIMEGREEN)
