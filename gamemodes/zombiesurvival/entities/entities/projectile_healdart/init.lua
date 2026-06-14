@@ -10,6 +10,12 @@ function ENT:Initialize()
 	self:SetModelScale(0.3, 0)
 	self:SetupGenericProjectile(self.Gravity)
 
+	local phys = self:GetPhysicsObject()
+	if phys and phys:IsValid() then
+		phys:EnableDrag(false)
+		phys:SetMass(0.01)
+	end
+
 	self:Fire("kill", "", 30)
 
 	if self:GetSeeked():IsValidLivingHuman() and self:GetOwner():IsValidLivingHuman() then
