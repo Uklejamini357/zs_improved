@@ -40,6 +40,10 @@ local matHeart = Material("icon16/heart.png")
 local colNail = Color(0, 0, 5, 220)
 local colText = Color(240, 240, 240, 105)
 local colDead = Color(230, 80, 80, 95)
+
+local math_min = math.min
+local math_max = math.max
+local math_Clamp = math.Clamp
 function ENT:DrawTranslucent()
 	local parent = self:GetParent()
 	if not parent:IsValid() or RealTime() == parent.LastNailInfoDraw then
@@ -139,7 +143,7 @@ function ENT:DrawTranslucent()
 		local dot = EyeVector():Dot(norm)
 
 		local dotsq = dot * dot
-		local vis = math.Clamp((dotsq * dotsq) - 0.1, 0, 1)
+		local vis = math_Clamp((dotsq * dotsq) - 0.1, 0, 1)
 
 		if vis < 0.01 then return end
 
@@ -166,22 +170,22 @@ function ENT:DrawTranslucent()
 				local repairs = self:GetRepairs()
 				local mrps = self:GetMaxRepairs()
 
-				local repairs2 = math.min(repairs, 4000)
-				local mrps2 = math.min(mrps, 4000)
-				local nhp2 = math.min(nhp, 4000)
-				local mnhp2 = math.min(mnhp, 4000)
+				local repairs_div = math_max(1, repairs/2000)
+				local mrps_div = math_max(1, mrps/2000)
+				local nhp_div = math_max(1, nhp/2000)
+				local mnhp_div = math_max(1, mnhp/2000)
 
 				surface.SetDrawColor(0, 0, 0, 210 * vis)
-				surface.DrawRect(x - 1, y, mrps2/5 + mrps2/50 + 1, hei)
+				surface.DrawRect(x - 1, y, (mrps/mrps_div)/5 + (mrps/mrps_div)/50 + 1, hei)
 
-				for i = 0, repairs2, math.max(200, repairs2/30) do
-					local val = math.Clamp(repairs - i, 0, 200)
+				for i = 0, repairs/mrps_div, 200 do
+					local val = math_Clamp((repairs/mrps_div) - i, 0, 200)
 
 					surface.SetDrawColor(100, 170, 215, 240 * vis)
 					surface.DrawRect(x + 1 + i/5 + i/50, y + 1, val/5, hei - 2)
 				end
 
-				local mu = math.Clamp(nhp / mnhp, 0, 1)
+				local mu = math_Clamp(nhp / mnhp, 0, 1)
 				local green = mu * 200
 				colNail.r = 200 - green
 				colNail.g = green
@@ -192,10 +196,10 @@ function ENT:DrawTranslucent()
 				x = wid * -0.5 + 2
 
 				surface.SetDrawColor(0, 0, 0, 210 * vis)
-				surface.DrawRect(x - 1, y, mnhp2/5 + mnhp2/50 + 2, hei)
+				surface.DrawRect(x - 1, y, (mnhp/mnhp_div)/5 + (mnhp/mnhp_div)/50 + 2, hei)
 
-				for i = 0, nhp2, 200 do
-					local val = math.Clamp(nhp - i, 0, 200)
+				for i = 0, nhp/mnhp_div, 200 do
+					local val = math_Clamp((nhp/mnhp_div) - i, 0, 200)
 
 					surface.SetDrawColor(colNail)
 					surface.DrawRect(x + 1 + i/5 + i/50, y + 1, val/5, hei - 2)

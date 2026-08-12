@@ -491,6 +491,8 @@ function GM:Initialize()
 
 	self.EndlessModeVoters = {}
 	self.GlobalHumanMultipliers = table.Copy(self.GlobalHumanMultiplierTypes)
+	self.endless_hp_scaling = 1
+	self.endless_dmg_scaling = 1
 
 	print(self.Name.." version "..self.Version)
 end
@@ -2120,6 +2122,8 @@ function GM:RestartLua()
 	self.LastSuperBossZombieSpawned = nil
 	self.UseSigils = nil
 	self.GlobalHumanMultipliers = table.Copy(self.GlobalHumanMultiplierTypes)
+	self.endless_hp_scaling = 1
+	self.endless_dmg_scaling = 1
 	--self:SetAllSigilsDestroyed(false)
 
 	-- logic_pickups
@@ -2127,7 +2131,7 @@ function GM:RestartLua()
 	self.MaxAmmoPickups = nil
 	self.MaxFlashlightPickups = nil
 	self.WeaponRequiredForAmmo = nil
-	for _, pl in pairs(player.GetAll()) do
+	for _, pl in ipairs(player.GetAll()) do
 		pl.AmmoPickups = nil
 		pl.WeaponPickups = nil
 	end
@@ -3265,6 +3269,7 @@ function GM:EntityTakeDamage(ent, dmginfo)
 		end
 
 		dmginfo:ScaleDamage(self.ZombieDamageDealtMultiplier or 1)
+		dmginfo:ScaleDamage(self.endless_dmg_scaling)
 	end
 
 	-- Props about to be broken props take 3x damage from anything except zombies
@@ -4725,6 +4730,8 @@ function GM:PlayerSpawn(pl)
 		else
 			dynhp = dynhp * healthmulti
 		end
+
+		dynhp = math.floor(dynhp * self.endless_hp_scaling)
 		pl:SetHealth(math.min(2147483647, dynhp * (1 + (pl.MutationModifiers["zombie_health"] or 0))))
 		pl:SetNWInt("zs_zombiehealth", math.min(2147483647, hp))
 		pl:SetNWInt("zs_zombiedynhealth", math.min(2147483647, dynhp))
@@ -4917,7 +4924,7 @@ function GM:SetWave(wave)
 				table.insert(UnlockedClasses, classid)
 			end
 
-			for _, ent in pairs(ents.FindByClass("logic_classunlock")) do
+			for _, ent in ipairs(ents.FindByClass("logic_classunlock")) do
 				local classname = GAMEMODE.ZombieClasses[classid].Name
 				if ent.Class == string.lower(classname) then
 					ent:Input("onclassunlocked", ent, ent, classname)
@@ -4932,7 +4939,7 @@ function GM:SetWave(wave)
 	end
 
 	if #UnlockedClasses > 0 then
-		for _, pl in pairs(player.GetAll()) do
+		for _, pl in ipairs(player.GetAll()) do
 			local classnames = {}
 			for __, classid in pairs(UnlockedClasses) do
 				local classtbl = self.ZombieClasses[classid]
@@ -4943,6 +4950,11 @@ function GM:SetWave(wave)
 				net.WriteString(string.AndSeparate(classnames))
 			net.Send(pl)
 		end
+	end
+
+	if self.EndlessMode then
+		self.endless_hp_scaling = 1.04^(wave-self:GetNumberOfWaves())
+		self.endless_dmg_scaling = math.sqrt(self.endless_hp_scaling)
 	end
 end
 
@@ -5002,10 +5014,11 @@ function GM:WaveStateChanged(newstate)
 		end
 
 		local prevwave = self:GetWave()
+		local nextwave = prevwave+1
 
 		if not self.EndlessMode and self:GetUseSigils() and prevwave >= self:GetNumberOfWaves() then return end
 
-		gamemode.Call("SetWave", prevwave + 1)
+		gamemode.Call("SetWave", nextwave)
 		gamemode.Call("SetWaveStart", CurTime())
 		if self.ZombieEscape then
 			gamemode.Call("SetWaveEnd", -1)
@@ -5019,7 +5032,14 @@ function GM:WaveStateChanged(newstate)
 		net.WriteFloat(self:GetWaveEnd())
 		net.Broadcast()
 
-		for _, pl in pairs(team.GetPlayers(TEAM_UNDEAD)) do
+		if nextwave > self:GetNumberOfWaves() then
+			for _, pl in ipairs(player.GetAll()) do
+				pl:CenterNotify(COLOR_RORANGE, Format("Zombie HP: x%s", math.Round(self.endless_hp_scaling, 2)))
+				pl:CenterNotify(COLOR_DARKRED, Format("Zombie Damage: x%s", math.Round(self.endless_dmg_scaling, 2)))
+			end
+		end
+
+		for _, pl in ipairs(team.GetPlayers(TEAM_UNDEAD)) do
 			pl.m_LastWaveStartSpawn = CurTime()
 
 			if pl:GetZombieClassTable().Name == "Crow" then
@@ -5032,18 +5052,18 @@ function GM:WaveStateChanged(newstate)
 			end
 		end
 
-		for _, pl in pairs(player.GetAll()) do
+		for _, pl in ipairs(player.GetAll()) do
 			pl.WaveBarricadeDamage = 0
 			pl.WaveHumanDamage = 0
 		end
 
 		local curwave = self:GetWave()
-		for _, ent in pairs(ents.FindByClass("logic_waves")) do
+		for _, ent in ipairs(ents.FindByClass("logic_waves")) do
 			if ent.Wave == curwave or ent.Wave == -1 then
 				ent:Input("onwavestart", ent, ent, curwave)
 			end
 		end
-		for _, ent in pairs(ents.FindByClass("logic_wavestart")) do
+		for _, ent in ipairs(ents.FindByClass("logic_wavestart")) do
 			if ent.Wave == curwave or ent.Wave == -1 then
 				ent:Input("onwavestart", ent, ent, curwave)
 			end
@@ -5136,7 +5156,7 @@ function GM:WaveStateChanged(newstate)
 			pointsbonus = self.EndWavePointsBonus + (self:GetWave() - 1) * self.EndWavePointsBonusPerWave
 		end
 
-		for _, pl in pairs(player.GetAll()) do
+		for _, pl in ipairs(player.GetAll()) do
 			if pl:Team() == TEAM_HUMAN and pl:Alive() then
 				if self.EndWaveHealthBonus > 0 and pl:Health() < pl:GetMaxHealth() then
 					pl:SetHealth(math.min(pl:GetMaxHealth(), pl:Health() + self.EndWaveHealthBonus))

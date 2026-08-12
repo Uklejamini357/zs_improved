@@ -397,6 +397,15 @@ function MakepWorth()
 	end
 
 	for catid, catname in ipairs(GAMEMODE.ItemCategories) do
+		local hasitems = false
+		for i, tab in ipairs(GAMEMODE.Items) do
+			if tab.Category == catid and tab.WorthShop then
+				hasitems = true
+				break
+			end
+		end
+		if not hasitems then continue end
+
 		local itemframe = vgui.Create("DScrollPanel", propertysheet)
 		local trinkets = catid == ITEMCAT_TRINKETS
 

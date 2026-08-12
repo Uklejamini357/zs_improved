@@ -771,6 +771,7 @@ end)
 
 
 concommand.Add("zs_dev_toggleendround", function(pl, cmd, args, str)
+	if not IsPlayerValidSuperAdmin(pl) then return end
 	GAMEMODE.NoEndRound = GAMEMODE.NoEndRound
 
 	for _,pl in player.Iterator() do
@@ -779,6 +780,181 @@ concommand.Add("zs_dev_toggleendround", function(pl, cmd, args, str)
 	end
 end)
 
+concommand.Add("zs_dev_killprops", function(pl, cmd, args)
+	if not IsPlayerValidSuperAdmin(pl) then return end
+
+	local timerhandler = "zs_dev_killprops"..pl:EntIndex()
+	if timer.Exists(timerhandler) then
+		timer.Remove(timerhandler)
+	else
+		timer.Create(timerhandler, 1, 6, function()
+			local times = tonumber(timer.RepsLeft(timerhandler))
+
+			if times ~= 0 then
+				PrintMessage(3, tostring(times))
+			else
+				local e = EffectData()
+				for _,ent in pairs(ents.FindByClass("prop_*")) do
+					e:SetOrigin(ent:GetPos())
+					util.Effect("Explosion", e)
+					ent:TakeDamage(1e9)
+					if ent:GetClass() == "prop_obj_sigil" and not ent:GetSigilCorrupted() then
+						gamemode.Call("PreOnSigilCorrupted", ent, DamageInfo())
+						ent:SetSigilCorrupted(true)
+						ent:SetSigilHealthBase(ent.MaxHealth)
+						ent:SetSigilLastDamaged(0)
+						gamemode.Call("OnSigilCorrupted", ent, DamageInfo())
+
+					end
+					ent:Remove()
+				end
+			end
+		end)
+	end
+end)
+
+
+concommand.Add("zs_admin_replacesigils", function(pl, cmd, args)
+	if not IsPlayerValidSuperAdmin(pl) then return end
+	
+	local e = EffectData()
+	for _,ent in ipairs(ents.FindByClass("prop_obj_sigil")) do
+		if args[1] == "1" or args[1] == "2" then
+			gamemode.Call("PreOnSigilCorrupted", ent, DamageInfo())
+			ent:SetSigilCorrupted(true)
+			ent:SetSigilHealthBase(ent.MaxHealth)
+			ent:SetSigilLastDamaged(0)
+			gamemode.Call("OnSigilCorrupted", ent, DamageInfo())
+			if args[1] == "2" then
+				e:SetOrigin(ent:GetPos())
+				for i=1,5 do
+					util.Effect("Explosion", e)
+				end
+			end
+		end
+		ent:Remove()
+	end
+
+	timer.Simple(0.5, function()
+		gamemode.Call("CreateSigils")
+	end)
+end)
+
+concommand.Add("zs_admin_killsigils", function(pl, cmd, args)
+	if not IsPlayerValidSuperAdmin(pl) then return end
+	
+	local e = EffectData()
+	for _,ent in ipairs(ents.FindByClass("prop_obj_sigil")) do
+		if args[1] == "1" or args[1] == "2" then
+			gamemode.Call("PreOnSigilCorrupted", ent, DamageInfo())
+			ent:SetSigilCorrupted(true)
+			ent:SetSigilHealthBase(ent.MaxHealth)
+			ent:SetSigilLastDamaged(0)
+			gamemode.Call("OnSigilCorrupted", ent, DamageInfo())
+			if args[1] == "2" then
+				e:SetOrigin(ent:GetPos())
+				for i=1,5 do
+					util.Effect("Explosion", e)
+				end
+			end
+		end
+		ent:Remove()
+	end
+end)
+
+concommand.Add("zs_devtest_nailprop", function(pl, cmd, args)
+	if not IsPlayerValidSuperAdmin(pl) then return end
+
+	local nailhp = tonumber(args[1]) or 1
+	local nailtier = tonumber(args[2]) or 1
+
+	if GAMEMODE:IsClassicMode() then
+		pl:PrintTranslatedMessage(HUD_PRINTCENTER, "cant_do_that_in_classic_mode")
+		return
+	end
+
+	local tr = pl:CompensatedMeleeTrace(512, 1, nil, nil, nil, true)
+	local trent = tr.Entity
+
+	if not trent:IsValid()
+	or not util.IsValidPhysicsObject(trent, tr.PhysicsBone)
+	or tr.Fraction == 0
+	or trent:GetMoveType() ~= MOVETYPE_VPHYSICS and not trent:GetNailFrozen()
+	or trent.NoNails
+	or trent:IsProjectile()
+	or trent:GetMaxHealth() == 1 and trent:Health() == 0 and not trent.TotalHealth
+	or trent.PreHoldCollisionGroup and (trent.PreHoldCollisionGroup == COLLISION_GROUP_DEBRIS or trent.PreHoldCollisionGroup == COLLISION_GROUP_DEBRIS_TRIGGER or trent.PreHoldCollisionGroup == COLLISION_GROUP_INTERACTIVE_DEBRIS)
+	or not trent:IsNailed() and not trent:GetPhysicsObject():IsMoveable() then return end
+
+	if not gamemode.Call("CanPlaceNail", pl, tr) then return end
+
+	if trent:GetBarricadeHealth() <= 0 and trent:GetMaxBarricadeHealth() > 0 then
+		pl:PrintTranslatedMessage(HUD_PRINTCENTER, "object_too_damaged_to_be_used")
+		return
+	end
+
+	-- Specical case for nailing things a drone is towing
+	local ropeconstraint = constraint.FindConstraint(trent, "Rope")
+	if ropeconstraint then
+		if ropeconstraint.Ent1 and ropeconstraint.Ent1:IsValid() and ropeconstraint.Ent1:GetClass() == "prop_drone" then return end
+		if ropeconstraint.Ent2 and ropeconstraint.Ent2:IsValid() and ropeconstraint.Ent2:GetClass() == "prop_drone" then return end
+	end
+
+	local aimvec = pl:GetAimVector()
+	local trtwo = util.TraceLine({start = tr.HitPos, endpos = tr.HitPos + aimvec * 240, filter = table.Add({pl, trent}, GAMEMODE.CachedInvisibleEntities), mask = MASK_SOLID})
+
+	if trtwo.HitSky then return end
+
+	local ent = trtwo.Entity
+	if trtwo.HitWorld
+	or ent:IsValid() and util.IsValidPhysicsObject(ent, trtwo.PhysicsBone) and (ent:GetMoveType() == MOVETYPE_VPHYSICS or ent:GetNailFrozen()) and not ent.NoNails and not (not ent:IsNailed() and not ent:GetPhysicsObject():IsMoveable()) and not (ent:GetMaxHealth() == 1 and ent:Health() == 0 and not ent.TotalHealth) then
+		if trtwo.MatType == MAT_CLIP then
+			pl:PrintTranslatedMessage(HUD_PRINTCENTER, "impossible")
+			return
+		end
+
+		if ent and ent:IsValid() and (ent:IsProjectile() or ent.NoNails or ent:IsNailed() and (#ent.Nails >= 8 or ent:GetPropsInContraption() >= GAMEMODE.MaxPropsInBarricade)) then return end
+
+		if ent:GetBarricadeHealth() <= 0 and ent:GetMaxBarricadeHealth() > 0 then
+			pl:PrintTranslatedMessage(HUD_PRINTCENTER, "object_too_damaged_to_be_used")
+			return
+		end
+
+		if GAMEMODE:EntityWouldBlockSpawn(ent) then return end
+
+		local cons = constraint.Weld(trent, ent, tr.PhysicsBone, trtwo.PhysicsBone, 0, true)
+		if cons ~= nil then
+			for _, oldcons in pairs(constraint.FindConstraints(trent, "Weld")) do
+				if oldcons.Ent1 == ent or oldcons.Ent2 == ent then
+					cons = oldcons.Constraint
+					break
+				end
+			end
+		end
+
+		if not cons then return end
+
+		pl:DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE)
+
+		local nail = ents.Create("prop_nail")
+		if nail:IsValid() then
+			nail.HealthMultiplier = nailhp * (pl.PropNailHealthMul or 1)
+			nail.NailTier = nailtier
+			nail:SetActualOffset(tr.HitPos, trent)
+			nail:SetPos(tr.HitPos - aimvec * 8)
+			nail:SetAngles(aimvec:Angle())
+			nail:AttachTo(trent, ent, tr.PhysicsBone, trtwo.PhysicsBone)
+			nail:Spawn()
+			nail:SetDeployer(pl)
+
+			cons:DeleteOnRemove(nail)
+
+			gamemode.Call("OnNailCreated", trent, ent, nail)
+
+			nail:EmitSound(string.format("weapons/melee/crowbar/crowbar_hit-%d.ogg", math.random(4)))
+		end
+	end
+end)
 --[[ -- who needs it anyway when there is lua_run?
 concommand.Add("zs_dev_luarun", function(pl, cmd, args, str)
 	if not IsPlayerValidSuperAdmin(pl, true) then return end

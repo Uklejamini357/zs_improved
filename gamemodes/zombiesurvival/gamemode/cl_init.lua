@@ -2110,7 +2110,7 @@ function GM:_CalcView(pl, origin, angles, fov, znear, zfar)
 	end
 
 	if not pl:Alive() and pl:GetMoveType() == MOVETYPE_NOCLIP then
-		origin = pl:GetPos()
+		origin = pl:GetPos() + pl:GetCurrentViewOffset()
 	end
 
 	if pl:GetObserverMode() ~= OBS_MODE_NONE then

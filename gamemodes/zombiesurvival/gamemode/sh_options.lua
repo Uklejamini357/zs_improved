@@ -32,7 +32,10 @@ ITEMCAT_TOOLS = 4
 ITEMCAT_DEPLOYABLES = 5
 ITEMCAT_TRINKETS = 6
 ITEMCAT_OTHER = 7
-ITEMCAT_ENDLESS = 8
+ITEMCAT_TRAITS = 8 -- old zs experience?
+ITEMCAT_RETURNS = 9
+ITEMCAT_CLASSES = 10
+ITEMCAT_ENDLESS = 11
 
 CATEGORY_MUTATIONS = 1
 CATEGORY_BOSSMUTATIONS = 2
@@ -53,7 +56,24 @@ GM.ItemCategories = {
 	[ITEMCAT_DEPLOYABLES] = "Deployables",
 	[ITEMCAT_TRINKETS] = "Trinkets",
 	[ITEMCAT_OTHER] = "Other",
+	[ITEMCAT_TRAITS] = "Traits",
+	[ITEMCAT_RETURNS] = "Returns",
+	[ITEMCAT_CLASSES] = "Classes",
 	[ITEMCAT_ENDLESS] = "Endless"
+}
+
+GM.ItemCategoriesDesc = {
+	[ITEMCAT_GUNS] = "",
+	[ITEMCAT_AMMO] = "",
+	[ITEMCAT_MELEE] = "",
+	[ITEMCAT_TOOLS] = "",
+	[ITEMCAT_DEPLOYABLES] = "Arsenal crates, Resupply boxes, turrets.",
+	[ITEMCAT_TRINKETS] = "Buy something.",
+	[ITEMCAT_OTHER] = "Throwables. Mostly grenades.",
+	[ITEMCAT_TRAITS] = "Buy small buffs for a medium amount of worth! Can only be chosen at the worth menu.",
+	[ITEMCAT_RETURNS] = "Sacrifice your buffs for small worth gain! Can only be chosen at the worth menu.",
+	[ITEMCAT_CLASSES] = "Only one class can be picked per round! Can only be chosen at the start of the game.",
+	[ITEMCAT_ENDLESS] = "Unique buffs for endless mode!"
 }
 
 GM.MutationCategories = {
@@ -341,6 +361,25 @@ item =
 GM:AddStartingItem("nanitecloud",		ITEMCAT_OTHER,			25,				"weapon_zs_nanitecloudbomb")
 item.SkillRequirement = SKILL_U_NANITECLOUD
 GM:AddStartingItem("bloodshot",			ITEMCAT_OTHER,			35,				"weapon_zs_bloodshotbomb")
+
+
+
+-- Human Classes (Only one can be chosen!)
+-- TODO: Move all of this into folder and use it all from there instead.
+GM:AddStartingItem("class_gunslinger",	ITEMCAT_CLASSES,		60,				nil,			"Class: Gunslinger",	"Best use with pistol!",			nil,					function(pl) end)
+GM:AddStartingItem("class_assault",		ITEMCAT_CLASSES,		60,				nil,			"Class: Assault",		"Specializes in using SMG weapons.",			nil,					function(pl) end)
+GM:AddStartingItem("class_heavy",		ITEMCAT_CLASSES,		60,				nil,			"Class: Heavy",			"Has specialization in using Heavy weapons.",			nil,					function(pl) end)
+GM:AddStartingItem("class_berserker",	ITEMCAT_CLASSES,		60,				nil,			"Class: Berserker",		"Berserker uses melee weapons to their fullest potential.\n-25% bullet damage\n+15% melee damage",			nil,					function(pl) end)
+GM:AddStartingItem("class_blademaster",	ITEMCAT_CLASSES,		60,				nil,			"Class: Blade Master",	"Inflicts Bleeding to zombies using blade weapons.\nBleeding zombies rapidly lose their health over time.\n-25% bullet damage & -10% damage",			nil,					function(pl) end)
+GM:AddStartingItem("class_medic",		ITEMCAT_CLASSES,		60,				nil,			"Class: Medic",			"Focuses on keeping allies healthy.\nMedical Kit uses 25% less ammo\n+25% healing effectiveness\n-15% damage",			nil,					function(pl) end)
+GM:AddStartingItem("class_cader",		ITEMCAT_CLASSES,		60,				nil,			"Class: Cader",			"Has special ability for protecting their barricades.",			nil,					function(pl) end)
+GM:AddStartingItem("class_engineer",	ITEMCAT_CLASSES,		60,				nil,			"Class: Engineer",		"Manages manhacks, turrets and their special abilities.\nDeployed turrets can be modified for complex, but effective mechanisms.\n+10% turret damage\n-25% weapon bullet damage and melee damage",			nil,					function(pl) end)
+GM:AddStartingItem("class_technician",	ITEMCAT_CLASSES,		60,				nil,			"Class: Technician",	"Highly versatile class able to customize deployables based on pulse ammo, including zappers for deadly effects!",			nil,					function(pl) end)
+GM:AddStartingItem("class_specialist",	ITEMCAT_CLASSES,		60,				nil,			"Class: Specialist",	"Specializes in buffing allies with special effects.\n-20% damage",			nil,					function(pl) end)
+GM:AddStartingItem("class_juggernaut",	ITEMCAT_CLASSES,		60,				nil,			"Class: Juggernaut",	"Tanky class that can tank a lot of incoming damage.\nIts' speed is the only issue.\n\n+4 melee damage block\n-25% movement speed",			nil,					function(pl) end)
+
+-- add in another day (kind of a port from HORDE?)
+-- GM:AddStartingItem("class_mage",		ITEMCAT_CLASSES,		35,				nil,			"Class: Mage",	"Unleashes magic upon the zombies.",			nil,					function(pl) end)
 
 ------------
 -- Points --

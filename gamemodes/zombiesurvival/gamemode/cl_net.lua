@@ -5,6 +5,16 @@ cvars.AddChangeCallback("zs_damagefloaters", function(cvar, oldvalue, newvalue)
 	DamageFloaters = newvalue ~= "0"
 end)
 
+local DamageSounds = CreateClientConVar("zs_damagesounds", "0", true, false):GetBool()
+cvars.AddChangeCallback("zs_damagesounds", function(cvar, oldvalue, newvalue)
+	DamageSounds = newvalue ~= "0"
+end)
+
+local DamageSoundsSnd = CreateClientConVar("zs_damagesounds_sound", "buttons/button10.wav", true, false):GetString()
+cvars.AddChangeCallback("zs_damagesounds_sound", function(cvar, oldvalue, newvalue)
+	DamageSoundsSnd = newvalue
+end)
+
 local M_Player = FindMetaTable("Player")
 local P_Team = M_Player.Team
 
@@ -68,6 +78,10 @@ net.Receive("zs_dmg", function(length)
 		timer.Create("ZS.DPSReset", 5, 1, function()
 			GAMEMODE.DamagePerSecondCounterMax = 0
 		end)
+	end
+
+	if DamageSounds then
+		MySelf:EmitSound("@"..DamageSoundsSnd, 0)
 	end
 end)
 
@@ -166,7 +180,8 @@ net.Receive("zs_wavestart", function(length)
 	end
 
 	if !GAMEMODE.ObjectiveMap and GAMEMODE:IsEndlessMode() and wave == GAMEMODE:GetNumberOfWaves()+1 then
-		GAMEMODE:CenterNotify(COLOR_RED, "H A V E   F U N .")
+		-- GAMEMODE:CenterNotify(COLOR_RED, "H A V E   F U N .")
+		GAMEMODE:CenterNotify(COLOR_RED, "ONLY ONE WAY TO FIND OUT.")
 
 		MySelf:EmitSound("ambient/creatures/town_zombie_call1.wav", 0, 80)
 		return
