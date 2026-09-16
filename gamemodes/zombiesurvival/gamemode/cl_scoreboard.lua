@@ -67,6 +67,32 @@ function PANEL:Init()
 	self.m_ServerNameLabel:NoClipping(true)
 	self.m_ServerNameLabel.Paint = BlurPaint
 
+	self.m_SpectatorsLabel = vgui.Create("DLabel", self)
+	self.m_SpectatorsLabel.Font = "Trebuchet18"
+	self.m_SpectatorsLabel:SetFont(self.m_SpectatorsLabel.Font)
+	self.m_SpectatorsLabel:SetText("Spectators:")
+	self.m_SpectatorsLabel:SetTextColor(COLOR_GRAY)
+	self.m_SpectatorsLabel:SizeToContents()
+	self.m_SpectatorsLabel:NoClipping(true)
+	self.m_SpectatorsLabel:SetMouseInputEnabled(true)
+	self.m_SpectatorsLabel.Paint = BlurPaint
+	self.m_SpectatorsLabel.OnMousePressed = function(panel, mc)
+		if mc ~= MOUSE_LEFT then return end 
+		local menu = DermaMenu()
+		for _,pl in pairs(team.GetPlayers(TEAM_SPECTATOR)) do
+			menu:AddOption(pl:Nick(), function()
+				timer.Simple(0, function()
+					if pl:IsValid() then
+						gamemode.Call("ClickedPlayerButton", pl)
+					end
+				end)
+			end)
+		end
+		menu:Open()
+
+		return false
+	end
+
 	self.m_AuthorLabel = EasyLabel(self, "by "..GAMEMODE.Author.." ("..GAMEMODE.Email..")", "ZSScoreBoardPing", COLOR_GRAY)
 	self.m_ContactLabel = EasyLabel(self, GAMEMODE.Website, "ZSScoreBoardPing", COLOR_GRAY)
 
@@ -98,6 +124,8 @@ function PANEL:PerformLayout()
 	self.m_ContactLabel:MoveBelow(self.m_AuthorLabel)
 
 	self.m_ServerNameLabel:SetPos(math.min(self:GetWide() - self.m_ServerNameLabel:GetWide(), self:GetWide() * 0.75 - self.m_ServerNameLabel:GetWide() * 0.5), 32 - self.m_ServerNameLabel:GetTall() / 2)
+
+	self.m_SpectatorsLabel:SetPos(20*screenscale, self:GetTall() - 20*screenscale)
 
 	self.m_HumanHeading:SetSize(self:GetWide() / 2 - 32, 28 * screenscale)
 	self.m_HumanHeading:SetPos(self:GetWide() * 0.25 - self.m_HumanHeading:GetWide() * 0.5, 110 * screenscale - self.m_HumanHeading:GetTall())
@@ -192,6 +220,20 @@ function PANEL:RefreshScoreboard()
 	self.m_ServerNameLabel:SetText(GetHostName())
 	self.m_ServerNameLabel:SizeToContents()
 	self.m_ServerNameLabel:SetPos(math.min(self:GetWide() - self.m_ServerNameLabel:GetWide(), self:GetWide() * 0.75 - self.m_ServerNameLabel:GetWide() * 0.5), 32 - self.m_ServerNameLabel:GetTall() / 2)
+
+	local specs = team.GetPlayers(TEAM_SPECTATOR)
+	local s = {}
+	for _,pl in pairs(specs) do
+		table.insert(s, pl:Nick())
+	end
+	local str = string.AndSeparate(s)
+	if str ~= "" then
+		self.m_SpectatorsLabel:SetVisible(true)
+		self.m_SpectatorsLabel:SetText(Format("(%d) Spectators: %s", #team.GetPlayers(TEAM_SPECTATOR), str))
+		self.m_SpectatorsLabel:SizeToContents()
+	else
+		self.m_SpectatorsLabel:SetVisible(false)
+	end
 
 	if self.PlayerPanels == nil then self.PlayerPanels = {} end
 
@@ -350,6 +392,15 @@ function PANEL:DoClick()
 	end
 end
 
+function PANEL:DoRightClick()
+	local pl = self:GetPlayer()
+	if pl:IsValid() and MySelf:Team() == TEAM_SPECTATOR then
+		net.Start("zs_spectateentity")
+		net.WriteEntity(pl)
+		net.SendToServer()
+	end
+end
+
 function PANEL:PerformLayout()
 	self.m_AvatarButton:AlignLeft(16)
 	self.m_AvatarButton:CenterVertical()
@@ -419,7 +470,7 @@ function PANEL:RefreshPlayer()
 	self.m_RemortLabel:SetColor(hcolor)
 	self.m_RemortLabel:SetAlpha(240)
 
-	if MySelf:Team() == TEAM_UNDEAD and pl:Team() == TEAM_UNDEAD and pl:GetZombieClassTable().Icon then
+	if (MySelf:Team() == TEAM_UNDEAD or MySelf:Team() == TEAM_SPECTATOR) and pl:Team() == TEAM_UNDEAD and pl:GetZombieClassTable().Icon then
 		self.m_ClassImage:SetVisible(true)
 		self.m_ClassImage:SetImage(pl:GetZombieClassTable().Icon)
 		self.m_ClassImage:SetImageColor(pl:GetZombieClassTable().IconColor or color_white)

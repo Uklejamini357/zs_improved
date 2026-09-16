@@ -40,7 +40,7 @@ function GM:DrawTargetID(ent, fade)
 		if ent:Team() == TEAM_HUMAN then
 			local batxt = math_ceil(ent:GetBloodArmor()).." Blood Armor"
 
-			draw.SimpleTextBlur(batxt, "ZSHUDFontSmaller", x, y, Color(255, 45, 45), TEXT_ALIGN_CENTER)
+			draw.SimpleTextBlur(batxt, "ZSHUDFontSmaller", x, y, Color(255, 45, 45, fade*255), TEXT_ALIGN_CENTER)
 			y = y + draw.GetFontHeight("ZSHUDFontSmaller") + 3
 		end
 

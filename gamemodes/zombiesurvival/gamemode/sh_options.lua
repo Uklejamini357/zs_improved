@@ -755,7 +755,10 @@ GM:AddMutation("token_converter", "Token Converter", "Convert Zombie tokens to 1
 end, false, 65, 5)
 
 GM:AddMutation("spawn_as_a_miniboss", "Miniboss Zombie", "Spawn as a miniboss zombie.", CATEGORY_MISCMUTATIONS, 135, function(pl)
-	if pl:GetZombieClassTable().MiniBoss and pl:Alive() then
+	if (pl:GetZombieClassTable().DemiBoss or pl:GetZombieClassTable().Boss or pl:GetZombieClassTable().SuperBoss) and pl:Alive() then
+		GAMEMODE:ConCommandErrorMessage(pl, "You are already a stronger boss type zombie!")
+		return false
+	elseif pl:GetZombieClassTable().MiniBoss and pl:Alive() then
 		GAMEMODE:ConCommandErrorMessage(pl, "You are already a miniboss zombie!")
 		return false
 	elseif not GAMEMODE:GetWaveActive() then

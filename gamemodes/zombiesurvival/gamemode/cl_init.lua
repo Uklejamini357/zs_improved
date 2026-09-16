@@ -226,6 +226,13 @@ function GM:ClickedPlayerButton(pl, button)
 	menu:AddOption(Format("XP: %s / %s (Max: %s)", pl:GetZSXP(), self:XPForLevel(pl:GetZSLevel() + 1, pl:GetZSRemortLevel()), pl:GetZSMaxXP()), function() end)
 	menu:AddOption(Format("Level: %s", pl:GetZSLevel()), function() end)
 	menu:AddOption(Format("Remort: %s", pl:GetZSRemortLevel()), function() end)
+	if pl:IsValid() and MySelf:Team() == TEAM_SPECTATOR then
+		menu:AddOption("Spectate", function()
+			net.Start("zs_spectateentity")
+			net.WriteEntity(pl)
+			net.SendToServer()
+		end)
+	end
 	menu:Open()
 end
 
@@ -2035,7 +2042,12 @@ function GM:_ShouldDrawLocalPlayer(pl)
 end
 
 local roll = 0
+local fov_desired = GetConVar("fov_desired")
 function GM:_CalcView(pl, origin, angles, fov, znear, zfar)
+	if pl:GetObserverMode() == 3 or pl:GetObserverMode() == 4 then
+		return {fov = fov_desired:GetFloat()}
+	end
+
 	if pl.Confusion and pl.Confusion:IsValid() then
 		pl.Confusion:CalcView(pl, origin, angles, fov, znear, zfar)
 	end

@@ -278,6 +278,32 @@ function GM:ShowHelp()
 
 			menu:Remove()
 		end
+
+		but = vgui.Create("DButton", menu)
+		but:SetFont("ZSHUDFontSmaller")
+		but:SetText(MySelf:Team() ~= TEAM_SPECTATOR and "(dev) Spectate" or "(dev) Stop Spectating")
+		but:SetTall(buttonhei)
+		but:DockMargin(0, 0, 0, 12)
+		but:DockPadding(0, 12, 0, 12)
+		but:Dock(TOP)
+		but.DoClick = function()
+			if MySelf:Team() ~= TEAM_SPECTATOR then
+				Derma_Query("Enter spectator mode?", "Spectator Mode", "Yes", function()
+					net.Start("zs_startspectate")
+					net.WriteBool(true)
+					net.SendToServer()
+					menu:Remove()
+				end, "No")
+
+			else
+				Derma_Query("Stop spectating?", "Spectator Mode", "Yes", function()
+					net.Start("zs_startspectate")
+					net.WriteBool(false)
+					net.SendToServer()
+					menu:Remove()
+				end, "No")
+			end
+		end
 	end
 
 	menu:MakePopup()

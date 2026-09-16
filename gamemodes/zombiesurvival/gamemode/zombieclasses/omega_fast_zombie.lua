@@ -9,6 +9,7 @@ CLASS.Model = Model("models/player/zombie_fast.mdl")
 
 CLASS.Wave = 24 / GM.NumberOfWaves
 CLASS.Revives = true
+CLASS.EndlessOnly = true
 
 CLASS.Health = 595
 CLASS.DynamicHealth = 15

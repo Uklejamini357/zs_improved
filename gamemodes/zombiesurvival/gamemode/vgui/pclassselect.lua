@@ -200,6 +200,13 @@ function PANEL:Init()
 
 	self.ButtonGrid:SortByMember("Wave")
 	self:InvalidateLayout()
+
+	hook.Add("OnPauseMenuShow", self, function()
+        if self and self:IsValid() and self:IsVisible() then
+            self:Remove()
+            return false
+        end
+    end)
 end
 
 function PANEL:PerformLayout()
@@ -293,15 +300,10 @@ function PANEL:OnRemove()
 	if IsValid(button) then button:Remove() end
 	button = self.ClassTypeLabel --self.LowZombieCountLabel
 	if IsValid(button) then button:Remove() end
+    hook.Remove("OnPauseMenuShow", self)
 end
 
 function PANEL:Think()
-	if input.IsKeyDown(KEY_ESCAPE) and gui.IsGameUIVisible() then
-		timer.Simple(0, function()
-			self:Remove()
-		end)
-		gui.HideGameUI()
-	end
 end
 
 local texUpEdge = surface.GetTextureID("gui/gradient_up")
@@ -484,6 +486,8 @@ function PANEL:CreateDescLabels()
 	local zclass = self.ClassTable
 	if not zclass or not zclass.Description then return end
 
+	local wave = GAMEMODE:GetWave()
+
 	local lines = {}
 
 	if zclass.Wave and zclass.Wave > 0 then
@@ -517,9 +521,10 @@ function PANEL:CreateDescLabels()
 	table.insert(lines, " ")
 	local hp = zclass.Health or 0
 	local dynhp = (zclass.DynamicHealth or 0) *
-	(GAMEMODE.ObjectiveMap and 0 or GAMEMODE:IsEndlessMode() and math.max(0, GAMEMODE:GetWave() - 1) or math.Clamp(GAMEMODE:GetWave() - 1, 0, GAMEMODE:GetNumberOfWaves()))
+	(GAMEMODE.ObjectiveMap and 0 or GAMEMODE:IsEndlessMode() and math.max(0, wave - 1) or math.Clamp(wave - 1, 0, GAMEMODE:GetNumberOfWaves()))
 	
-	table.Add(lines, string.Explode("\n", translate.Format("zclass_health", hp + dynhp, hp, dynhp)))
+	local ehpmul = wave > GAMEMODE:GetNumberOfWaves() and 1.04^(wave-GAMEMODE:GetNumberOfWaves()) or 1
+	table.Add(lines, string.Explode("\n", translate.Format("zclass_health", (hp + dynhp) * ehpmul, hp, zclass.DynamicHealth or 0)..(ehpmul > 1 and " - Mult: x"..math.Round(ehpmul, ehpmul >= 100 and 0 or 2) or "")))
 	table.Add(lines, string.Explode("\n", translate.Format("zclass_speed", zclass.Speed or 0)))
 	table.insert(lines, " ")
 	local wep = weapons.Get(zclass.SWEP)

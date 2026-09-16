@@ -174,6 +174,9 @@ function GM:_RenderScreenspaceEffects()
 				elseif 0 < curr then
 					redview = math_Approach(redview, 0, FrameTime() * 0.2)
 				end
+				if MySelf:Team() == TEAM_SPECTATOR then
+					redview = 0
+				end
 
 				tColorModHuman["$pp_colour_addr"] = redview * (0.035 + math_abs(math_sin(CurTime() * 2)) * 0.14)
 				tColorModHuman["$pp_colour_brightness"] = fear * -0.045

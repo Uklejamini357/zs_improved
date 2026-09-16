@@ -47,7 +47,7 @@ function EFFECT:Init(data)
 		dir:Normalize()
 
 		ent = ClientsideModel("models/props_junk/Rock001a.mdl", RENDERGROUP_OPAQUE)
-		if ent:IsValid() then
+		if IsValid(ent) then
 			ent:SetMaterial("models/flesh")
 			ent:SetModelScale(math.Rand(0.2, 0.5), 0)
 			ent:SetPos(pos + dir * 6)

@@ -668,7 +668,7 @@ LANGUAGE.zclasses_superbosses_d   = "Superbosses - Very powerful zombies that ap
 LANGUAGE.classoptions_redeem    = "Redeem"
 
 LANGUAGE.unlocked_on_x_infliction   = "Unlocked on %d%% infliction"
-LANGUAGE.zclass_health   = "Health: %d (Default HP: %d, +%d HP per every wave)"
+LANGUAGE.zclass_health   = "Health: %d (Base: %d, +%d HP per wave)"
 LANGUAGE.zclass_speed   = "Speed: %d"
 LANGUAGE.zclass_damageperhit   = "Damage per hit: %s (To props: %s)"
 LANGUAGE.zclass_range   = "Range: %s"

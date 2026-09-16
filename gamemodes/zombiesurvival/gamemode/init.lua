@@ -603,6 +603,8 @@ function GM:AddNetworkStrings()
 	util.AddNetworkString("zs_mutations_table")
 	util.AddNetworkString("zs_redeembutton")
 	util.AddNetworkString("zs_bankxp")
+	util.AddNetworkString("zs_startspectate")
+	util.AddNetworkString("zs_spectateentity")
 
 	util.AddNetworkString("voice_eyepain")
 	util.AddNetworkString("voice_giveammo")
@@ -2082,6 +2084,7 @@ function GM:PreRestartRound()
 	end
 
 	for _, pl in pairs(player.GetAll()) do
+		if pl:Team() == TEAM_SPECTATOR then continue end
 		pl:StripWeapons()
 		pl:Spectate(OBS_MODE_ROAMING)
 		pl:GodDisable()
@@ -2172,7 +2175,7 @@ end
 -- I don't know.
 local function CheckBroken()
 	for _, pl in pairs(player.GetAll()) do
-		if pl:Alive() and (pl:Health() <= 0 or pl:GetObserverMode() ~= OBS_MODE_NONE or pl:OBBMaxs().x ~= 16) then
+		if pl:Alive() and pl:Team() ~= TEAM_SPECTATOR and (pl:Health() <= 0 or pl:GetObserverMode() ~= OBS_MODE_NONE or pl:OBBMaxs().x ~= 16) then
 			pl:SetObserverMode(OBS_MODE_NONE)
 			pl:UnSpectateAndSpawn()
 		end
@@ -2222,6 +2225,7 @@ function GM:DoRestartGame()
 	gamemode.Call("InitPostEntityMap")
 
 	for _, pl in pairs(player.GetAll()) do
+		if pl:Team() == TEAM_SPECTATOR then continue end
 		pl:UnSpectateAndSpawn()
 		pl:GodDisable()
 		gamemode.Call("PlayerInitialSpawnRound", pl)
@@ -2235,6 +2239,7 @@ end
 
 function GM:RestartGame()
 	for _, pl in pairs(player.GetAll()) do
+		if pl:Team() == TEAM_SPECTATOR then continue end
 		pl:StripWeapons()
 		pl:StripAmmo()
 		pl:SetFrags(0)
@@ -3119,7 +3124,7 @@ function GM:PlayerDeathThink(pl)
 
 	if self.RoundEnded or pl.Revive or self:GetWave() == 0 then return end
 
-	if pl:GetObserverMode() == OBS_MODE_CHASE then
+	if pl:Team() ~= TEAM_SPECTATOR and pl:GetObserverMode() == OBS_MODE_CHASE then
 		local target = pl:GetObserverTarget()
 		if not target or not target:IsValid() or target:IsPlayer() and (not target:Alive() or target:Team() ~= pl:Team()) then
 			pl:StripWeapons()
@@ -4007,6 +4012,51 @@ function GM:WeaponDeployed(pl, wep)
 end
 
 function GM:KeyPress(pl, key)
+	if pl:Team() == TEAM_SPECTATOR and pl:GetObserverMode() >= 3 then
+		if pl:KeyDown(IN_USE) then return end
+		local switchtarget
+
+		function switchtarget(t, reverse, fromprev)
+			local players = team.GetPlayers(t)
+			if players[1] == nil then
+				if fromprev then return end
+				switchtarget(t == TEAM_HUMAN and TEAM_UNDEAD or t == TEAM_UNDEAD and TEAM_HUMAN, reverse, true)
+				return
+			end
+
+			if reverse then
+				table.sort(players, function(a, b) return a:EntIndex() > b:EntIndex() end)
+			end
+
+			local prev = pl:GetObserverTarget()
+			for count,v in pairs(players) do
+				local target = players[count + 1]
+				if !target then target = players[1] end
+
+				if !(prev and prev:IsValid()) or prev == v then
+					pl:SpectateEntity(target)
+					pl.m_SpectateZombies = target:Team() == TEAM_UNDEAD
+					break
+				end
+			end
+		end
+
+		if key == IN_ATTACK then
+			switchtarget(pl.m_SpectateZombies and TEAM_UNDEAD or TEAM_HUMAN)
+		elseif key == IN_ATTACK2 then
+			switchtarget(pl.m_SpectateZombies and TEAM_UNDEAD or TEAM_HUMAN, true)
+		elseif key == IN_RELOAD then
+			pl.m_SpectateZombies = !pl.m_SpectateZombies
+			switchtarget(pl.m_SpectateZombies and TEAM_UNDEAD or TEAM_HUMAN)
+		elseif key == IN_JUMP then
+			local spec = math.max(4, (pl:GetObserverMode()+1)%7)
+			pl:SetObserverMode(spec)
+			if !pl:GetObserverTarget():IsValid() and spec ~= 6 then
+				pl:SpectateEntity(team.GetPlayers(pl.m_SpectateZombies and TEAM_UNDEAD or TEAM_HUMAN)[1])
+			end
+		end
+	end
+
 	if key == IN_USE then
 		if pl:Team() == TEAM_HUMAN and pl:Alive() then
 			if pl:IsCarrying() then
@@ -5441,6 +5491,62 @@ net.Receive("zs_zebuy", function(len, sender)
 	sender:SendLua("surface.PlaySound(\"ambient/levels/labs/coinslot1.wav\")")
 	callback(sender)
 	sender:PrintTranslatedMessage(HUD_PRINTTALK, "purchased_x_for_y_points", str, cost)
+end)
+
+net.Receive("zs_startspectate", function(len, pl)
+	if !pl:IsDeveloper() then return end
+	local spectate = net.ReadBool()
+
+	if spectate then
+		if pl:Team() == TEAM_SPECTATOR then return end
+		if pl:Alive() then
+			pl:Kill()
+			local r = pl:GetRagdollEntity()
+			if r:IsValid() then
+				r:Remove()
+			end
+		end
+		timer.Simple(0, function()
+			pl:ChangeTeam(TEAM_SPECTATOR)
+			pl:Spectate(OBS_MODE_ROAMING)
+		end)
+	else
+		if pl:Team() ~= TEAM_SPECTATOR then return end
+		pl:KillSilent()
+		if !GAMEMODE.PreviouslyDied[pl:UniqueID()] then
+			pl:StripWeapons()
+			pl:StripAmmo()
+			pl:SetFrags(0)
+			pl:SetDeaths(0)
+			pl:SetPoints(0)
+			if not pl.IsZSBot then
+				pl:ChangeTeam(TEAM_HUMAN)
+			end
+			pl:DoHulls()
+			pl:SetZombieClass(GAMEMODE.DefaultZombieClass)
+			pl.DeathClass = nil
+
+			pl:UnSpectateAndSpawn()
+			pl:GodDisable()
+			gamemode.Call("PlayerInitialSpawnRound", pl)
+			gamemode.Call("PlayerReadyRound", pl)
+
+			return
+		end
+		pl:ChangeTeam(TEAM_UNDEAD)
+		if GAMEMODE:GetWaveActive() then
+			pl:UnSpectateAndSpawn()
+		end
+	end
+end)
+
+net.Receive("zs_spectateentity", function(len, pl)
+	local ent = net.ReadEntity()
+
+	if pl:Team() == TEAM_SPECTATOR and ent:IsValid() then
+		pl:SpectateEntity(ent)
+		pl.m_SpectateZombies = ent:Team() == TEAM_UNDEAD
+	end
 end)
 
 function GM:OnReloaded()

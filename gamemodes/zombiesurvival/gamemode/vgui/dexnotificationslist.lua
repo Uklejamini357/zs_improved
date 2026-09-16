@@ -15,7 +15,7 @@ end
 local matGrad = Material("VGUI/gradient-r")
 function PANEL:Paint()
 	surface.SetMaterial(matGrad)
-	surface.SetDrawColor(0, 0, 0, 180)
+	surface.SetDrawColor(self.paintColorROverride or 0, self.paintColorGOverride or 0, self.paintColorBOverride or 0, 180)
 
 	local align = self:GetParent():GetAlign()
 	if align == RIGHT then

@@ -5,10 +5,14 @@ local texDownEdge = surface.GetTextureID("gui/gradient_down")
 local colHealth = Color(0, 0, 0, 240)
 local function ContentsPaint(self, w, h)
 	local lp = MySelf
-	if lp:IsValid() then
+	local spec = lp:GetObserverMode() == 3 or lp:GetObserverMode() == 4 or lp:GetObserverMode() == 5
+	local pl = spec and lp:GetObserverTarget() or lp
+	
+	
+	if pl and pl:IsValid() and pl:IsPlayer() then
 		local screenscale = BetterScreenScale()
-		local health = math.max(lp:Health(), 0)
-		local healthperc = math.Clamp(health / lp:GetMaxHealthEx(), 0, 1)
+		local health = math.max(pl:Health(), 0)
+		local healthperc = math.Clamp(health / pl:GetMaxHealthEx(true), 0, 1)
 		local wid, hei = 300 * screenscale, 18 * screenscale
 
 		colHealth.r = (1 - healthperc) * 180
@@ -35,8 +39,8 @@ local function ContentsPaint(self, w, h)
 		surface.SetDrawColor(255, 255, 255, 255)
 		surface.DrawTexturedRect(x + 2 + subwidth - 6, y + 1 - hei/2, 4, hei * 2)
 
-		local phantomhealth = math.max(lp:GetPhantomHealth(), 0)
-		healthperc = math.Clamp(phantomhealth / lp:GetMaxHealthEx(), 0, 1)
+		local phantomhealth = math.max(pl:GetPhantomHealth(), 0)
+		healthperc = math.Clamp(phantomhealth / pl:GetMaxHealthEx(true), 0, 1)
 
 		colHealth.r = 100
 		colHealth.g = 90
@@ -49,9 +53,9 @@ local function ContentsPaint(self, w, h)
 		surface.SetDrawColor(colHealth.r, colHealth.g, colHealth.b, 30)
 		surface.DrawRect(x + 2 + subwidth - 4, y + 1, phantomwidth, hei - 2)
 
-		if lp:Team() == TEAM_HUMAN then
-			local bloodarmor = lp:GetBloodArmor()
-			local maxbloodarmor = math.floor(lp.MaxBloodArmor or 10)
+		if pl:Team() == TEAM_HUMAN then
+			local bloodarmor = pl:GetBloodArmor()
+			local maxbloodarmor = math.floor(pl.MaxBloodArmor or 10)
 			if bloodarmor > 0 then
 				x = 78 * screenscale
 				y = 142 * screenscale

@@ -2,7 +2,7 @@ GM.Name		=	"ZS Improved" -- wtf was it Redux or Improved?
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.6.4" -- Endless: Unleashed+
+GM.Version	=	"1.6.5" -- Endless: Unleashed+ (absolutely yes)
 
 local zs_enablesandbox = CreateConVar("zs_enablesandbox", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable Sandbox Mode. You know what it does, adds sandbox spawnmenu for admins only etc. Restart might be required when changing this value!")
 
@@ -167,6 +167,7 @@ GM.ZombieVolunteers = {}
 
 team.SetUp(TEAM_ZOMBIE, "The Undead", Color(0, 255, 0, 255))
 team.SetUp(TEAM_SURVIVORS, "Survivors", Color(0, 160, 255, 255))
+team.SetUp(TEAM_SPECTATOR, "Spectators", Color(180, 180, 180, 255))
 
 local validmodels = player_manager.AllValidModels()
 validmodels["tf01"] = nil

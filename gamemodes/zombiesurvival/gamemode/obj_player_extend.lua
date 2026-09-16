@@ -989,7 +989,7 @@ end
 if not meta.OldAlive then
 	meta.OldAlive = meta.OldAlive or meta.Alive
 	function meta:Alive()
-		return self:GetObserverMode() == OBS_MODE_NONE and not self.NeverAlive and self:OldAlive()
+		return self:Team() == TEAM_SPECTATOR or self:GetObserverMode() == OBS_MODE_NONE and not self.NeverAlive and self:OldAlive()
 	end
 end
 
