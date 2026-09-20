@@ -201,11 +201,15 @@ hook.Add("InitPostEntityMap", "CustomEvents", function()
     end
 end)
 
+local checkprops = CurTime()
 hook.Add("Think", "Customevents", function()
     if GAMEMODE.MapEventMode ~= "td" then return end
 
-    local zpos = ents.FindByClass("info_player_zombie")[1]:GetPos()
-    local hpos = ents.FindByClass("info_player_human")[1]:GetPos()
+    local zspawn = ents.FindByClass("info_player_zombie")[1]
+    if !zspawn then return end
+    local hspawn = ents.FindByClass("info_player_human")[1]
+    if !hspawn then return end
+    local zpos,hpos = zspawn:GetPos(), hspawn:GetPos()
     for _,zm in ipairs(team.GetPlayers(TEAM_UNDEAD)) do
         if zm:Alive() and zm:GetPos().z < -12400 then
             zm:SetPos(zpos)
@@ -213,8 +217,17 @@ hook.Add("Think", "Customevents", function()
     end
 
     for _,hm in ipairs(team.GetPlayers(TEAM_HUMAN)) do
-        if hm:Alive() and hm:GetPos().z < -12400 then
+        if hm:Alive() and hm:GetPos().z < -12400 and hm:GetPos().z > -13400 and hm:GetMoveType() ~= MOVETYPE_NOCLIP then
             hm:SetPos(hpos)
+        end
+    end
+
+    if checkprops < CurTime() then
+        checkprops = CurTime() + 1
+
+        local props = ents.FindByClass("prop_physics")
+        for _,ent in ipairs(props) do
+            ent:Remove()
         end
     end
 end)
@@ -249,6 +262,7 @@ hook.Add("PlayerSay", "CustomEvents.PlayerSay", function(pl, text)
 end)
 
 hook.Add("OnWaveStateChanged", "Customevents", function()
+    if GAMEMODE.MapEventMode ~= "td" then return end
     local wave = GAMEMODE:GetWave()
     local active = GAMEMODE:GetWaveActive()
 
@@ -262,7 +276,7 @@ hook.Add("OnWaveStateChanged", "Customevents", function()
                 PrintMessage(3, "The base has 20 lives - each time zombie passes, 1 life is lost.")
             end)
             timer.Simple(3, function()
-                PrintMessage(3, "ZOMBIES ONLY: Follow the path and reach the end. No cheating!")
+                PrintMessage(3, "ZOMBIES ONLY: Follow the path and reach the end.")
             end)
             timer.Simple(4, function()
                 PrintMessage(3, "If the base gets destroyed, all humans will lose!")
@@ -273,12 +287,12 @@ hook.Add("OnWaveStateChanged", "Customevents", function()
         end
 
         if wave >= 6 then
-            GAMEMODE:SetWaveEnd(CurTime() + 120+wave*10)
+            GAMEMODE:SetWaveEnd(CurTime() + 150+wave*5)
         else
-            GAMEMODE:SetWaveEnd(CurTime() + 120)
+            GAMEMODE:SetWaveEnd(CurTime() + 150)
         end
     else
-        GAMEMODE:SetWaveStart(CurTime() + 20)
+        GAMEMODE:SetWaveStart(CurTime() + 30)
     end
 end)
 

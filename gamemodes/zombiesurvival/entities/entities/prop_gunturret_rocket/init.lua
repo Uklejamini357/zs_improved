@@ -8,7 +8,7 @@ function ENT:FireTurret(src, dir)
 		local owner = self:GetObjectOwner()
 		local twinvolley = self:GetManualControl() and owner:IsSkillActive(SKILL_TWINVOLLEY)
 		if curammo > (twinvolley and 1 or 0) then
-			self:SetNextFire(CurTime() + self.FireDelay * (twinvolley and 1.5 or 1))
+			self:SetNextFire(CurTime() + self.FireDelay * (twinvolley and 1.5 or 1) / (owner.TurretFirerateMul or 1))
 			self:SetAmmo(curammo - (twinvolley and 2 or 1))
 
 			if self:GetAmmo() == 0 then
@@ -36,7 +36,7 @@ function ENT:FireTurret(src, dir)
 						phys:Wake()
 
 						angle:RotateAroundAxis(angle:Forward(), math.Rand(0, 360))
-						angle:RotateAroundAxis(angle:Up(), math.Rand(-self.Spread, self.Spread))
+						angle:RotateAroundAxis(angle:Up(), math.Rand(-self.Spread, self.Spread) * (owner.TurretAimSpreadMul or 1))
 						phys:SetVelocityInstantaneous(angle:Forward() * 900 * (owner.ProjectileSpeedMul or 1))
 					end
 				end

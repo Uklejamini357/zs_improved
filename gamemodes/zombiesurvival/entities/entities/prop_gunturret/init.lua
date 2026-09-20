@@ -129,7 +129,7 @@ function ENT:FireTurret(src, dir)
 		local owner = self:GetObjectOwner()
 		local twinvolley = self:GetManualControl() and owner:IsSkillActive(SKILL_TWINVOLLEY)
 		if curammo > (twinvolley and 1 or 0) then
-			self:SetNextFire(CurTime() + self.FireDelay * (twinvolley and 1.5 or 1))
+			self:SetNextFire(CurTime() + self.FireDelay * (twinvolley and 1.5 or 1) / (owner.TurretFirerateMul or 1))
 			self:SetAmmo(curammo - (twinvolley and 2 or 1))
 
 			if self:GetAmmo() == 0 then
@@ -139,7 +139,7 @@ function ENT:FireTurret(src, dir)
 			self:PlayShootSound()
 
 			TEMPTURRET = self
-			self:FireBulletsLua(src, dir, self.Spread, self.NumShots * (twinvolley and 2 or 1), self.Damage * (owner.TurretDamageMul or 1), self:GetObjectOwner(), nil, nil, BulletCallback, nil, nil, nil, nil, self)
+			self:FireBulletsLua(src, dir, self.Spread * (owner.TurretAimSpreadMul or 1), self.NumShots * (twinvolley and 2 or 1), self.Damage * (owner.TurretDamageMul or 1), self:GetObjectOwner(), nil, nil, BulletCallback, nil, nil, nil, nil, self)
 		else
 			self:SetNextFire(CurTime() + 2)
 			self:EmitSound("npc/turret_floor/die.wav")
@@ -157,6 +157,7 @@ function ENT:Think()
 
 	local owner = self:GetObjectOwner()
 	if owner:IsValid() and self:GetAmmo() > 0 and self:GetMaterial() == "" then
+		local target = self:GetTarget()
 		if self:GetManualControl() then
 			if owner:KeyDown(IN_ATTACK) then
 				if not self:IsFiring() then self:SetFiring(true) end
@@ -165,17 +166,23 @@ function ENT:Think()
 				self:SetFiring(false)
 			end
 
-			local target = self:GetTarget()
 			if target:IsValid() then self:ClearTarget() end
 		else
 			if self:IsFiring() then self:SetFiring(false) end
-			local target = self:GetTarget()
 			if target:IsValid() then
 				if self:IsValidTarget(target) and CurTime() < self.LastHitSomething + self.LastHitPeriod then
 					self:FireTurret(self:ShootPos(), (self:GetTargetPos(target) - self:ShootPos()):GetNormalized())
 				else
 					self:ClearTarget()
-					self:EmitSound("npc/turret_floor/deploy.wav")
+
+					-- sometimes turrets are just stupid
+					target = self:SearchForTarget()
+					if target then
+						self:SetTarget(target)
+						self:SetTargetReceived(CurTime())
+					else
+						self:EmitSound("npc/turret_floor/deploy.wav")
+					end
 				end
 			else
 				target = self:SearchForTarget()
@@ -208,7 +215,7 @@ function ENT:Use(activator, caller)
 		if self:GetObjectOwner():IsValid() then
 			if activator:GetInfo("zs_nousetodeposit") == "0" then
 				local curammo = self:GetAmmo()
-				local togive = math.min(15, activator:GetAmmoCount(self.AmmoType), self.MaxAmmo - curammo)
+				local togive = math.min(activator:GetInfoNum("zs_maxammodeposit", 15), activator:GetAmmoCount(self.AmmoType), self.MaxAmmo - curammo)
 				if togive > 0 then
 					self:SetAmmo(curammo + togive)
 					activator:RemoveAmmo(togive, self.AmmoType)

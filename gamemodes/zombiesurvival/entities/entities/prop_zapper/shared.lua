@@ -8,6 +8,11 @@ ENT.PointsMultiplier = 1.25
 ENT.Damage = 25
 ENT.LegDamage = 10
 
+ENT.ZapperRange = 135
+ENT.ZapCheckDelay = 0.4
+ENT.AmmoUsePerZap = 2
+ENT.ZapperDelay = 3
+
 ENT.m_NoNailUnfreeze = true
 ENT.NoNails = true
 

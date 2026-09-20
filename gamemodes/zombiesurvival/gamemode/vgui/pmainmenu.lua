@@ -111,6 +111,60 @@ function MakepPlayerColor()
 	pPlayerColor:MakePopup()
 end
 
+function MakepChangelog()
+	PlayMenuOpenSound()
+
+	local wid = math.min(ScrW(), 750)
+
+	local y = 40
+
+	local frame = vgui.Create("DEXRoundedFrame")
+	frame:SetColorAlpha(230)
+	frame:SetWide(wid)
+	frame:SetTitle(" ")
+	frame:SetKeyboardInputEnabled(false)
+
+	local scroll = vgui.Create("DScrollPanel", frame)
+	scroll:Dock(FILL)
+
+	local desc = string.Explode("\n", GAMEMODE.ReleaseNotes)
+	local txt, colid
+	for i=1, #desc do
+		if i == 1 then
+			local label = EasyLabel(frame, GAMEMODE.Name.." changelogs", "ZSHUDFontNS", color_white)
+			label:CenterHorizontal()
+			label:Dock(TOP)
+			y = y + label:GetTall() + 8
+
+			continue
+		end
+		local changelogtxt = vgui.Create("DLabel", scroll)
+		changelogtxt:SetFont("ZSHUDFontSmallest") --"ZSHUDFontSmall"
+		changelogtxt:SetTextColor(COLOR_GRAY)
+		changelogtxt:SetContentAlignment(4)
+		changelogtxt:SetWrap(true)
+		changelogtxt:SetAutoStretchVertical(true)
+		changelogtxt:Dock(TOP)
+
+		txt = desc[i] or " "
+		if txt:sub(1, 1) == "^" then
+			colid = tonumber(txt:sub(2, 2)) or 0
+			txt = txt:sub(3)
+			changelogtxt:SetTextColor(util.ColorIDToColor(colid, COLOR_GRAY))
+		else
+			changelogtxt:SetTextColor(COLOR_GRAY)
+		end
+		changelogtxt:SetText(txt)
+		y = y + changelogtxt:GetTall() + 8
+	end
+
+	frame:SetTall(math.min(ScrH()*0.8, y + 8))
+	frame:Center()
+	frame:SetAlpha(0)
+	frame:AlphaTo(255, 0.15, 0)
+	frame:MakePopup()
+end
+
 function GM:ShowHelp()
 	if self.HelpMenu and self.HelpMenu:IsValid() then
 		self.HelpMenu:Remove()
@@ -235,6 +289,15 @@ function GM:ShowHelp()
 	but:DockPadding(0, 12, 0, 12)
 	but:Dock(TOP)
 	but.DoClick = function() MakepCredits() end
+
+	but = vgui.Create("DButton", menu)
+	but:SetFont("ZSHUDFontSmaller")
+	but:SetText("Changelog")
+	but:SetTall(buttonhei)
+	but:DockMargin(0, 0, 0, 12)
+	but:DockPadding(0, 12, 0, 12)
+	but:Dock(TOP)
+	but.DoClick = function() MakepChangelog() end
 
 	but = vgui.Create("DButton", menu)
 	but:SetFont("ZSHUDFontSmaller")

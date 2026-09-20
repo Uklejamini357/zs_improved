@@ -101,7 +101,7 @@ function ENT:Use(activator, caller)
 		if self:GetObjectOwner():IsValid() then
 			if activator:GetInfo("zs_nousetodeposit") == "0" then
 				local curammo = self:GetAmmo()
-				local togive = math.min(math.min(15, activator:GetAmmoCount("pulse")), self.MaxAmmo - curammo)
+				local togive = math.min(activator:GetInfoNum("zs_maxammodeposit", 15), activator:GetAmmoCount("pulse"), self.MaxAmmo - curammo)
 				if togive > 0 then
 					self:SetAmmo(curammo + togive)
 					activator:RemoveAmmo(togive, "pulse")
@@ -135,7 +135,7 @@ function ENT:FindZapperTarget(pos, owner)
 	local targethealth = 99999
 	local isheadcrab
 
-	for k, ent in ipairs(ents.FindInSphere(pos, 135 * (owner.FieldRangeMul or 1))) do
+	for k, ent in ipairs(ents.FindInSphere(pos, self.ZapperRange * (owner.FieldRangeMul or 1))) do
 		if ent:IsValidLivingZombie() and not ent:GetZombieClassTable().NeverAlive then
 			isheadcrab = ent:IsHeadcrab()
 			if (isheadcrab or ent:Health() < targethealth) and TrueVisibleFilters(pos, ent:NearestPoint(pos), self, ent) then
@@ -161,19 +161,19 @@ function ENT:Think()
 
 	local curammo = self:GetAmmo()
 	local owner = self:GetObjectOwner()
-	if curammo >= 2 and owner:IsValid() then
-		self.NextZapCheck = CurTime() + 0.4
+	if curammo >= math.max(1, self.AmmoUsePerZap) and owner:IsValid() then
+		self.NextZapCheck = CurTime() + self.ZapCheckDelay
 
 		local pos = self:LocalToWorld(Vector(0, 0, 24))
 		local target = self:FindZapperTarget(pos, owner)
 
 		if target then
-			self:SetAmmo(curammo - 2)
-			if self:GetAmmo() < 2 then
+			self:SetAmmo(curammo - self.AmmoUsePerZap)
+			if self:GetAmmo() < self.AmmoUsePerZap then
 				owner:SendDeployableOutOfAmmoMessage(self)
 			end
 
-			self:SetNextZap(CurTime() + 3 * (owner.FieldDelayMul or 1))
+			self:SetNextZap(CurTime() + self.ZapperDelay * (owner.FieldDelayMul or 1))
 
 			target:AddLegDamageExt(self.LegDamage, owner, self, SLOWTYPE_PULSE)
 

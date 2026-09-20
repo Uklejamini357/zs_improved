@@ -606,6 +606,9 @@ function GM:AddNetworkStrings()
 	util.AddNetworkString("zs_startspectate")
 	util.AddNetworkString("zs_spectateentity")
 
+	-- admin
+	util.AddNetworkString("zs_forcebuyitem")
+
 	util.AddNetworkString("voice_eyepain")
 	util.AddNetworkString("voice_giveammo")
 	util.AddNetworkString("voice_death")

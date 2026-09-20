@@ -651,6 +651,8 @@ LANGUAGE.skillmod_n108 = "%s health to nailed props"
 LANGUAGE.skillmod_n109 = "%s clipsize of weapons with 8 or more clip size"
 LANGUAGE.skillmod_n110 = "%s turret damage multiplier"
 LANGUAGE.skillmod_n111 = "%s zapper damage multiplier"
+LANGUAGE.skillmod_n112 = "%s turret fire rate"
+LANGUAGE.skillmod_n113 = "%s turret aim spread"
 
 -- Class selection
 

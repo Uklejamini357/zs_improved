@@ -97,6 +97,7 @@ CreateClientConVar("zs_nosuperbosspick", "0", true, true)
 CreateClientConVar("zs_nousetodeposit", "0", true, true)
 CreateClientConVar("zs_nopickupprops", "0", true, true)
 CreateClientConVar("zs_noautocheckout", "0", true, true, "Disables automatic worth checkout. Worth is still automatically checked out on later waves. (BETA FEATURE: Enable it at your own risk.)")
+CreateClientConVar("zs_maxammodeposit", "15", true, true, "Max ammunition to deposit to deployables per use")
 
 GM.DisableScopes = CreateClientConVar("zs_disablescopes", "0", true, false):GetBool()
 cvars.AddChangeCallback("zs_disablescopes", function(cvar, oldvalue, newvalue)

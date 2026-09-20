@@ -447,3 +447,11 @@ GM:SetSkillModifierFunction(SKILLMOD_ZAPPER_DAMAGE_MUL, function(pl, amount)
 	pl.ZapperDamageMul = math.Clamp(amount + 1.0, 0, 1000)
 end)
 
+GM:SetSkillModifierFunction(SKILLMOD_TURRET_FIRERATE_MUL, function(pl, amount)
+	pl.TurretFirerateMul = math.Clamp(amount + 1.0, 0, 1000)
+end)
+
+GM:SetSkillModifierFunction(SKILLMOD_TURRET_AIMSPREAD_MUL, function(pl, amount)
+	pl.TurretAimSpreadMul = math.Clamp(amount + 1.0, 0, 1000)
+end)
+

@@ -2,23 +2,25 @@ AddCSLuaFile()
 
 ENT.Base = "prop_gunturret"
 
-ENT.SWEP = "weapon_zs_gunturret_minigun"
+ENT.SWEP = "weapon_zs_gunturret_sniper"
 
-ENT.AmmoType = "smg1"
-ENT.FireDelay = 0.057
+ENT.AmmoType = "357"
+ENT.FireDelay = 0
 ENT.NumShots = 1
-ENT.Damage = 9.8
+ENT.Damage = 130
 ENT.PlayLoopingShootSound = false
-ENT.Spread = 2.3
-ENT.MaxAmmo = 2500
-ENT.MaxHealth = 300
+ENT.Spread = 0.1
+ENT.MaxAmmo = 7522
+ENT.MaxHealth = 250
+ENT.SearchDistance = 10000
+ENT.MinimumAimDot = 0.01
 
 if CLIENT then
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 
-	local ent = ClientsideModel("models/weapons/w_smg_mac10.mdl")
+	local ent = ClientsideModel("models/weapons/w_snip_awp.mdl")
 	if ent:IsValid() then
 		ent:SetParent(self)
 		ent:SetOwner(self)
@@ -28,28 +30,11 @@ function ENT:Initialize()
 		ent:SetColor(Color(70, 70, 70))
 
 		matrix = Matrix()
-		matrix:Scale(Vector(1, 0.8, 0.8))
+		matrix:Scale(Vector(1.1, 0.9, 0.9))
 		ent:EnableMatrix("RenderMultiply", matrix)
 
 		ent:Spawn()
 		self.GunAttachment = ent
-	end
-
-	ent = ClientsideModel("models/weapons/w_smg_mac10.mdl")
-	if ent:IsValid() then
-		ent:SetParent(self)
-		ent:SetOwner(self)
-		ent:SetLocalPos(vector_origin)
-		ent:SetLocalAngles(angle_zero)
-		ent:SetMaterial("phoenix_storms/torpedo")
-		ent:SetColor(Color(70, 70, 70))
-
-		matrix = Matrix()
-		matrix:Scale(Vector(1, 0.8, 0.8))
-		ent:EnableMatrix("RenderMultiply", matrix)
-
-		ent:Spawn()
-		self.GunAttachment2 = ent
 	end
 
 	ent = ClientsideModel("models/props_trainstation/trainstation_ornament002.mdl")
@@ -93,20 +78,8 @@ function ENT:DrawTranslucent()
 	local atch = self.GunAttachment
 	if atch and atch:IsValid() then
 		local ang = self:GetGunAngles()
-		local gunpos = self:ShootPos() + ang:Right() * 4
+		local gunpos = self:ShootPos() + ang:Forward() * 4 + ang:Right() * 4
 		ang:RotateAroundAxis(ang:Forward(), 45)
-
-		atch:SetPos(gunpos)
-		atch:SetAngles(ang)
-
-		atch:SetNoDraw(nodrawattachs or self:GetObjectOwner() == MySelf and self:GetManualControl())
-	end
-
-	atch = self.GunAttachment2
-	if atch and atch:IsValid() then
-		local ang = self:GetGunAngles()
-		local gunpos = self:ShootPos() + ang:Right() * 4
-		ang:RotateAroundAxis(ang:Forward(), -45)
 
 		atch:SetPos(gunpos)
 		atch:SetAngles(ang)
@@ -138,10 +111,6 @@ function ENT:OnRemove()
 		self.GunAttachment:Remove()
 	end
 
-	if self.GunAttachment2 and self.GunAttachment2:IsValid() then
-		self.GunAttachment2:Remove()
-	end
-
 	if self.GunBase and self.GunBase:IsValid() then
 		self.GunBase:Remove()
 	end
@@ -153,8 +122,10 @@ function ENT:OnRemove()
 	self.ScanningSound:Stop()
 	self.ShootingSound:Stop()
 end
+
 end
 
 function ENT:PlayShootSound()
-	self:EmitSound("weapons/smg1/smg1_fire1.wav", 70, 125, 0.75, CHAN_WEAPON)
+	self:EmitSound("weapons/awp/awp1.wav", 70, 100, 0.75, CHAN_AUTO)
+	self:EmitSound("weapons/m4a1/m4a1_unsil-1.wav", 70, 145, 0.55, CHAN_WEAPON)
 end

@@ -372,33 +372,56 @@ function GM:AddShopItem(list, i, tab, issub, nopointshop)
 	itempan.DoClick = ItemPanelDoClick
 	itempan.DoDoubleClick = ItemPanelDoClick
 	itempan.DoRightClick = function()
-		local points = tab.Price * MySelf:GetArsenalPrices()
+		local points = math.floor(tab.Price) * MySelf:GetArsenalPrices()
 		local menu = DermaMenu(itempan)
-		menu:AddOption("Buy", function()
+		local submenufunc = MySelf:GetPoints() >= points * 2 and menu.AddSubMenu or menu.AddOption 
+		local submenu = submenufunc(menu, "Buy", function()
 			RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
 		end)
 		if MySelf:GetPoints() >= points * 2 then
-			menu:AddOption("Buy x2", function()
-				for i=1,2 do
-					RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
+			local buymulti = function(count)
+				return function()
+					for i=1,count do
+						RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
+					end
 				end
-			end)
+			end
+			submenu:AddOption("Buy x2", buymulti(2))
+			if MySelf:GetPoints() >= points * 5 then
+				submenu:AddOption("Buy x5", buymulti(5))
+			end
+			if MySelf:GetPoints() >= points * 10 then
+				submenu:AddOption("Buy x10", buymulti(10))
+			end
+			if MySelf:GetPoints() >= points * 20 then
+				submenu:AddOption("Buy x20", buymulti(20))
+			end
 		end
-		if MySelf:GetPoints() >= points * 5 then
-			menu:AddOption("Buy x5", function()
-				for i=1,5 do
-					RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
+
+		if MySelf:IsAdmin() then
+			local function forcebuy(count)
+				for i=1,count do
+					net.Start("zs_forcebuyitem")
+					net.WriteString(itempan.ID)
+					net.SendToServer()
 				end
-			end)
+			end
+
+			local submenu1, parentMenu = menu:AddSubMenu("Force Buy Item", function() forcebuy(1) end)
+			submenu1:AddOption("3x", function() forcebuy(3) end)
+			submenu1:AddOption("5x", function() forcebuy(5) end)
+			submenu1:AddOption("10x", function() forcebuy(10) end)
+			submenu1:AddOption("20x", function() forcebuy(20) end)
+			submenu1:AddOption("50x", function() forcebuy(50) end)
+			local submenu1_1 = submenu1:AddSubMenu("(!)")
+			local submenu1_2 = submenu1:AddSubMenu("(!!)")
+			submenu1_1:AddOption("100x", function() forcebuy(100) end)
+			submenu1_1:AddOption("250x", function() forcebuy(250) end)
+			submenu1_2:AddOption("500x", function() forcebuy(500) end)
+			submenu1_2:AddOption("1000x", function() forcebuy(1000) end)
 		end
-		if MySelf:GetPoints() >= points * 10 then
-			menu:AddOption("Buy x10", function()
-				for i=1,10 do
-					RunConsoleCommand("zs_pointsshopbuy", itempan.ID, itempan.NoPoints and "scrap")
-				end
-			end)
-		end
-		if usescrap and (tab.Category == ITEMCAT_TRINKETS or tab.Category == ITEMCAT_AMMO) and FindItem(self.ID).CanMakeFromScrap then
+
+		if (tab.Category == ITEMCAT_TRINKETS or tab.Category == ITEMCAT_AMMO and FindItem(itempan.ID).CanMakeFromScrap) then
 			menu:AddOption("Remantle with Scrap", function()
 				RunConsoleCommand("zs_pointsshopbuy", itempan.ID, "scrap")
 			end)

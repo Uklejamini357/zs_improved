@@ -23,21 +23,21 @@ function ENT:Think()
 
 	local curammo = self:GetAmmo()
 	local owner = self:GetObjectOwner()
-	if curammo >= math.max(1, self.AmmoUsePerZap) and owner:IsValid() then
-		self.NextZapCheck = CurTime() + self.ZapCheckDelay
+	if curammo >= 3 and owner:IsValid() then
+		self.NextZapCheck = CurTime() + 0.4
 
 		local pos = self:LocalToWorld(Vector(0, 0, 29))
 		local target = self:FindZapperTarget(pos, owner)
 
 		local shocked = {}
 		if target then
-			self:SetAmmo(curammo - self.AmmoUsePerZap)
+			self:SetAmmo(curammo - 3)
 
-			if self:GetAmmo() < self.AmmoUsePerZap then
+			if self:GetAmmo() < 3 then
 				owner:SendDeployableOutOfAmmoMessage(self)
 			end
 
-			self:SetNextZap(CurTime() + self.ZapperDelay * (owner.FieldDelayMul or 1))
+			self:SetNextZap(CurTime() + 4.5 * (owner.FieldDelayMul or 1))
 			self:HitTarget(target, self.Damage, owner)
 
 			local effectdata = EffectData()

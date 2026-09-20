@@ -14,6 +14,7 @@ SWEP.TurretAmmoType = "smg1"
 SWEP.TurretAmmoStartAmount = 150
 SWEP.TurretSpread = 2.3
 
+SWEP.MaxStock = 2
 SWEP.Tier = 5
 
 SWEP.Primary.Ammo = "turret_minigun"

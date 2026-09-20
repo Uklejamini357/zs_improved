@@ -1,6 +1,6 @@
 ENT.Base = "prop_zapper"
 
-ENT.Damage = 55
+ENT.Damage = 75
 ENT.MaxArcZaps = 3
 ENT.ZapCheckDelay = 0.4
 ENT.AmmoUsePerZap = 3

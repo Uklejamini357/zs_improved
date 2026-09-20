@@ -537,6 +537,17 @@ GM:AddPointShopItem("rocketturret",		ITEMCAT_DEPLOYABLES,			125,			"weapon_zs_gu
 item.Countables = "prop_gunturret_rocket"
 item.NoClassicMode = true
 item.SkillRequirement = SKILL_U_ROCKETTURRET
+item =
+GM:AddPointShopItem("sniperturret",		ITEMCAT_DEPLOYABLES,			200,			"weapon_zs_gunturret_sniper",	nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_gunturret_sniper") pl:GiveAmmo(1, "turret_sniper") end)
+item.Countables = "prop_gunturret_sniper"
+item.NoClassicMode = true
+item.SkillRequirement = SKILL_U_SNIPERTURRET
+item =
+GM:AddPointShopItem("autoshotgunturret",ITEMCAT_DEPLOYABLES,			350,			"weapon_zs_gunturret_autoshotgun",	nil,						nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_gunturret_autoshotgun") pl:GiveAmmo(1, "turret_autoshotgun") end)
+item.Countables = "prop_gunturret_autoshotgun"
+item.NoClassicMode = true
+item.EndlessModeOnly = true
+item.SkillRequirement = SKILL_U_AUTOSHOTGUNTURRET
 GM:AddPointShopItem("manhack",			ITEMCAT_DEPLOYABLES,			30,				"weapon_zs_manhack").Countables = "prop_manhack"
 item =
 GM:AddPointShopItem("drone",			ITEMCAT_DEPLOYABLES,			40,				"weapon_zs_drone")
@@ -567,6 +578,12 @@ GM:AddPointShopItem("zapper_arc",		ITEMCAT_DEPLOYABLES,			100,			"weapon_zs_zapp
 item.Countables = "prop_zapper_arc"
 item.NoClassicMode = true
 item.SkillRequirement = SKILL_U_ZAPPER_ARC
+item =
+GM:AddPointShopItem("zapper_arc_shock",	ITEMCAT_DEPLOYABLES,			320,			"weapon_zs_zapper_arc_shock",	nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_zapper_arc") pl:GiveAmmo(1, "zapper_arc") pl:GiveAmmo(30, "pulse") end)
+item.Countables = "prop_zapper_arc_shock"
+item.NoClassicMode = true
+item.EndlessModeOnly = true
+item.SkillRequirement = SKILL_U_ZAPPER_ARC_SHOCK
 item =
 GM:AddPointShopItem("ffemitter",		ITEMCAT_DEPLOYABLES,			40,				"weapon_zs_ffemitter",			nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_ffemitter") pl:GiveAmmo(1, "slam") pl:GiveAmmo(30, "pulse") end)
 item.Countables = "prop_ffemitter"
@@ -832,26 +849,31 @@ function GM:AddDeployableInfo(class, name, wepclass)
 
 	return tab
 end
-GM:AddDeployableInfo("prop_arsenalcrate", 		"Arsenal Crate", 		"weapon_zs_arsenalcrate")
-GM:AddDeployableInfo("prop_resupplybox", 		"Resupply Box", 		"weapon_zs_resupplybox")
-GM:AddDeployableInfo("prop_remantler", 			"Weapon Remantler", 	"weapon_zs_remantler")
-GM:AddDeployableInfo("prop_messagebeacon", 		"Message Beacon", 		"weapon_zs_messagebeacon")
-GM:AddDeployableInfo("prop_camera", 			"Camera",	 			"weapon_zs_camera")
-GM:AddDeployableInfo("prop_gunturret", 			"Gun Turret",	 		"weapon_zs_gunturret")
-GM:AddDeployableInfo("prop_gunturret_assault", 	"Assault Turret",	 	"weapon_zs_gunturret_assault")
-GM:AddDeployableInfo("prop_gunturret_buckshot",	"Blast Turret",	 		"weapon_zs_gunturret_buckshot")
-GM:AddDeployableInfo("prop_gunturret_rocket",	"Rocket Turret",	 	"weapon_zs_gunturret_rocket")
-GM:AddDeployableInfo("prop_repairfield",		"Repair Field Emitter",	"weapon_zs_repairfield")
-GM:AddDeployableInfo("prop_zapper",				"Zapper",				"weapon_zs_zapper")
-GM:AddDeployableInfo("prop_zapper_arc",			"Arc Zapper",			"weapon_zs_zapper_arc")
-GM:AddDeployableInfo("prop_ffemitter",			"Force Field Emitter",	"weapon_zs_ffemitter")
-GM:AddDeployableInfo("prop_manhack",			"Manhack",				"weapon_zs_manhack")
-GM:AddDeployableInfo("prop_manhack_saw",		"Sawblade Manhack",		"weapon_zs_manhack_saw")
-GM:AddDeployableInfo("prop_drone",				"Drone",				"weapon_zs_drone")
-GM:AddDeployableInfo("prop_drone_pulse",		"Pulse Drone",			"weapon_zs_drone_pulse")
-GM:AddDeployableInfo("prop_drone_hauler",		"Hauler Drone",			"weapon_zs_drone_hauler")
-GM:AddDeployableInfo("prop_rollermine",			"Rollermine",			"weapon_zs_rollermine")
-GM:AddDeployableInfo("prop_tv",                   	 "TV",                    	"weapon_zs_tv")
+GM:AddDeployableInfo("prop_arsenalcrate", 			"Arsenal Crate", 			"weapon_zs_arsenalcrate")
+GM:AddDeployableInfo("prop_resupplybox", 			"Resupply Box", 			"weapon_zs_resupplybox")
+GM:AddDeployableInfo("prop_remantler", 				"Weapon Remantler", 		"weapon_zs_remantler")
+GM:AddDeployableInfo("prop_messagebeacon", 			"Message Beacon", 			"weapon_zs_messagebeacon")
+GM:AddDeployableInfo("prop_camera", 				"Camera",	 				"weapon_zs_camera")
+GM:AddDeployableInfo("prop_gunturret", 				"Gun Turret",	 			"weapon_zs_gunturret")
+GM:AddDeployableInfo("prop_gunturret_assault", 		"Assault Turret",	 		"weapon_zs_gunturret_assault")
+GM:AddDeployableInfo("prop_gunturret_buckshot",		"Blast Turret",	 			"weapon_zs_gunturret_buckshot")
+GM:AddDeployableInfo("prop_gunturret_rocket",		"Rocket Turret",	 		"weapon_zs_gunturret_rocket")
+GM:AddDeployableInfo("prop_gunturret_sniper",		"Sniper Turret",	 		"weapon_zs_gunturret_sniper")
+GM:AddDeployableInfo("prop_gunturret_boomstick",	"Boomstick Turret",	 		"weapon_zs_gunturret_boomstick")
+GM:AddDeployableInfo("prop_gunturret_autoshotgun",	"Auto Shotgun Turret",		"weapon_zs_gunturret_autoshotgun")
+GM:AddDeployableInfo("prop_gunturret_minigun",		"Minigun Turret",	 		"weapon_zs_gunturret_minigun")
+GM:AddDeployableInfo("prop_repairfield",			"Repair Field Emitter",		"weapon_zs_repairfield")
+GM:AddDeployableInfo("prop_zapper",					"Zapper",					"weapon_zs_zapper")
+GM:AddDeployableInfo("prop_zapper_arc",				"Arc Zapper",				"weapon_zs_zapper_arc")
+GM:AddDeployableInfo("prop_zapper_arc_shock",		"Electrified Arc Zapper",	"weapon_zs_zapper_arc")
+GM:AddDeployableInfo("prop_ffemitter",				"Force Field Emitter",		"weapon_zs_ffemitter")
+GM:AddDeployableInfo("prop_manhack",				"Manhack",					"weapon_zs_manhack")
+GM:AddDeployableInfo("prop_manhack_saw",			"Sawblade Manhack",			"weapon_zs_manhack_saw")
+GM:AddDeployableInfo("prop_drone",					"Drone",					"weapon_zs_drone")
+GM:AddDeployableInfo("prop_drone_pulse",			"Pulse Drone",				"weapon_zs_drone_pulse")
+GM:AddDeployableInfo("prop_drone_hauler",			"Hauler Drone",				"weapon_zs_drone_hauler")
+GM:AddDeployableInfo("prop_rollermine",				"Rollermine",				"weapon_zs_rollermine")
+GM:AddDeployableInfo("prop_tv",						"TV",						"weapon_zs_tv")
 
 GM.MaxSigils = 3
 

@@ -2,52 +2,38 @@ AddCSLuaFile()
 
 ENT.Base = "prop_gunturret"
 
-ENT.SWEP = "weapon_zs_gunturret_minigun"
+ENT.SWEP = "weapon_zs_gunturret_autoshotgun"
 
-ENT.AmmoType = "smg1"
-ENT.FireDelay = 0.057
-ENT.NumShots = 1
-ENT.Damage = 9.8
+ENT.AmmoType = "buckshot"
+ENT.FireDelay = 0.16
+ENT.NumShots = 7
+ENT.Damage = 5.85
 ENT.PlayLoopingShootSound = false
-ENT.Spread = 2.3
-ENT.MaxAmmo = 2500
-ENT.MaxHealth = 300
+ENT.Spread = 7.5
+ENT.SearchDistance = 200
+ENT.MaxAmmo = 500
 
 if CLIENT then
 
 function ENT:Initialize()
 	self.BaseClass.Initialize(self)
 
-	local ent = ClientsideModel("models/weapons/w_smg_mac10.mdl")
+	local ent = ClientsideModel("models/weapons/w_shot_xm1014.mdl")
 	if ent:IsValid() then
 		ent:SetParent(self)
 		ent:SetOwner(self)
 		ent:SetLocalPos(vector_origin)
 		ent:SetLocalAngles(angle_zero)
-		ent:SetMaterial("phoenix_storms/torpedo")
-		ent:SetColor(Color(70, 70, 70))
-
-		matrix = Matrix()
-		matrix:Scale(Vector(1, 0.8, 0.8))
-		ent:EnableMatrix("RenderMultiply", matrix)
-
 		ent:Spawn()
 		self.GunAttachment = ent
 	end
 
-	ent = ClientsideModel("models/weapons/w_smg_mac10.mdl")
+	ent = ClientsideModel("models/weapons/w_shot_xm1014.mdl")
 	if ent:IsValid() then
 		ent:SetParent(self)
 		ent:SetOwner(self)
 		ent:SetLocalPos(vector_origin)
 		ent:SetLocalAngles(angle_zero)
-		ent:SetMaterial("phoenix_storms/torpedo")
-		ent:SetColor(Color(70, 70, 70))
-
-		matrix = Matrix()
-		matrix:Scale(Vector(1, 0.8, 0.8))
-		ent:EnableMatrix("RenderMultiply", matrix)
-
 		ent:Spawn()
 		self.GunAttachment2 = ent
 	end
@@ -93,10 +79,9 @@ function ENT:DrawTranslucent()
 	local atch = self.GunAttachment
 	if atch and atch:IsValid() then
 		local ang = self:GetGunAngles()
-		local gunpos = self:ShootPos() + ang:Right() * 4
-		ang:RotateAroundAxis(ang:Forward(), 45)
+		ang:RotateAroundAxis(ang:Forward(), -45)
 
-		atch:SetPos(gunpos)
+		atch:SetPos(self:ShootPos() + ang:Forward() * 6 + ang:Up() * -4)
 		atch:SetAngles(ang)
 
 		atch:SetNoDraw(nodrawattachs or self:GetObjectOwner() == MySelf and self:GetManualControl())
@@ -105,10 +90,9 @@ function ENT:DrawTranslucent()
 	atch = self.GunAttachment2
 	if atch and atch:IsValid() then
 		local ang = self:GetGunAngles()
-		local gunpos = self:ShootPos() + ang:Right() * 4
-		ang:RotateAroundAxis(ang:Forward(), -45)
+		ang:RotateAroundAxis(ang:Forward(), 45)
 
-		atch:SetPos(gunpos)
+		atch:SetPos(self:ShootPos() + ang:Forward() * 6 + ang:Right() * 4)
 		atch:SetAngles(ang)
 
 		atch:SetNoDraw(nodrawattachs or self:GetObjectOwner() == MySelf and self:GetManualControl())
@@ -153,8 +137,9 @@ function ENT:OnRemove()
 	self.ScanningSound:Stop()
 	self.ShootingSound:Stop()
 end
+
 end
 
 function ENT:PlayShootSound()
-	self:EmitSound("weapons/smg1/smg1_fire1.wav", 70, 125, 0.75, CHAN_WEAPON)
+	self:EmitSound("Weapon_XM1014.Single")
 end

@@ -348,6 +348,11 @@ SKILL_U_AR2PULSERIFLE = 226
 SKILL_ENDLESS_LANKY = 227
 SKILL_ENDLESS_BATTLER = 228
 SKILL_ENDLESS_POINTS = 229
+SKILL_U_SNIPERTURRET = 230
+SKILL_POWER_TURRET_COMPONENTS = 231
+SKILL_U_AUTOSHOTGUNTURRET = 232
+SKILL_LIGHTER_TURRET_HULL = 233
+SKILL_U_ZAPPER_ARC_SHOCK = 234
 
 SKILLMOD_HEALTH = 1
 SKILLMOD_BLOODARMOR = 2
@@ -460,6 +465,9 @@ SKILLMOD_BARRICADE_HEALTH_MUL = 108
 SKILLMOD_CLIP_SIZE_MUL = 109
 SKILLMOD_TURRET_DAMAGE_MUL = 110
 SKILLMOD_ZAPPER_DAMAGE_MUL = 111
+SKILLMOD_TURRET_FIRERATE_MUL = 112
+SKILLMOD_TURRET_AIMSPREAD_MUL = 113
+
 
 -- These are only used to check in Character stats and Skills (beta)
 GM.SkillModifiersNonMulOnly = {
@@ -516,6 +524,7 @@ GM.SkillModifiersBadOnly = {
 	[SKILLMOD_WEAPON_FIREDELAY_MUL] = true,
 	[SKILLMOD_DAMAGE_TAKEN_MUL] = true,
 	[SKILLMOD_REMANTLER_PRICE_MUL] = true,
+	[SKILLMOD_TURRET_AIMSPREAD_MUL] = true,
 }
 
 
@@ -1061,8 +1070,27 @@ s = GM:AddSkill(SKILL_VISION, "Refiner's Vision", GOOD.."Locate nearby remantler
 6, -6, {SKILL_NONE, SKILL_ACUITY}, TREE_BUILDINGTREE)
 
 s = GM:AddSkill(SKILL_U_ROCKETTURRET, "Unlock: Rocket Turret", GOOD.."Unlocks purchasing the Rocket Turret\nFires explosives instead of SMG ammo\nDeals damage in a radius\nHigh tier deployable",
--8, -0, {SKILL_TURRETOVERLOAD}, TREE_BUILDINGTREE)
+-8, 0, {SKILL_TURRETOVERLOAD}, TREE_BUILDINGTREE)
 s.AlwaysActive = true
+
+s = GM:AddSkill(SKILL_U_SNIPERTURRET, "Unlock: Sniper Turret", GOOD.."Unlocks purchasing the Sniper Turret\nFires sniper rounds inflicting high damage\nCan scan enemies far away, but has long delay between shots\nTier 5 deployable",
+-10, 0, {SKILL_TURRETOVERLOAD}, TREE_BUILDINGTREE)
+s.AlwaysActive = true
+
+s = GM:AddSkill(SKILL_POWER_TURRET_COMPONENTS, "Power Turret Components", GOOD.."+5% turret damage\n"..BAD.."-25% turret health\n"..BAD.."-25% turret scan speed",
+-12, 1, {SKILL_U_SNIPERTURRET}, TREE_BUILDINGTREE)
+GM:AddSkillModifier(SKILL_POWER_TURRET_COMPONENTS, SKILLMOD_TURRET_DAMAGE_MUL, 0.05)
+GM:AddSkillModifier(SKILL_POWER_TURRET_COMPONENTS, SKILLMOD_TURRET_HEALTH_MUL, -0.25)
+GM:AddSkillModifier(SKILL_POWER_TURRET_COMPONENTS, SKILLMOD_TURRET_SCANSPEED_MUL, -0.25)
+
+s = GM:AddSkill(SKILL_U_AUTOSHOTGUNTURRET, "Unlock: Auto-Shotgun Turret", GOOD.."Unlocks purchasing the Auto-Shotgun Turret\nFires rapid shotgun rounds\nDeadly DPS turret\nTier 6 deployable",
+-12, 3, {SKILL_POWER_TURRET_COMPONENTS}, TREE_BUILDINGTREE)
+s.AlwaysActive = true
+
+s = GM:AddSkill(SKILL_LIGHTER_TURRET_HULL, "Lighter Turret Hull", "+10% turret fire rate\n+50% turret bullet spread",
+-13.5, 1.5, {SKILL_U_AUTOSHOTGUNTURRET}, TREE_BUILDINGTREE)
+GM:AddSkillModifier(SKILL_LIGHTER_TURRET_HULL, SKILLMOD_TURRET_FIRERATE_MUL, 0.1)
+GM:AddSkillModifier(SKILL_LIGHTER_TURRET_HULL, SKILLMOD_TURRET_AIMSPREAD_MUL, 0.5)
 
 s = GM:AddSkill(SKILL_INSIGHT, "Buyer's Insight", GOOD.."Locate nearby arsenal crates if behind walls\n"..GOOD.."Locate nearby unplaced arsenal crates on players through walls\n"..GOOD.."Locate nearby arsenal packs through walls",
 6, -0, {SKILL_U_NANITECLOUD, SKILL_U_ZAPPER_ARC, SKILL_LIGHTCONSTRUCT, SKILL_D_LATEBUYER}, TREE_BUILDINGTREE)
@@ -1070,6 +1098,10 @@ s.AlwaysActive = true
 
 s = GM:AddSkill(SKILL_U_ZAPPER_ARC, "Unlock: Arc Zapper", GOOD.."Unlocks purchasing the Arc Zapper\nZaps zombies that get nearby, and jumps in an arc\nMid tier deployable and long cooldown\nRequires a steady upkeep of pulse ammo",
 6, 2, {SKILL_FIELDAMP, SKILL_TECHNICIAN}, TREE_BUILDINGTREE)
+s.AlwaysActive = true
+
+s = GM:AddSkill(SKILL_U_ZAPPER_ARC_SHOCK, "Unlock: Electrified Arc Zapper", GOOD.."Unlocks purchasing the Electrified Arc Zapper\nZaps zombies that get nearby, and jumps in an arc\nAlso damages nearby zombies while zapping\nTier 6 deployable, long cooldown between zaps\nRequires a steady upkeep of pulse ammo",
+2, 6, {SKILL_PULSEEXPERT}, TREE_BUILDINGTREE)
 s.AlwaysActive = true
 
 s = GM:AddSkill(SKILL_D_LATEBUYER, "Debuff: Late Buyer", GOOD.."+20 starting Worth\n"..GOOD.."-2% resupply delay\n"..GOOD.."-5% arsenal item prices\n"..BAD.."Unable to use points at arsenal crates until the second half of the round",

@@ -964,3 +964,63 @@ concommand.Add("zs_dev_luarun", function(pl, cmd, args, str)
 	end
 end, nil, text)
 ]]
+
+
+
+-- admin only
+net.Receive("zs_forcebuyitem", function(len, pl)
+    if !pl:IsAdmin() then return end
+	local id = net.ReadString()
+	id = tonumber(id) or id
+	local itemtab = FindItem(id)
+	
+	if not itemtab or not itemtab.PointShop then return end
+
+	if itemtab.Callback then
+		itemtab.Callback(pl)
+	elseif itemtab.SWEP then
+		if string.sub(itemtab.SWEP, 1, 6) ~= "weapon" then
+			if GAMEMODE:GetInventoryItemType(itemtab.SWEP) == INVCAT_TRINKETS and pl:HasInventoryItem(itemtab.SWEP) then
+				local wep = ents.Create("prop_invitem")
+				if wep:IsValid() then
+					wep:SetPos(pl:GetShootPos())
+					wep:SetAngles(pl:GetAngles())
+					wep:SetInventoryItemType(itemtab.SWEP)
+					wep:Spawn()
+				end
+			else
+				pl:AddInventoryItem(itemtab.SWEP)
+			end
+		elseif pl:HasWeapon(itemtab.SWEP) then
+			local stored = weapons.Get(itemtab.SWEP)
+			if stored and stored.AmmoIfHas then
+				pl:GiveAmmo(stored.Primary.DefaultClip, stored.Primary.Ammo)
+			else
+				local wep = ents.Create("prop_weapon")
+				if wep:IsValid() then
+					wep:SetPos(pl:GetShootPos())
+					wep:SetAngles(pl:GetAngles())
+					wep:SetWeaponType(itemtab.SWEP)
+					wep:SetShouldRemoveAmmo(true)
+					wep:Spawn()
+				end
+			end
+		else
+			local wep = pl:Give(itemtab.SWEP)
+			if wep and wep:IsValid() and wep.EmptyWhenPurchased and wep:GetOwner():IsValid() then
+				if wep.Primary then
+					local primary = wep:ValidPrimaryAmmo()
+					if primary then
+						pl:RemoveAmmo(math.max(0, wep.Primary.DefaultClip - wep.Primary.ClipSize), primary)
+					end
+				end
+				if wep.Secondary then
+					local secondary = wep:ValidSecondaryAmmo()
+					if secondary then
+						pl:RemoveAmmo(math.max(0, wep.Secondary.DefaultClip - wep.Secondary.ClipSize), secondary)
+					end
+				end
+			end
+		end
+	end
+end)

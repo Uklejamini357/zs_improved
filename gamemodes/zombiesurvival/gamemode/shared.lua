@@ -2,7 +2,8 @@ GM.Name		=	"ZS Improved" -- wtf was it Redux or Improved?
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.6.5" -- Endless: Unleashed+ (absolutely yes)
+GM.Version	=	"1.7.0"
+GM.ReleaseNotes	= "Tech Update" -- further release notes can be found down after include's and include_library (with using addToNote function)
 
 local zs_enablesandbox = CreateConVar("zs_enablesandbox", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable Sandbox Mode. You know what it does, adds sandbox spawnmenu for admins only etc. Restart might be required when changing this value!")
 
@@ -159,6 +160,28 @@ include_library("ammoexpand")
 
 ----------------------
 
+local function addToNote(txt, colorid)
+	GM.ReleaseNotes = GM.ReleaseNotes.."\n"..(colorid and "^"..colorid or "")..txt
+end
+
+-- added
+addToNote("Added new option to adjust maximum ammo to deposit to deployables", COLORID_CYAN)
+addToNote("Added 2 new skill modifiers:", COLORID_CYAN)
+addToNote("- Turret aim spread mult.", COLORID_CYAN)
+addToNote("- Turret fire rate mult.", COLORID_CYAN)
+addToNote("Added Sniper Turret (T5)", COLORID_CYAN)
+addToNote("Added Auto-Shotgun Turret (T6)", COLORID_CYAN)
+addToNote("Added Electrified Zapper Arc (T6)", COLORID_CYAN)
+addToNote("Added 5 new skills, with 3 of them being item unlocks", COLORID_CYAN)
+addToNote("Added Buy x20 option in arsenal when right-clicking on an item", COLORID_CYAN)
+addToNote("- For admins: Added force buy option in the buy options; works like buying an item, bypassing all requirements and does not spend any points", COLORID_CYAN)
+addToNote("Added changelogs.\n", COLORID_CYAN)
+
+-- addToNote("Changed deployables to drop a max of up to 20 ammo boxes on destruction", COLORID_YELLOW) -- not yet
+addToNote("Changed turrets to instantly try to lock onto another target at the same angle (can avoid the turret from losing target when aiming at stacked zombies)\n", COLORID_YELLOW)
+
+addToNote("Fixed \"Remantle with Scrap\" option not showing up", COLORID_WHITE)
+
 GM.EndRound = false
 GM.StartingPlayerHealth = 100
 --GM.StartingPlayerSpeed = 225 -- see sh_globals.lua for editing SPEED_NORMAL
@@ -243,9 +266,13 @@ function GM:AddCustomAmmo()
 	game.AddAmmoType({name = "repairfield"})
 	game.AddAmmoType({name = "zapper"})
 	game.AddAmmoType({name = "zapper_arc"})
+	game.AddAmmoType({name = "zapper_arc_shock"})
 	game.AddAmmoType({name = "remantler"})
 	game.AddAmmoType({name = "turret_buckshot"})
 	game.AddAmmoType({name = "turret_assault"})
+	game.AddAmmoType({name = "turret_sniper"})
+	game.AddAmmoType({name = "turret_boomstick"})
+	game.AddAmmoType({name = "turret_autoshotgun"})
 	game.AddAmmoType({name = "turret_minigun"})
 	game.AddAmmoType({name = "turret_rocket"})
 	game.AddAmmoType({name = "camera"})
