@@ -1491,7 +1491,8 @@ function PANEL:Paint(w, h)
 		angle = (realtime * 180) % 360
 	end
 
-	for id, node in pairs(skillnodes) do
+	local func, iterator, constructor = pairs(skillnodes)
+	for id, node in func, iterator, constructor do
 		if IsValid(node) then
 			nodepos = node:GetPos()
 			if (nodepos - campost):LengthSqr() > camheightadj then
@@ -1502,32 +1503,59 @@ function PANEL:Paint(w, h)
 			skill = node.Skill
 			selected = not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= 36 -- 6^2
 
--- Old
-			local sel_radius
-			local scale
+			local sel_radius, scale
 			if UseNewSkillTrees then
 				-- New
 				sel_radius = skillid <= -2 and 300 or skillid == -1 and 90 or 36 * (skill.ModelScale or 1)
 				selected = not CheckHidden(skill, true) and not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= sel_radius
 				scale = skillid <= -2 and 0.08 or 0.09
 			else
+				-- Old
 				sel_radius = 36 * (skill.ModelScale or 1)
 				selected = not CheckHidden(skill, true) and not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= sel_radius
 				scale = 0.09
 			end
-	
-			cam.Start3D2D(node:GetPos() - to_camera * 8, Angle(0, 90, 90), scale)
-
-			surface.DisableClipping(true)
-			DisableClipping(true)
 
 			if selected then
 				hoveredskill = skillid
+				break
+			end
+		end
+	end
 
+	for id, node in func, iterator, constructor do
+		if IsValid(node) then
+			nodepos = node:GetPos()
+			if (nodepos - campost):LengthSqr() > camheightadj then
+				continue
+			end
+
+			skillid = node.SkillID
+			skill = node.Skill
+			selected = not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= 36 -- 6^2
+			local sel_radius, scale
+			if UseNewSkillTrees then
+				-- New
+				sel_radius = skillid <= -2 and 300 or skillid == -1 and 90 or 36 * (skill.ModelScale or 1)
+				selected = not CheckHidden(skill, true) and not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= sel_radius
+				scale = skillid <= -2 and 0.08 or 0.09
+			else
+				-- Old
+				sel_radius = 36 * (skill.ModelScale or 1)
+				selected = not CheckHidden(skill, true) and not skill.Disabled and intersectpos and nodepos:DistToSqr(intersectpos) <= sel_radius
+				scale = 0.09
+			end
+
+			if hoveredskill == skillid then
 				sat = 1 - math.abs(math.sin(realtime * math.pi)) * 0.25
 			else
 				sat = 1
 			end
+
+			cam.Start3D2D(node:GetPos() - to_camera * 8, Angle(0, 90, 90), scale)
+
+			surface.DisableClipping(true)
+			DisableClipping(true)
 
 			local notunlockable = false
 			local divs = skill.ColorModifierOverride or nodecolors[skill.Tree] or {0, 0, 0}
@@ -1594,7 +1622,7 @@ function PANEL:Paint(w, h)
 
 			render_SetColorModulation(1, 1, 1)
 
-			if self.vCamPos.x < (self.DesiredTree == 0 and 11500 or 9500)*screenscale and not CheckHidden(skill) then
+			if self.vCamPos.x < (self.DesiredTree == 0 and 11500 or 9500)*screenscale and not CheckHidden(skill) and (!hoveredskill or hoveredskill == skillid) then
 				local colo = skill.Disabled and COLOR_DARKGRAY or skill.Rainbow and HSVToColor(RealTime() * 160 % 360, 0.5, 1) or selected and color_white or notunlockable and COLOR_MIDGRAY or COLOR_GRAY
 				local colo2 = COLOR_GRAY
 
@@ -1623,7 +1651,6 @@ function PANEL:Paint(w, h)
 						draw_SimpleText(translate.Get("s_always_active"), font, 0, y_pos, COLOR_RPINK, TEXT_ALIGN_CENTER)
 						y_pos = y_pos + y_pos_add
 					end
-
 
 					if skill.RemortReq then
 						draw_SimpleText(translate.Format("s_remort_req", skill.RemortReq), font, 0, y_pos, skill.RemortReq <= MySelf:GetZSRemortLevel() and COLOR_GREEN or COLOR_SOFTRED, TEXT_ALIGN_CENTER)
@@ -1654,7 +1681,7 @@ function PANEL:Paint(w, h)
 						end
 
 						if skill.EndlessOnly then
-							draw_SimpleText(translate.Get("endless_mode_only"), font, 0, y_pos, colo2, TEXT_ALIGN_CENTER)
+							draw_SimpleText(translate.Get("endless_mode_only"), font, 0, y_pos, COLOR_RPINK, TEXT_ALIGN_CENTER)
 							y_pos = y_pos + y_pos_add
 						end
 

@@ -2465,7 +2465,7 @@ function GM:EndRound(winner)
 	elseif winner == TEAM_UNDEAD then
 		hook.Add("PlayerShouldTakeDamage", "EndRoundShouldTakeDamage", EndRoundPlayerCanSuicide)
 
-		self:SetDifficulty(self:GetDifficulty() * 0.2)
+		self:SetDifficulty(math.max(0, (self:GetDifficulty() - 5) * 0.2))
 
 		for _, pl in pairs(team.GetPlayers(TEAM_UNDEAD)) do
 			gamemode.Call("OnPlayerLoseRound", pl)
@@ -3500,7 +3500,7 @@ function GM:EntityTakeDamage(ent, dmginfo)
 		end
 
 		if attacker:IsValidPlayer() and attacker:IsSkillActive(SKILL_DOOR_DESTROYER) then
-			dmginfo:ScaleDamage(3)
+			dmginfo:SetDamage(math.min(dmginfo:GetDamage()*5, dmginfo:GetDamage()+200))
 		end
 
 		if gamemode.Call("ShouldAntiGrief", ent, attacker, dmginfo, ent.TotalHeal) then
@@ -3540,7 +3540,7 @@ function GM:EntityTakeDamage(ent, dmginfo)
 		end
 
 		if attacker:IsValidPlayer() and attacker:IsSkillActive(SKILL_DOOR_DESTROYER) then
-			dmginfo:ScaleDamage(3)
+			dmginfo:SetDamage(math.min(dmginfo:GetDamage()*5, dmginfo:GetDamage()+200))
 		end
 
 		if dmginfo:GetDamage() >= 20 and attacker:IsPlayer() and attacker:Team() == TEAM_UNDEAD then

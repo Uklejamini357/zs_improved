@@ -2388,6 +2388,7 @@ function GM:EndRound(winner, nextmap)
 			MakepEndBoard(winner)
 			timer.Simple(0.5, function()
 				if self.RoundEnded then return end
+				if not (pEndBoard and pEndBoard:IsValid()) then return end
 				pEndBoard:Remove()
 			end)
 		end

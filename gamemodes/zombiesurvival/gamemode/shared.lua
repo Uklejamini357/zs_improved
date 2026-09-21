@@ -2,8 +2,9 @@ GM.Name		=	"ZS Improved" -- wtf was it Redux or Improved?
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.7.1"
-GM.ReleaseNotes	= "fix" -- further release notes can be found down after include's and include_library (with using addToNote function)
+GM.Version	=	"1.7.2"
+GM.ReleaseNotes	= "placeholder" -- further release notes can be found down after include's and include_library (with using addToNote function)
+-- yes, this is a real update note.
 
 local zs_enablesandbox = CreateConVar("zs_enablesandbox", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable Sandbox Mode. You know what it does, adds sandbox spawnmenu for admins only etc. Restart might be required when changing this value!")
 
@@ -170,6 +171,14 @@ local function addToNote(txt, colorid)
 	GM.ReleaseNotes = GM.ReleaseNotes.."\n"..(colorid and "^"..colorid or "")..txt
 end
 
+
+addToNote("Buffed Door Destroyer skill to deal 5x damage to doors instaed of 3x, also add max bonus damage of 250 to it.", COLORID_GREEN)
+
+addToNote("Skills text in F3 menu will not be displayed other than for the hovered skill, if hovering on the skill orb.", COLORID_YELLOW)
+addToNote("Changed \"Endless Mode only\" text color on F3 skill menu to pink, to make it easier visible.", COLORID_YELLOW)
+addToNote("Additional difficulty will now also be reduced by 5%, each time humans lose.", COLORID_YELLOW)
+
+addToNote("#fix (1.7.1)", COLORID_GRAY)
 
 addToNote("Arsenal shop will now auto-remove itself after round restart.", COLORID_YELLOW)
 addToNote("Items marked as endless mode only will not be displayed if it's not endless mode.", COLORID_YELLOW)

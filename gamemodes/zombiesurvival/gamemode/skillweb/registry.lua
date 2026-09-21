@@ -1149,7 +1149,7 @@ GM:AddSkillFunction(SKILL_STOWAGE, function(pl, active)
 	pl.Stowage = active
 end)
 
-s = GM:AddSkill(SKILL_DOOR_DESTROYER, "Door Destroyer", GOOD.."3x damage dealt to hinged doors\n"..BAD.."-10% repair rate\n"..BAD.."-5% health to nailed props",
+s = GM:AddSkill(SKILL_DOOR_DESTROYER, "Door Destroyer", GOOD.."5x damage dealt to hinged doors\nMax bonus damage: 250\n"..BAD.."-10% repair rate\n"..BAD.."-5% health to nailed props",
 4, 2, {}, TREE_BUILDINGTREE)
 GM:AddSkillModifier(SKILL_DOOR_DESTROYER, SKILLMOD_REPAIRRATE_MUL, -0.1)
 GM:AddSkillModifier(SKILL_DOOR_DESTROYER, SKILLMOD_BARRICADE_HEALTH_MUL, -0.05)
