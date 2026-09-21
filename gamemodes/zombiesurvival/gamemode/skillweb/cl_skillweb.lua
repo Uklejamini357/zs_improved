@@ -964,6 +964,7 @@ function PANEL:UpdateQuickStats()
 	for skillid in pairs(table.ToAssoc(MySelf:GetDesiredActiveSkills())) do
 		local modifiers = gm_modifiers[skillid]
 		local skill = allskills[skillid]
+		if !GAMEMODE:IsEndlessMode() and skill.EndlessOnly then continue end
 		if modifiers then
 			for modid, amount in pairs(modifiers) do
 				skillmodifiers[modid] = (skillmodifiers[modid] or 0) + (isfunction(amount) and amount(skill, MySelf, MySelf:GetSkillLevel(skillid)) or amount)

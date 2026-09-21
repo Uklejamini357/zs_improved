@@ -748,6 +748,7 @@ concommand.Add("zs_admin_forcerestartround", function(pl, cmd, args)
 		end
 	end
 
+	GAMEMODE.RoundEnded = true -- prevent endround shit
 	gamemode.Call("PreRestartRound")
 	gamemode.Call("RestartRound")
 

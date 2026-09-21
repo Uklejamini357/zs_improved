@@ -127,19 +127,16 @@ function MakepChangelog()
 	local scroll = vgui.Create("DScrollPanel", frame)
 	scroll:Dock(FILL)
 
+	local label = EasyLabel(frame, GAMEMODE.Name.." changelogs", "ZSHUDFontNS", color_white)
+	label:CenterHorizontal()
+	label:Dock(TOP)
+	y = y + label:GetTall() + 8
+
 	local desc = string.Explode("\n", GAMEMODE.ReleaseNotes)
 	local txt, colid
 	for i=1, #desc do
-		if i == 1 then
-			local label = EasyLabel(frame, GAMEMODE.Name.." changelogs", "ZSHUDFontNS", color_white)
-			label:CenterHorizontal()
-			label:Dock(TOP)
-			y = y + label:GetTall() + 8
-
-			continue
-		end
 		local changelogtxt = vgui.Create("DLabel", scroll)
-		changelogtxt:SetFont("ZSHUDFontSmallest") --"ZSHUDFontSmall"
+		changelogtxt:SetFont("ZSHUDFontSmallest")
 		changelogtxt:SetTextColor(COLOR_GRAY)
 		changelogtxt:SetContentAlignment(4)
 		changelogtxt:SetWrap(true)
@@ -153,6 +150,23 @@ function MakepChangelog()
 			changelogtxt:SetTextColor(util.ColorIDToColor(colid, COLOR_GRAY))
 		else
 			changelogtxt:SetTextColor(COLOR_GRAY)
+		end
+
+		local hashtag = txt:sub(1, 1) == "#"
+		if hashtag or i == 1 then
+			changelogtxt:SetFont("ZSHUDFontSmall")
+			changelogtxt:SetContentAlignment(5)
+			changelogtxt:SetWrap(false)
+
+			if hashtag then
+				txt = txt:sub(2)
+			end
+
+			if i == 1 then
+				txt = txt.." ("..GAMEMODE.Version..")"
+			end
+
+			txt = txt.."\n"
 		end
 		changelogtxt:SetText(txt)
 		y = y + changelogtxt:GetTall() + 8

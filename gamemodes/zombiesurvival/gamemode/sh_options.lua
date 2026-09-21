@@ -709,7 +709,7 @@ item.SkillRequirement = SKILL_U_NANITECLOUD
 item =
 GM:AddPointShopItem("endless_moddamage",ITEMCAT_ENDLESS,		150,			nil,
 "Damage Modifier",
-"+3% damage dealt\nApplies to all humans\nAvailable only in endless mode!",
+"+3% damage dealt\nApplies to all humans",
 nil--[["endlessmodifier_damage"]], function(pl)
 	GAMEMODE.GlobalHumanMultipliers.Damage = (GAMEMODE.GlobalHumanMultipliers.Damage or 1) + 0.03
 	for _,human in pairs(team.GetPlayers(TEAM_HUMAN)) do
@@ -721,7 +721,7 @@ item.EndlessModeOnly = true
 item =
 GM:AddPointShopItem("endless_modprophealth",	ITEMCAT_ENDLESS,		150,			nil,
 "Prop Health Modifier",
-"+10% Prop Health Multiplier\nApplies to all humans\nAvailable only in endless mode!",
+"+10% Prop Health Multiplier\nApplies to all humans",
 nil--[["endlessmodifier_prophealth"]], function(pl)
 	GAMEMODE.GlobalHumanMultipliers.PropHealthMulti = (GAMEMODE.GlobalHumanMultipliers.PropHealthMulti or 1) + 0.1
 	for _,human in pairs(team.GetPlayers(TEAM_HUMAN)) do

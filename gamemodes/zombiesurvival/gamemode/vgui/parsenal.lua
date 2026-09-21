@@ -69,11 +69,10 @@ local function ItemPanelThink(self)
 			self.m_LastAbleToBuy = newstate
 			if newstate then
 				self.NameLabel:SetTextColor(COLOR_WHITE)
-				self.NameLabel:InvalidateLayout()
 			else
 				self.NameLabel:SetTextColor(COLOR_RED)
-				self.NameLabel:InvalidateLayout()
 			end
+			self.NameLabel:InvalidateLayout()
 		end
 
 		if self.StockLabel then
@@ -207,6 +206,10 @@ function GM:SupplyItemViewerDetail(viewer, sweptable, shoptbl)
 
 		viewer.m_Desc:MoveBelow(viewer.m_Title, 20)
 		viewer.m_Desc:SetFont("ZSBodyTextFontBig")
+	end
+
+	if shoptbl.EndlessModeOnly then
+		desctext = desctext.."\n\nAvailable only in endless mode!"
 	end
 	viewer.m_Desc:SetText(desctext)
 
@@ -362,7 +365,13 @@ function GM:AddShopItem(list, i, tab, issub, nopointshop)
 
 	local itempan = vgui.Create("DButton")
 	itempan:SetText("")
-	itempan:SetToolTip(tab.Description)
+	local desc = tab.Description
+	if !desc and tab.EndlessModeOnly then
+		desc = "Available only in endless mode!"
+	elseif desc and tab.EndlessModeOnly then
+		desc = desc.."\n\nAvailable only in endless mode!"
+	end
+	itempan:SetToolTip(desc)
 	itempan:SetSize(wid * screenscale, (nottrinkets and 100 or 60) * screenscale)
 	itempan.ID = tab.Signature or i
 	itempan.NoPoints = nopointshop
@@ -480,6 +489,9 @@ function GM:AddShopItem(list, i, tab, issub, nopointshop)
 		end
 		local txt = price..(nopointshop and " Scrap" or " Points")
 		pricelabel:SetText(txt)
+		if tab.EndlessModeOnly then
+			pricelabel:SetTextColor(COLOR_PURPLE)
+		end
 		pricelabel.Think = function(self)
 			points = math.floor(tab.Price * MySelf:GetArsenalPrices())
 			price = tostring(nopointshop and math.ceil(GAMEMODE:PointsToScrap(tab.Price) * MySelf:GetRemantlerPrices()) or points)
@@ -813,7 +825,7 @@ function GM:OpenArsenalMenu()
 	for catid, catname in ipairs(GAMEMODE.ItemCategories) do
 		local hasitems = false
 		for i, tab in ipairs(GAMEMODE.Items) do
-			if tab.Category == catid and tab.PointShop then
+			if tab.PointShop and tab.Category == catid and (GAMEMODE:IsEndlessMode() or !tab.EndlessModeOnly) then
 				hasitems = true
 				break
 			end
@@ -887,7 +899,7 @@ function GM:OpenArsenalMenu()
 			sheet.Panel:SetPos(0, tabhei + 2)
 
 			for i, tab in ipairs(GAMEMODE.Items) do
-				if tab.PointShop and tab.Category == catid then
+				if tab.PointShop and tab.Category == catid and (GAMEMODE:IsEndlessMode() or !tab.EndlessModeOnly) then
 					self:AddShopItem(
 						trinkets and tabpane.Grids[tab.SubCategory] or tabpane.Grid or tabpane.Grids[tab.Tier or 1],
 						i, tab

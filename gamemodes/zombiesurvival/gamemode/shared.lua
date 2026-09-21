@@ -2,8 +2,8 @@ GM.Name		=	"ZS Improved" -- wtf was it Redux or Improved?
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.7.0"
-GM.ReleaseNotes	= "Tech Update" -- further release notes can be found down after include's and include_library (with using addToNote function)
+GM.Version	=	"1.7.1"
+GM.ReleaseNotes	= "fix" -- further release notes can be found down after include's and include_library (with using addToNote function)
 
 local zs_enablesandbox = CreateConVar("zs_enablesandbox", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable Sandbox Mode. You know what it does, adds sandbox spawnmenu for admins only etc. Restart might be required when changing this value!")
 
@@ -160,11 +160,26 @@ include_library("ammoexpand")
 
 ----------------------
 
+
+
+
+
+
+
 local function addToNote(txt, colorid)
 	GM.ReleaseNotes = GM.ReleaseNotes.."\n"..(colorid and "^"..colorid or "")..txt
 end
 
--- added
+
+addToNote("Arsenal shop will now auto-remove itself after round restart.", COLORID_YELLOW)
+addToNote("Items marked as endless mode only will not be displayed if it's not endless mode.", COLORID_YELLOW)
+addToNote("Points text will display as purple if an item is marked as endless only\n", COLORID_YELLOW)
+
+addToNote("Fixed skill stats not showing properly in skills menu on non-endless mode", COLORID_WHITE)
+
+--
+addToNote("#Tech update (1.7.0)", COLORID_GRAY)
+
 addToNote("Added new option to adjust maximum ammo to deposit to deployables", COLORID_CYAN)
 addToNote("Added 2 new skill modifiers:", COLORID_CYAN)
 addToNote("- Turret aim spread mult.", COLORID_CYAN)
@@ -177,10 +192,18 @@ addToNote("Added Buy x20 option in arsenal when right-clicking on an item", COLO
 addToNote("- For admins: Added force buy option in the buy options; works like buying an item, bypassing all requirements and does not spend any points", COLORID_CYAN)
 addToNote("Added changelogs.\n", COLORID_CYAN)
 
--- addToNote("Changed deployables to drop a max of up to 20 ammo boxes on destruction", COLORID_YELLOW) -- not yet
 addToNote("Changed turrets to instantly try to lock onto another target at the same angle (can avoid the turret from losing target when aiming at stacked zombies)\n", COLORID_YELLOW)
 
 addToNote("Fixed \"Remantle with Scrap\" option not showing up", COLORID_WHITE)
+
+
+
+
+-------- separator
+
+
+
+
 
 GM.EndRound = false
 GM.StartingPlayerHealth = 100

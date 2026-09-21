@@ -1414,6 +1414,11 @@ function GM:RestartRound()
 
 	hook.Remove("CalcView", "EndRoundCalcView")
 	hook.Remove("ShouldDrawLocalPlayer", "EndRoundShouldDrawLocalPlayer")
+
+	if self.ArsenalInterface and self.ArsenalInterface:IsValid() then
+		self.ArsenalInterface:Remove()
+		self.ArsenalInterface = nil
+	end
 end
 
 function GM:_HUDShouldDraw(name)
