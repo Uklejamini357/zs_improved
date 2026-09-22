@@ -16,6 +16,6 @@ SWEP.TurretSpread = 7.5
 SWEP.MaxStock = 2
 SWEP.Tier = 6
 
-SWEP.Primary.Ammo = "turret_buckshot"
+SWEP.Primary.Ammo = "turret_autoshotgun"
 
 GAMEMODE:AttachWeaponModifier(SWEP, WEAPON_MODIFIER_TURRET_SPREAD, -0.9)

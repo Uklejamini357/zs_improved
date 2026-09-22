@@ -404,6 +404,15 @@ killicon.Add("weapon_zs_ultrabutcherknife", "zombiesurvival/killicons/weapon_zs_
 
 killicon.Add("prop_gunturret_minigun", "zombiesurvival/killicons/weapon_zs_gunturret2.png")
 killicon.Add("weapon_zs_gunturret_minigun", "zombiesurvival/killicons/weapon_zs_gunturret2")
+killicon.Add("prop_gunturret_boomstick", "zombiesurvival/killicons/weapon_zs_gunturret_buckshot.png")
+killicon.Add("weapon_zs_gunturret_boomstick", "zombiesurvival/killicons/weapon_zs_gunturret_buckshot")
+killicon.Add("prop_gunturret_sniper", "zombiesurvival/killicons/weapon_zs_assaultturret.png")
+killicon.Add("weapon_zs_gunturret_sniper", "zombiesurvival/killicons/weapon_zs_assaultturret.png")
+killicon.Add("prop_gunturret_autoshotgun", "zombiesurvival/killicons/weapon_zs_gunturret_buckshot.png")
+killicon.Add("weapon_zs_gunturret_autoshotgun", "zombiesurvival/killicons/weapon_zs_gunturret_buckshot")
+
+killicon.Add("weapon_zs_zapper_arc_shock", "zombiesurvival/killicons/weapon_zs_dynamo")
+killicon.Add("prop_zapper_arc_shock", "zombiesurvival/killicons/weapon_zs_dynamo")
 
 killicon.Add("weapon_zs_darkhammer", "zombiesurvival/killicons/weapon_zs_electrohammer", Color(63, 63, 63))
 

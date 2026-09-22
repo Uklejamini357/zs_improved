@@ -5,12 +5,12 @@ ENT.Base = "prop_gunturret"
 ENT.SWEP = "weapon_zs_gunturret_sniper"
 
 ENT.AmmoType = "357"
-ENT.FireDelay = 0
+ENT.FireDelay = 1.8
 ENT.NumShots = 1
 ENT.Damage = 130
 ENT.PlayLoopingShootSound = false
 ENT.Spread = 0.1
-ENT.MaxAmmo = 7522
+ENT.MaxAmmo = 75
 ENT.MaxHealth = 250
 ENT.SearchDistance = 10000
 ENT.MinimumAimDot = 0.01
