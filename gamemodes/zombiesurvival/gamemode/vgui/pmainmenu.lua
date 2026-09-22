@@ -327,7 +327,7 @@ function GM:ShowHelp()
 		but:SetFont("ZSHUDFontSmaller")
 		but:SetText("(dev) Open class menu")
 		but:SetTall(buttonhei)
-		but:DockMargin(0, 84, 0, 0)
+		but:DockMargin(0, 34, 0, 0)
 		but:DockPadding(0, 12, 0, 12)
 		but:Dock(TOP)
 		but.DoClick = function() GAMEMODE:OpenClassSelect() menu:Remove() end

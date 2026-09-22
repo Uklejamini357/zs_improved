@@ -1749,7 +1749,7 @@ function GM:LastHumanMessage()
 	if self.RoundEnded or not MySelf:IsValid() then return end
 
 	local icon = self.PantsMode and "weapon_zs_legs" or "default"
-	if P_Team(MySelf) == TEAM_UNDEAD or not MySelf:Alive() then
+	if P_Team(MySelf) ~= TEAM_HUMAN or not MySelf:Alive() then
 		self:CenterNotify({killicon = icon}, {font = "ZSHUDFont"}, " ", COLOR_RED, translate.Get(self.PantsMode and "kick_the_last_human" or "kill_the_last_human"), {killicon = icon})
 	else
 		self:CenterNotify({font = "ZSHUDFont"}, " ", COLOR_RED, translate.Get("you_are_the_last_human"))

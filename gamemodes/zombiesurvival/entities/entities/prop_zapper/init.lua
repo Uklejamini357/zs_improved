@@ -16,6 +16,9 @@ function ENT:Initialize()
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
 	self:SetUseType(SIMPLE_USE)
+	if self.SpawnColor then
+		self:SetColor(self.SpawnColor)
+	end
 
 	self:CollisionRulesChanged()
 

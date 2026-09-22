@@ -7,6 +7,7 @@ function ENT:HitTarget(ent, damage, owner)
 		POINTSMULTIPLIER = self.PointsMultiplier
 	end
 	ent:TakeSpecialDamage(damage * (owner.ZapperDamageMul or 1), DMG_SHOCK, owner, self)
+	util.BlastDamagePlayer(self, owner, ent:GetPos(), 120, damage * (owner.ZapperDamageMul or 1) / 3, DMG_SHOCK, 0.8, true)
 	if self.PointsMultiplier then
 		POINTSMULTIPLIER = nil
 	end
@@ -23,21 +24,21 @@ function ENT:Think()
 
 	local curammo = self:GetAmmo()
 	local owner = self:GetObjectOwner()
-	if curammo >= 3 and owner:IsValid() then
-		self.NextZapCheck = CurTime() + 0.4
+	if curammo >= math.max(1, self.AmmoUsePerZap) and owner:IsValid() then
+		self.NextZapCheck = CurTime() + self.ZapCheckDelay
 
 		local pos = self:LocalToWorld(Vector(0, 0, 29))
 		local target = self:FindZapperTarget(pos, owner)
 
 		local shocked = {}
 		if target then
-			self:SetAmmo(curammo - 3)
+			self:SetAmmo(curammo - self.AmmoUsePerZap)
 
-			if self:GetAmmo() < 3 then
+			if self:GetAmmo() < self.AmmoUsePerZap then
 				owner:SendDeployableOutOfAmmoMessage(self)
 			end
 
-			self:SetNextZap(CurTime() + 4.5 * (owner.FieldDelayMul or 1))
+			self:SetNextZap(CurTime() + self.ZapperDelay * (owner.FieldDelayMul or 1))
 			self:HitTarget(target, self.Damage, owner)
 
 			local effectdata = EffectData()

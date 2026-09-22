@@ -579,7 +579,7 @@ item.Countables = "prop_zapper_arc"
 item.NoClassicMode = true
 item.SkillRequirement = SKILL_U_ZAPPER_ARC
 item =
-GM:AddPointShopItem("zapper_arc_shock",	ITEMCAT_DEPLOYABLES,			320,			"weapon_zs_zapper_arc_shock",	nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_zapper_arc") pl:GiveAmmo(1, "zapper_arc") pl:GiveAmmo(30, "pulse") end)
+GM:AddPointShopItem("zapper_arc_shock",	ITEMCAT_DEPLOYABLES,			320,			"weapon_zs_zapper_arc_shock",	nil,							nil,									nil,											function(pl) pl:GiveEmptyWeapon("weapon_zs_zapper_arc_shock") pl:GiveAmmo(1, "zapper_arc_shock") pl:GiveAmmo(30, "pulse") end)
 item.Countables = "prop_zapper_arc_shock"
 item.NoClassicMode = true
 item.EndlessModeOnly = true
@@ -679,6 +679,7 @@ GM:AddPointShopItem("supasm",			ITEMCAT_TRINKETS,		70,				"trinket_supasm").SubC
 GM:AddPointShopItem("pulseimpedance",	ITEMCAT_TRINKETS,		70,				"trinket_pulseimpedance").SubCategory =					ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddPointShopItem("arsenalpack",		ITEMCAT_TRINKETS,		70,				"trinket_arsenalpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
 GM:AddPointShopItem("remantlerpack",	ITEMCAT_TRINKETS,		70,				"trinket_remantlerpack").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
+-- GM:AddPointShopItem("opsmatrix",ITEMCAT_TRINKETS,		50,				"trinket_opsmatrix").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT
 -- Tier 6
 GM:AddPointShopItem("dmgbooster",		ITEMCAT_TRINKETS,		100,			"trinket_dmgbooster").SubCategory =						ITEMSUBCAT_TRINKETS_OFFENSIVE
 GM:AddPointShopItem("cadebooster",		ITEMCAT_TRINKETS,		100,			"trinket_cadebooster").SubCategory =					ITEMSUBCAT_TRINKETS_SUPPORT

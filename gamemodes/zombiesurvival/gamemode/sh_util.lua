@@ -213,14 +213,14 @@ function util.Blood(pos, amount, dir, force, noprediction)
 	util.Effect("bloodstream", effectdata, nil, noprediction)
 end
 
-function util.BlastDamagePlayer(inf, att, center, radius, damage, damagetype, taperfactor)
+function util.BlastDamagePlayer(inf, att, center, radius, damage, damagetype, taperfactor, noselfdamage)
 	if not att:IsValidPlayer() then ErrorNoHalt("[BlastDamagePlayer] Tried to use a nonplayer") end
 
-	util.BlastDamageEx(inf, att, center, radius * (att.ExpDamageRadiusMul or 1), damage * (att.ExplosiveDamageMul or 1), damagetype, taperfactor)
+	util.BlastDamageEx(inf, att, center, radius * (att.ExpDamageRadiusMul or 1), damage * (att.ExplosiveDamageMul or 1), damagetype, taperfactor, noselfdamage)
 end
 
 -- I had to make this since the default function checks visibility vs. the entitiy's center and not the nearest position.
-function util.BlastDamageEx(inflictor, attacker, epicenter, radius, damage, damagetype, taperfactor)
+function util.BlastDamageEx(inflictor, attacker, epicenter, radius, damage, damagetype, taperfactor, noselfdamage)
 	local basedmg = damage
 
 	for _, ent in ipairs(ents.FindInSphere(epicenter, radius)) do
@@ -230,6 +230,7 @@ function util.BlastDamageEx(inflictor, attacker, epicenter, radius, damage, dama
 				or TrueVisibleFilters(epicenter, ent:EyePos(), inflictor, attacker, ent)
 				or TrueVisibleFilters(epicenter, ent:WorldSpaceCenter(), inflictor, attacker, ent) then
 
+				if noselfdamage and ent == attacker then continue end
 				ent:TakeSpecialDamage(((radius - nearest:Distance(epicenter)) / radius) * basedmg, damagetype, attacker, inflictor, nearest)
 
 				if taperfactor and ent:IsPlayer() then
@@ -240,7 +241,7 @@ function util.BlastDamageEx(inflictor, attacker, epicenter, radius, damage, dama
 	end
 end
 
-function util.BlastDamageExAlloc(inflictor, attacker, epicenter, radius, damage, damagetype)
+function util.BlastDamageExAlloc(inflictor, attacker, epicenter, radius, damage, damagetype, noselfdamage)
 	local dmg
 	local t = {}
 
@@ -250,6 +251,8 @@ function util.BlastDamageExAlloc(inflictor, attacker, epicenter, radius, damage,
 			if TrueVisibleFilters(epicenter, nearest, inflictor, attacker, ent)
 				or TrueVisibleFilters(epicenter, ent:EyePos(), inflictor, attacker, ent)
 				or TrueVisibleFilters(epicenter, ent:WorldSpaceCenter(), inflictor, attacker, ent) then
+
+				if noselfdamage and ent == attacker then continue end
 
 				dmg = ((radius - nearest:Distance(epicenter)) / radius) * damage
 				ent:TakeSpecialDamage(dmg, damagetype, attacker, inflictor, nearest)
@@ -262,7 +265,7 @@ function util.BlastDamageExAlloc(inflictor, attacker, epicenter, radius, damage,
 	return t
 end
 
-function util.BlastAlloc(inflictor, attacker, epicenter, radius)
+function util.BlastAlloc(inflictor, attacker, epicenter, radius, noselfdamage)
 	local t = {}
 
 	for _, ent in ipairs(ents.FindInSphere(epicenter, radius)) do
@@ -271,6 +274,7 @@ function util.BlastAlloc(inflictor, attacker, epicenter, radius)
 			if TrueVisibleFilters(epicenter, nearest, inflictor, attacker, ent)
 				or TrueVisibleFilters(epicenter, ent:EyePos(), inflictor, attacker, ent)
 				or TrueVisibleFilters(epicenter, ent:WorldSpaceCenter(), inflictor, attacker, ent) then
+				if noselfdamage and ent == attacker then continue end
 				t[#t + 1] = ent
 			end
 		end

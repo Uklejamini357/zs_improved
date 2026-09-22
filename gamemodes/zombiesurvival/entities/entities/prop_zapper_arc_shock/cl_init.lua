@@ -1,6 +1,6 @@
 INC_CLIENT()
 
-local arcscolor = Color(150, 150, 150)
+local arcscolor = Color(150, 150, 255)
 function ENT:Initialize()
 	local matrix = Matrix()
 	matrix:Scale(Vector(0.85, 0.85, 1.2))
@@ -9,13 +9,15 @@ function ENT:Initialize()
 	self.AmbientSound = CreateSound(self, "ambient/machines/combine_shield_touch_loop1.wav")
 	self.AmbientSound:SetSoundLevel(65)
 
+	self:SetColor(arcscolor)
+
 	local cmodel = ClientsideModel("models/props_trainstation/trainstation_ornament002.mdl")
 	if cmodel:IsValid() then
 		cmodel:SetPos(self:LocalToWorld(Vector(0, 0, -25.6)))
 		cmodel:SetAngles(self:LocalToWorldAngles(Angle(0, 0, 0)))
 		cmodel:SetSolid(SOLID_NONE)
 		cmodel:SetMoveType(MOVETYPE_NONE)
-		cmodel:SetColor(Color(195, 195, 145))
+		cmodel:SetColor(Color(95, 95, 255))
 		cmodel:SetParent(self)
 		cmodel:SetOwner(self)
 

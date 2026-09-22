@@ -287,7 +287,7 @@ hook.Add("OnWaveStateChanged", "Customevents", function()
         end
 
         if wave >= 6 then
-            GAMEMODE:SetWaveEnd(CurTime() + 150+wave*5)
+            GAMEMODE:SetWaveEnd(CurTime() + 150+(wave*5)^0.8)
         else
             GAMEMODE:SetWaveEnd(CurTime() + 150)
         end
@@ -296,3 +296,8 @@ hook.Add("OnWaveStateChanged", "Customevents", function()
     end
 end)
 
+hook.Add("EndRound", "Customevents", function()
+    if GAMEMODE.MapEventMode ~= "td" then return end
+    if GAMEMODE.MapLivesLeft <= 0 then return end 
+    return false
+end)

@@ -230,9 +230,12 @@ concommand.Add("zs_dismantle", function(sender, command, arguments)
 			sender:RemoveAmmo(1, wtbl.Primary.Ammo)
 		end
 
-		sender:StripWeapon(contents)
+		if wtbl and (wtbl.AmmoIfHas and sender:GetAmmoCount(wtbl.Primary.Ammo) == 0 or !wtbl.AmmoIfHas) then
+			sender:StripWeapon(contents)
+		end
 		sender:UpdateAltSelectedWeapon()
 	end
+
 
 	GAMEMODE.StatTracking:IncreaseElementKV(STATTRACK_TYPE_WEAPON, invitem or contents, "Disassembles", 1)
 
@@ -283,7 +286,7 @@ concommand.Add("zs_upgrade", function(sender, command, arguments)
 	local classtbl = weapons.Get(upgclass)
 	if not classtbl then return end
 
-	if sender:HasWeapon(upgclass) then
+	if !wtbl.AmmoIfHas and sender:HasWeapon(upgclass) then
 		GAMEMODE:ConCommandErrorMessage(sender, translate.ClientGet(sender, "remantle_cannot"))
 		return
 	end
@@ -293,11 +296,21 @@ concommand.Add("zs_upgrade", function(sender, command, arguments)
 	sender:SendLua("surface.PlaySound(\"buttons/lever"..math.random(5)..".wav\")")
 	sender:RemoveAmmo(scrapcost, "scrap")
 
-	local wep = sender:GiveEmptyWeapon(upgclass)
+	local wep
+	if !sender:HasWeapon(upgclass) then
+		wep = sender:GiveEmptyWeapon(upgclass)
+	else
+		wep = sender:GetWeapon(upgclass)
+	end
 	if wep and wep:IsValid() then
 		sender:GetActiveWeapon():EmptyAll(true)
-		sender:SelectWeapon(upgclass)
-		sender:StripWeapon(contents)
+		local lessammo = sender:GetAmmoCount(wtbl.Primary.Ammo) <= 1
+		if !wtbl.AmmoIfHas or lessammo then
+			sender:StripWeapon(contents)
+		end
+		if !wtbl.AmmoIfHas or lessammo or arguments[2] == 1 then
+			sender:SelectWeapon(upgclass)
+		end
 		sender:UpdateAltSelectedWeapon()
 
 		if wtbl.AmmoIfHas then

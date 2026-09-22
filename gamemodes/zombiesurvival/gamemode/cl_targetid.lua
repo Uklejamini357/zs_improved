@@ -78,7 +78,7 @@ function GM:DrawTargetID(ent, fade)
 		local classtab = ent:GetZombieClassTable()
 		local classname = classtab.TranslationName and translate.Get(classtab.TranslationName) or classtab.Name
 		if classname then
-			local col = classtab.SuperBoss and HSVToColor((SysTime()*80) % 360, 1, 1) or classtab.Boss and COLOR_RED or classtab.DemiBoss and COLOR_ORANGE or classtab.MiniBoss and COLOR_YELLOW or colTemp
+			local col = classtab.SuperBoss and HSVToColor((SysTime()*80) % 360, 1, 1) or classtab.Boss and Color(255,0,0) or classtab.DemiBoss and Color(255,128,0) or classtab.MiniBoss and Color(255,255,0) or colTemp
 			col.a = colTemp.a
 			draw.SimpleTextBlur(classname, "ZSHUDFontTiny", x, y, col, TEXT_ALIGN_CENTER)
 		end

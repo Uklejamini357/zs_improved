@@ -2,8 +2,8 @@ GM.Name		=	"ZS Improved" -- wtf was it Redux or Improved?
 GM.Author	=	"Uklejamini (Original Creator: William \"JetBoom\" Moodhe)"
 GM.Email	=	"" --"williammoodhe@gmail.com"
 GM.Website	=	"https://www.noxiousnet.com"
-GM.Version	=	"1.7.3"
-GM.ReleaseNotes	= "FIX" -- further release notes can be found down after include's and include_library (with using addToNote function)
+GM.Version	=	"1.7.4"
+GM.ReleaseNotes	= "minor shocking update" -- further release notes can be found down after include's and include_library (with using addToNote function)
 
 local zs_enablesandbox = CreateConVar("zs_enablesandbox", 0, FCVAR_ARCHIVE + FCVAR_REPLICATED, "Enable Sandbox Mode. You know what it does, adds sandbox spawnmenu for admins only etc. Restart might be required when changing this value!")
 
@@ -170,6 +170,16 @@ local function addToNote(txt, colorid)
 	GM.ReleaseNotes = GM.ReleaseNotes.."\n"..(colorid and "^"..colorid or "")..txt
 end
 
+
+addToNote("Shocking Zapper Arc now inflicts area damage and is now more blue-ish", COLORID_CYAN)
+
+addToNote("Upgrading deployables does not strip the previous upgrade weapon anymore if you have more than 1 of these.", COLORID_GREEN)
+
+addToNote("Fixed buying Shocking Zapper Arc giving wrong item", COLORID_WHITE)
+addToNote("Fixed color bug when looking at mini/demi/boss zombie", COLORID_WHITE)
+addToNote("Fixed new turrets not being counted to turret channels", COLORID_WHITE)
+
+addToNote("#FIX (1.7.3)", COLORID_GRAY)
 
 addToNote("fix sniper turret and autoshotgun turret and give them killicons", COLORID_WHITE)
 
@@ -959,7 +969,7 @@ function GM:GetRagdollEyes(pl)
 end
 
 function GM:PlayerNoClip(pl, on)
-	if pl:IsAdmin() and (on or pl:Alive()) then
+	if pl:IsAdmin() and (on or pl:OldAlive()) then
 		if SERVER then
 			for _,ply in pairs(player.GetAll()) do
 				ply:PrintMessage(HUD_PRINTCONSOLE, translate.ClientFormat(ply, on and "x_turned_on_noclip" or "x_turned_off_noclip", pl:Name()))
